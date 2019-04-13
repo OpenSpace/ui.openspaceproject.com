@@ -1,17 +1,80 @@
+import images from './images';
+
+let screenspaceRenderables = [];
+
 export default (openspace) => {
 
   async function sleep(duration) {
     return new Promise(resolve => setTimeout(resolve, duration));
   }
 
-  function addImage() {
+  function fullImageUri(identifier) {
+    return "screenspace-image-" + identifier;
+  }
 
+  async function addImage(identifier) {
+    const imageData = images[identifier];
+
+    if (!imageData) {
+      console.error("Missing image data for " + identifier);
+      return;
+    }
+
+    const url = imageData.url;
+    const uri = fullImageUri(identifier);
+    const position = imageData.position || [3, 0, 0];
+    const tweenPosition = imageData.tweenPosition;
+
+    const initialPosition = tweenPosition ? [position[0] + 10, position[1], position[2]] : position;
+
+    const spec = {
+        Type: "ScreenSpaceImageOnline",
+        Identifier: uri,
+        Name: identifier,
+        URL: url,
+        Enabled: true,
+        UseRadiusAzimuthElevation: true,
+        FaceCamera: true,
+        RadiusAzimuthElevation: initialPosition,
+        UsePerspectiveProjection: true,
+        Alpha: 0,
+        Scale: imageData.scale || 1
+    };
+
+    // If image is already added, this will throw an error, but that's fine for the moment.
+    openspace.addScreenSpaceRenderable(spec);
+    screenspaceRenderables.push(uri);
+
+    // Enable the image if it already existed but was invisible.
+    openspace.setPropertyValue("ScreenSpace." + uri + ".Alpha", 0);
+    openspace.setPropertyValue("ScreenSpace." + uri + ".Enabled", true);  
+    openspace.setPropertyValue("ScreenSpace." + uri + ".RadiusAzimuthElevation", initialPosition);
+    openspace.setPropertyValue("ScreenSpace." + uri + ".Rotation", imageData.rotation || [0, 0, 0]);
+
+
+    await sleep(500);
+    openspace.setPropertyValueSingle("ScreenSpace." + uri + ".RadiusAzimuthElevation", position, 1, 'CubicEaseOut');
+    openspace.setPropertyValue("ScreenSpace." + uri + ".Alpha", 1, 1);
   }
 
 
-  function removeImage() {
-
+  async function removeImage(identifier) {
+    const uri = fullImageUri(identifier);
+    openspace.setPropertyValue("ScreenSpace." + uri + ".Alpha", 0, 1);
+    await sleep(2000);
+    openspace.setPropertyValue("ScreenSpace." + uri + ".Enabled", false);
+    // Ideally, we want to:
+    // openspace.removeScreenSpaceRenderable(uri);
+    // However, there is an issue with interpolations and removing property owners.
   }
+
+  function clearImages() {
+    screenspaceRenderables.forEach(ssr => {
+      openspace.removeScreenSpaceRenderable(ssr);
+    })
+    screenspaceRenderables = [];
+  }
+
 
   async function showInsignias() {
     const tween = 0.5;
@@ -82,6 +145,9 @@ export default (openspace) => {
       title: "Trails",
       buttons: {
         'Moon': () => { showTrails(['Moon']) },
+        'Apollo 8 Launch': () => { showTrails(['Apollo8Launch']) },
+        'Apollo 8 Moon': () => { showTrails(['Apollo8Moon']) },
+        'Apollo 8 Full': () => { showTrails(['Apollo8EarthBarycenter']) },
         'Hide All': () => { hideAllTrails(); },
         'Earth, Moon & Mars': () => { showTrails(['Earth', 'Moon', 'Mars']) },
       }
@@ -96,12 +162,13 @@ export default (openspace) => {
     {
       title: "Flying",
       buttons: {
-        'Man in the Moon': () => { addImage('aManInTheMoon'); },
-        'Jules Verne': () => { addImage('julesVerne'); },
+        'Man in the Moon': () => { addImage('manInTheMoone'); },
+        'Jules Verne': async () => { addImage('julesVerne1'); await sleep(1000); addImage('julesVerne2'); },
         'Goddard': () => { addImage('goddard'); },
         'Hide': () => {
-          removeImage('aManInTheMoon');
-          removeImage('julesVerne');
+          removeImage('manInTheMoone');
+          removeImage('julesVerne1');
+          removeImage('julesVerne2');
           removeImage('goddard');
         }
       }
@@ -125,13 +192,13 @@ export default (openspace) => {
         'Gagarin': () => { addImage('gagarin'); },
         'Capsule': () => { addImage('capsule'); },
         'News': () => { addImage('russiaNews'); /* stamps */ },
-        'Teresjkova': () => { addImage('teresjkova'); addImage('teresjkova-medals');/* stamps */ },
+        'Teresjkova': () => { addImage('teresjkova'); addImage('teresjkovaMedals');/* stamps */ },
         'Hide': () => {
           removeImage('gagarin');
           removeImage('capsule');
           removeImage('russiaNews');
           removeImage('teresjkova');
-          removeImage('teresjkova-medals');
+          removeImage('teresjkovaMedals');
         }
       }
     },
@@ -139,14 +206,14 @@ export default (openspace) => {
       title: "USA 1",
       buttons: {
         'Explorer': () => { addImage('explorer'); },
-        'Shephard': () => { addImage('gagarin'); addImage('mercury3'); },
-        'Glenn': () => { addImage('glenn'); addImage('mercury6'); },
+        'Shephard': () => { addImage('shepard'); /*addImage('mercury3');*/ },
+        'Glenn': () => { addImage('glenn'); /*addImage('mercury6');*/ },
         'Hide': () => {
           removeImage('explorer');
-          removeImage('gagarin');
-          removeImage('mercury3');
+          removeImage('shepard');
           removeImage('glenn');
-          removeImage('mercury6');
+          //removeImage('mercury3');
+          //removeImage('mercury6');
         }
       }
     },
@@ -162,8 +229,8 @@ export default (openspace) => {
     {
       title: "Apollo 8 Intro",
       buttons: {
-        'Show Insignia': () => { addImage('apollo8Insigina'); },
-        'Hide Insignia': () => { removeImage('apollo8Insigina'); },
+        'Show Insignia': () => { addImage('apolloInsigina'); },
+        'Hide Insignia': () => { removeImage('apolloInsigina'); },
       }
     },
     {
@@ -202,6 +269,7 @@ export default (openspace) => {
       title: "Apollo 13 Problem",
       buttons: {
         'Problem': () => { addImage('apollo13Problem'); },
+        'Hide': () => { addImage('apollo13Problem'); },
       }
     },
     {
@@ -211,5 +279,13 @@ export default (openspace) => {
         'Hide Insignias': () => { hideInsignias() },
       }
     },
+    {
+      title: "Utilities",
+      buttons: {
+        'Clear all images (fragile)': () => { clearImages() },
+      }
+    },
+
+
 	];
 } 

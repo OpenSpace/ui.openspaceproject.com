@@ -44,6 +44,10 @@ button.disconnected {
   background-color: #777;
 }
 
+button.disconnected:hover {
+  background-color: #777;
+}
+
 h2 {
   margin-top: 0;
 }
