@@ -149,7 +149,7 @@ export default (openspace) => {
     openspace.time.setPause(false);
   }
 
-	return [
+  return [
     {
       title: "Trails",
       buttons: {
@@ -161,13 +161,13 @@ export default (openspace) => {
         'Earth, Moon & Mars': () => { showTrails(['Earth', 'Moon', 'Mars']) },
       }
     },
-		{
-			title: "Sputnik Intro",
-			buttons: {
-				Show: () => { addImage('sputnik'); },
+    {
+      title: "Sputnik Intro",
+      buttons: {
+        Show: () => { addImage('sputnik'); },
         Hide: () => { removeImage('sputnik'); }
-			}
-		},
+      }
+    },
     {
       title: "Flying",
       buttons: {
@@ -298,5 +298,5 @@ export default (openspace) => {
     },
 
 
-	];
+  ];
 } 
