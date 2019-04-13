@@ -99,6 +99,7 @@ export default (openspace) => {
   }
 
   function jumpToEarthrise() {
+    // Atmosphere needs to be disabled, due to a bug with stereo separation.
     openspace.setPropertyValue('Scene.EarthAtmosphere.Renderable.Enabled', false)
     openspace.time.setPause(true);
     openspace.time.setTime("1968 DEC 24 16:37:31");
@@ -110,6 +111,14 @@ export default (openspace) => {
         Rotation: [0.697424E0, -0.694746E0, 0.539866E-1, 0.167373E0],
     });
 }
+
+  function enableAtmosphere() {
+    openspace.setPropertyValue('Scene.EarthAtmosphere.Renderable.Enabled', true)
+  }
+
+  function enableAtmospheres(enabled) {
+    openspace.setPropertyValue('Scene.*Atmosphere.Renderable.Enabled', enabled)
+  }
 
   function showTrails(objects) {
     objects.map(async (object) => {
@@ -190,12 +199,12 @@ export default (openspace) => {
       title: "Russia 2",
       buttons: {
         'Gagarin': () => { addImage('gagarin'); },
-        'Capsule': () => { addImage('capsule'); },
+        'Vostok': () => { addImage('vostokSpacecraft'); },
         'News': () => { addImage('russiaNews'); /* stamps */ },
         'Teresjkova': () => { addImage('teresjkova'); addImage('teresjkovaMedals');/* stamps */ },
         'Hide': () => {
           removeImage('gagarin');
-          removeImage('capsule');
+          removeImage('vostokSpacecraft');
           removeImage('russiaNews');
           removeImage('teresjkova');
           removeImage('teresjkovaMedals');
@@ -229,8 +238,8 @@ export default (openspace) => {
     {
       title: "Apollo 8 Intro",
       buttons: {
-        'Show Insignia': () => { addImage('apolloInsigina'); },
-        'Hide Insignia': () => { removeImage('apolloInsigina'); },
+        'Show Insignia': () => { addImage('apollo8Insignia'); },
+        'Hide Insignia': () => { removeImage('apollo8Insignia'); },
       }
     },
     {
@@ -242,7 +251,8 @@ export default (openspace) => {
       desciption: "Start audio from Earthrise at the same time as starting the Earthrise.",
       buttons: {
         'Jump to Earthrise': () => { jumpToEarthrise() },
-        'Start Earthrise': () => { playRealtime() /* TODO: Subtitles? */ },
+        'Start Earthrise': () => { playRealtime() },
+        'Enable Atmosphere': () => { enableAtmosphere() },
       }
     },
     {
@@ -283,6 +293,8 @@ export default (openspace) => {
       title: "Utilities",
       buttons: {
         'Clear all images (fragile)': () => { clearImages() },
+        'Disable atmospheres': () => { enableAtmospheres(false) },
+        'Enable atmospheres': () => { enableAtmospheres(true) },
       }
     },
 

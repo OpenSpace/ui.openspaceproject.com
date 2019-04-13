@@ -31,17 +31,26 @@ export default {
   laika: {
     url: remoteUrl + 'soviet/laika.jpg',
     position: [5, -0.3, 0],
-    rotation: [0.2, 0, 0.2]
+    rotation: [0.2, 0, 0.3]
   },
   luna2: {
     url: remoteUrl + 'soviet/luna2.jpg',
     position: [4.5, 0, 0],
-    rotation: [-0.05, 0, 0.2]
+    rotation: [-0.05, 0, 0.3]
   },
   luna3: {
     url: remoteUrl + 'soviet/luna3.jpg',
     position: [4, 0.3, 0],
-    rotation: [-0.2, 0, 0.2]
+    rotation: [-0.2, 0, 0.3]
+  },
+  gagarin: {
+
+  },
+  vostokSpacecraft: {
+
+  },
+  russiaNews: {
+
   },
   teresjkova: {
     url: remoteUrl + 'soviet/teresjkova.jpg'
@@ -57,5 +66,9 @@ export default {
   },
   explorer: {
     url: remoteUrl + 'usa/explorer.jpg'
-  }
+  },
+  apollo8Insignia: {
+    url: remoteUrl + 'apollo8/insignia.png',
+    position: [4, 0, 0.2]
+  },
 }
