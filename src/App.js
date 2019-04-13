@@ -63,7 +63,7 @@ class App extends Component {
               action.buttons && Object.keys(action.buttons).map(button => {
                 const fn = action.buttons[button];
                 const error = () => {console.log('Disconnected!') }
-                const c = this.openspace ? "connected" : "disconnected";
+                const c = this.state.connected ? "connected" : "disconnected";
                 return <button key={button} className={c} onClick={this.openspace ? fn : error}>{button}</button>
               })
             }
