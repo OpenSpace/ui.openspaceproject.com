@@ -44,31 +44,46 @@ export default {
     rotation: [-0.2, 0, 0.3]
   },
   gagarin: {
-
+    url: remoteUrl + 'soviet/gagarin.jpg',
+    position: [4, -1, 0.3],
   },
   vostokSpacecraft: {
-
+    url: remoteUrl + 'soviet/vostokSpacecraft.jpg',
+    position: [4, -0.33, 0.3],
   },
-  russiaNews: {
-
-  },
-  teresjkova: {
-    url: remoteUrl + 'soviet/teresjkova.jpg'
+  sovietNews: {
+    url: remoteUrl + 'soviet/news.jpg',
+    position: [4, 0.33, 0.3],
   },
   teresjkovaMedals: {
-    url: remoteUrl + 'soviet/teresjkovaMedals.jpg'
+    url: remoteUrl + 'soviet/teresjkovaMedals.jpg',
+    position: [4, 1, 0.3],
   },
   glenn: {
-    url: remoteUrl + 'usa/glenn.jpg'
+    url: remoteUrl + 'usa/glenn.jpg',
+    position: [5, 0.5, 0.3],
+    tweenPosition: true
   },
   shepard: {
-    url: remoteUrl + 'usa/shepard.jpg'
+    url: remoteUrl + 'usa/shepard.jpg',
+    position: [5, 0, 0.3],
+    tweenPosition: true
   },
   explorer: {
-    url: remoteUrl + 'usa/explorer.jpg'
+    url: remoteUrl + 'usa/explorer.jpg',
+    position: [5, -0.5, 0.3],
+    tweenPosition: true
   },
   apollo8Insignia: {
     url: remoteUrl + 'apollo8/insignia.png',
-    position: [4, 0, 0.2]
+    position: [4, 0, 0.2],
+    tweenPosition: true
   },
+  apollo13Problem: {
+    url: remoteUrl + 'apollo13/problem.jpg',
+    position: [4, 0, 0.2],
+    scale: 2,
+    tweenPosition: true
+  },
+
 }

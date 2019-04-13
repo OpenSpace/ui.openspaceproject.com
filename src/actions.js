@@ -183,7 +183,7 @@ export default (openspace) => {
       }
     },
     {
-      title: "Russia 1",
+      title: "Soviet 1",
       buttons: {
         'Laika': () => { addImage('laika'); },
         'Luna 2': () => { addImage('luna2'); },
@@ -196,17 +196,16 @@ export default (openspace) => {
       }
     },
     {
-      title: "Russia 2",
+      title: "Soviet 2",
       buttons: {
         'Gagarin': () => { addImage('gagarin'); },
         'Vostok': () => { addImage('vostokSpacecraft'); },
-        'News': () => { addImage('russiaNews'); /* stamps */ },
+        'News': () => { addImage('sovietNews'); /* stamps */ },
         'Teresjkova': () => { addImage('teresjkova'); addImage('teresjkovaMedals');/* stamps */ },
         'Hide': () => {
           removeImage('gagarin');
           removeImage('vostokSpacecraft');
-          removeImage('russiaNews');
-          removeImage('teresjkova');
+          removeImage('sovietNews');
           removeImage('teresjkovaMedals');
         }
       }

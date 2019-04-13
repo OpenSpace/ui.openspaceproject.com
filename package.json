@@ -2,6 +2,7 @@
   "name": "moonprogram",
   "version": "0.1.0",
   "private": true,
+  "homepage" : "http://weber.itn.liu.se/~emiax61/moon-mars-show/dashboard",
   "dependencies": {
     "openspace-api-js": "^0.1.1",
     "react": "^16.8.6",
