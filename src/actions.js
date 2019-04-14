@@ -98,19 +98,56 @@ export default (openspace) => {
     openspace.setPropertyValue("Scene.Apollo*Insignia.Renderable.Opacity", 0, tween)
   }
 
-  function jumpToEarthrise() {
+  function jumpToPreEarthrise() {
     // Atmosphere needs to be disabled, due to a bug with stereo separation.
     openspace.setPropertyValue('Scene.EarthAtmosphere.Renderable.Enabled', false)
+    openspace.time.setDeltaTime(1);
     openspace.time.setPause(true);
     openspace.time.setTime("1968 DEC 24 16:37:31");
     openspace.navigation.setCameraState({
-        Anchor: "Apollo8Pivot",
-        Aim: "",
-        ReferenceFrame: "Apollo8Pivot",
-        Position: [-7.174805E0, -1.820108E1, -3.634688E1],
-        Rotation: [0.697424E0, -0.694746E0, 0.539866E-1, 0.167373E0],
+      Anchor: "Apollo8Pivot",
+      Aim: "",
+      ReferenceFrame: "Apollo8Pivot",
+      Position: [-7.174805E0, -1.820108E1, -3.634688E1],
+      Rotation: [0.697424E0, -0.694746E0, 0.539866E-1, 0.167373E0],
     });
-}
+  }
+
+  function jumpInsideApollo8() {
+    openspace.time.setPause(true);
+    openspace.time.setTime("1968 DEC 24 16:38:43");
+    openspace.setPropertyValue("NavigationHandler.OrbitalNavigator.UseAdaptiveStereoscopicDepth", false);
+    openspace.setPropertyValue("NavigationHandler.OrbitalNavigator.StaticViewScaleExponent", 1);
+    openspace.navigation.setCameraState({
+      Anchor: "Apollo8Pivot",
+      ReferenceFrame: "Apollo8Pivot",
+      Aim: "",
+      Position: [-0.250397E0,-0.606144E0,-1.124966E0],
+      Rotation: [-0.429855E0,0.584589E0,-0.498124E0,-0.474713E0]
+    });
+  }
+
+  function jumpOutOfApollo8() {
+    openspace.time.setPause(true);
+    openspace.time.setTime("1968 DEC 24 16:39:43");
+    openspace.setPropertyValue("NavigationHandler.OrbitalNavigator.UseAdaptiveStereoscopicDepth", true);
+    openspace.navigation.setCameraState({
+      Aim:"",
+      Anchor:"Apollo8Pivot",
+      Position:[-1.279184E1,-1.339158E1,1.110525E1],
+      ReferenceFrame:"Apollo8Pivot",
+      Rotation:[0.145135E0,-0.215160E0,0.668888E0,0.696585E0]
+    });
+  }
+
+  function useAdaptiveStereoscopicDepth() {
+    openspace.setPropertyValue("NavigationHandler.OrbitalNavigator.UseAdaptiveStereoscopicDepth", true);
+  }
+
+  function jumpToEarthriseTime() {
+    openspace.time.setPause(true);
+    openspace.time.setTime("1968 DEC 24 16:38:43");
+  }
 
   function enableAtmosphere() {
     openspace.setPropertyValue('Scene.EarthAtmosphere.Renderable.Enabled', true)
@@ -149,7 +186,54 @@ export default (openspace) => {
     openspace.time.setPause(false);
   }
 
+  async function fadeLayer(layer, enable) {
+    if (enable) {
+      openspace.setPropertyValueSingle(layer + ".Enabled", true);
+    }
+    openspace.setPropertyValueSingle(layer + ".Settings.Opacity", enable ? 1 : 0, 1);
+    await sleep(1000);
+
+    if (!enable) {
+      openspace.setPropertyValueSingle(layer + ".Settings.Enabled", false);
+    }
+  }
+
+  function enableApollo11Layers(enabled) {
+    fadeLayer('Scene.Moon.Renderable.Layers.ColorLayers.LRO_NAC_Apollo_11', enabled)
+    openspace.setPropertyValueSingle("Scene.Moon.Renderable.Layers.HeightLayers.LRO_NAC_Apollo_11.Enabled", enabled);
+  }
+
+
+  function enableApollo17Lro(enabled) {
+    fadeLayer('Scene.Moon.Renderable.Layers.ColorLayers.LRO_NAC_Apollo_17', enabled)
+    openspace.setPropertyValueSingle("Scene.Moon.Renderable.Layers.HeightLayers.LRO_NAC_Apollo_17.Enabled", enabled);
+  }
+
+  function enableApollo17Travmap(enabled) {
+    if (enabled) {
+      openspace.setPropertyValueSingle("Scene.Moon.Renderable.Layers.ColorLayers.A17_travmap.BlendMode", 0.0);
+    }
+    fadeLayer('Scene.Moon.Renderable.Layers.ColorLayers.A17_travmap', enabled)
+  }
+
+  function enableNavigationSats(enable) {
+    openspace.setPropertyValue("Scene.beidou_*.Renderable.Enabled", enable);
+    openspace.setPropertyValue("Scene.galileo_*.Renderable.Enabled", enable);
+    openspace.setPropertyValue("Scene.glo-*.Renderable.Enabled", enable);
+    openspace.setPropertyValue("Scene.gps-*.Renderable.Enabled", enable);
+    openspace.setPropertyValue("Scene.musson_*.Renderable.Enabled", enable);
+    openspace.setPropertyValue("Scene.nnss_*.Renderable.Enabled", enable);
+    openspace.setPropertyValue("Scene.sbas_*.Renderable.Enabled", enable);
+  }
+
   return [
+    {
+      title: "Setup",
+      buttons: {
+        'Full Moon': async () => { hideAllTrails(); await sleep(1500); openspace.time.setTime("2018-09-24 13:00:00") },
+        'Hide All Trails': () => { hideAllTrails(); },
+      }
+    },
     {
       title: "Trails",
       buttons: {
@@ -157,8 +241,8 @@ export default (openspace) => {
         'Apollo 8 Launch': () => { showTrails(['Apollo8Launch']) },
         'Apollo 8 Moon': () => { showTrails(['Apollo8Moon']) },
         'Apollo 8 Full': () => { showTrails(['Apollo8EarthBarycenter']) },
-        'Hide All': () => { hideAllTrails(); },
         'Earth, Moon & Mars': () => { showTrails(['Earth', 'Moon', 'Mars']) },
+        'Hide All': () => { hideAllTrails(); },
       }
     },
     {
@@ -227,8 +311,11 @@ export default (openspace) => {
     },
     {
       title: "Kennedy",
-      description: "Move moon to side! \n Insert projector: Kennedy Speech."
-      // TODO if time: provide subtitles
+      description: "Move moon to side! \n Insert projector: Kennedy Speech.",
+      buttons: {
+        'Insert Projector On': () => { addImage('insertProjector'); },
+        'Insert Projector Off': () => { removeImage('insertProjector'); }
+      }// TODO if time: provide subtitles
     },
     {
       title: "Trip to the Moon",
@@ -237,6 +324,7 @@ export default (openspace) => {
     {
       title: "Apollo 8 Intro",
       buttons: {
+        'Launch time': async () => { hideAllTrails(); await sleep(3000); openspace.time.setTime("1968-12-21T12:51:51.0"); showTrails(['Apollo8Launch']) },
         'Show Insignia': () => { addImage('apollo8Insignia'); },
         'Hide Insignia': () => { removeImage('apollo8Insignia'); },
       }
@@ -247,11 +335,17 @@ export default (openspace) => {
     },
     {
       title: "Earthrise",
-      desciption: "Start audio from Earthrise at the same time as starting the Earthrise.",
+      description: "Start audio from Earthrise at the same time as starting the Earthrise. \n Move Earth to left before showing real photo.",
+
       buttons: {
-        'Jump to Earthrise': () => { jumpToEarthrise() },
+        'Jump to Pre-Earthrise': () => { jumpToPreEarthrise() },
         'Start Earthrise': () => { playRealtime() },
+        'Interior': () => { jumpInsideApollo8() },
+        'Exterior': () => { jumpOutOfApollo8() },
         'Enable Atmosphere': () => { enableAtmosphere() },
+        'Show photo': () => { addImage('earthrise'); },
+        'Hide photo': () => { removeImage('earthrise'); },
+        'Enable Adaptive Stero': () => { useAdaptiveStereoscopicDepth() },
       }
     },
     {
@@ -259,26 +353,43 @@ export default (openspace) => {
       description: "Land at Apollo 11 site. Use arrow keys for flip book. Show lander.",
       /* TODO */
       buttons: {
-        
+        'Show Insignia': () => { addImage('apollo11Insignia'); },
+        'Hide Insignia': () => { removeImage('apollo11Insignia'); },
+        'Layers On': () => { enableApollo11Layers(true); },
+        'Layers Off': () => { enableApollo11Layers(false); },
+
+        'Eagle Landing': () => { addImage('eagleLanding'); },
+        'Aldrin Ladder': () => { addImage('aldrinLadder'); },
+        'Lunar Module': () => { addImage('apollo11Lem'); },
+        'Footprints': () => { addImage('apollo11Footprints'); },
+        'Hide moon images': () => { removeImage('eagleLanding'); removeImage('aldrinLadder'); removeImage('apollo11Lem'); removeImage('apollo11Footprints'); },
+
+        'Nixon': () => { addImage('nixon'); },
+        'Hide Nixon': () => { removeImage('nixon'); },
       }
     },
     {
       title: "Apollo 13",
       buttons: {
-        'Control Room 1': () => { addImage('apollo13Calm'); },
-        'Hide': () => { removeImage('apollo13Calm'); },
-      }
-    },
-    {
-      title: "Apollo 13 Video",
-      description: "Video?"
-      /* TODO */
-    },
-    {
-      title: "Apollo 13 Problem",
-      buttons: {
         'Problem': () => { addImage('apollo13Problem'); },
-        'Hide': () => { addImage('apollo13Problem'); },
+        'Landing': async () => {
+          addImage('apollo13Landing');
+          await sleep(500);
+          addImage('apollo13InWater');
+          await sleep(500);
+          addImage('apollo13Helicopter');
+          await sleep(500);
+          addImage('apollo13LoadOnDeck');
+         },
+        'Happy': async () => { removeImage('apollo13Problem'); await sleep(500); addImage('apollo13Happy'); },
+        'Hide': () => {
+          removeImage('apollo13Problem');
+          removeImage('apollo13Happy');
+          removeImage('apollo13Landing');
+          removeImage('apollo13InWater');
+          removeImage('apollo13Helicopter')
+          removeImage('apollo13LoadOnDeck');
+        },
       }
     },
     {
@@ -286,6 +397,51 @@ export default (openspace) => {
       buttons: {
         'Show Insignias': () => { showInsignias() },
         'Hide Insignias': () => { hideInsignias() },
+      }
+    },
+    {
+      title: "Apollo 17",
+      description: "Land at Apollo 17 site.",
+      /* TODO */
+      buttons: {
+        'LRO On': () => { enableApollo17Lro(true); },
+        'LRO Off': () => { enableApollo17Lro(false); },
+        'Travmap On': () => { enableApollo17Travmap(true); },
+        'Travmap Off': () => { enableApollo17Travmap(false); } 
+      }
+    },
+    {
+      title: "Apollo 17 Pictures",
+      buttons: {
+        'LRV': async () => {
+          addImage('apollo17Lrv');
+         },
+         'Digging': async () => {
+          addImage('apollo17Digging');
+         },
+         'Reflector': async () => {
+          addImage('apollo17Reflector');
+         },
+         'Boulder': async () => {
+          addImage('apollo17Boulder');
+         },
+        'Hide': () => {
+          removeImage('apollo17Lrv');
+          removeImage('apollo17Digging');
+          removeImage('apollo17Reflector');
+          removeImage('apollo17Boulder');
+        },
+      }
+    },
+    {
+      title: "Mars",
+      description: "Land at Ganges Chasma (8.43 S, 46.69 W) .",
+    },
+    {
+      title: "Satellites",
+      buttons: {
+        'Show navigation sats': () => { enableNavigationSats(true); },
+        'Hide navigation sats': () => { enableNavigationSats(false); }
       }
     },
     {
