@@ -144,11 +144,6 @@ export default (openspace) => {
     openspace.setPropertyValue("NavigationHandler.OrbitalNavigator.UseAdaptiveStereoscopicDepth", true);
   }
 
-  function jumpToEarthriseTime() {
-    openspace.time.setPause(true);
-    openspace.time.setTime("1968 DEC 24 16:38:43");
-  }
-
   function enableAtmosphere() {
     openspace.setPropertyValue('Scene.EarthAtmosphere.Renderable.Enabled', true)
   }
@@ -230,6 +225,7 @@ export default (openspace) => {
     {
       title: "Setup",
       buttons: {
+        'Load Apollo 8': () => { openspace.asset.add("scene/solarsystem/missions/apollo/apollo8") },
         'Full Moon': async () => { hideAllTrails(); await sleep(1500); openspace.time.setTime("2018-09-24 13:00:00") },
         'Hide All Trails': () => { hideAllTrails(); },
       }
@@ -440,6 +436,7 @@ export default (openspace) => {
     {
       title: "Satellites",
       buttons: {
+        'Load navigation sats': () => { openspace.asset.add("scene/solarsystem/planets/earth/satellites/satellites_navigation"); },
         'Show navigation sats': () => { enableNavigationSats(true); },
         'Hide navigation sats': () => { enableNavigationSats(false); }
       }

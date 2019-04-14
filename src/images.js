@@ -31,17 +31,17 @@ export default {
   },
   laika: {
     url: remoteUrl + 'soviet/laika.jpg',
-    position: [5, -0.3, 0],
+    position: [5, -0.6, 0.3],
     rotation: [0.2, 0, 0.3]
   },
   luna2: {
     url: remoteUrl + 'soviet/luna2.jpg',
-    position: [4.5, 0, 0],
+    position: [4.5, 0, 0.3],
     rotation: [-0.05, 0, 0.3]
   },
   luna3: {
     url: remoteUrl + 'soviet/luna3.jpg',
-    position: [4, 0.3, 0],
+    position: [4, 0.6, 0.3],
     rotation: [-0.2, 0, 0.3]
   },
   gagarin: {
@@ -77,12 +77,12 @@ export default {
   },
   apollo8Insignia: {
     url: remoteUrl + 'apollo8/insignia.png',
-    position: [4, 0, 0.2],
+    position: [4, 0, 0.3],
     tweenPosition: true
   },
   apollo11Insignia: {
     url: remoteUrl + 'apollo11/insignia.png',
-    position: [4, 0, 0.2],
+    position: [4, 0, 0.3],
     tweenPosition: true
   },
   earthrise: {
@@ -99,27 +99,27 @@ export default {
   },
   eagleLanding: {
     url: remoteUrl + 'apollo11/eagleLanding.jpg',
-    position: [3.5, -1, 0.4],
+    position: [3.5, -1, 0.5],
     tweenPosition: true
   },
   aldrinLadder: {
     url: remoteUrl + 'apollo11/aldrinLadder.jpg',
-    position: [3.5, -0.35, 0.3],
+    position: [3.5, -0.35, 0.4],
     tweenPosition: true
   },
   apollo11Lem: {
     url: remoteUrl + 'apollo11/lunarModule.jpg',
-    position: [3.5, 0.35, 0.3],
+    position: [3.5, 0.35, 0.4],
     tweenPosition: true
   },
   apollo11Footprints: {
     url: remoteUrl + 'apollo11/footprint.jpg',
-    position: [3.5, 1, 0.3],
+    position: [3.5, 1, 0.4],
     tweenPosition: true
   },
   nixon: {
     url: remoteUrl + 'apollo11/nixon.jpg',
-    position: [3.5, 0, 0.3],
+    position: [3.5, 0, 0.4],
     tweenPosition: true,
     scale: 1.5
   },
@@ -132,25 +132,25 @@ export default {
   },
   apollo13Landing: {
     url: remoteUrl + 'apollo13/landing.jpg',
-    position: [3.5, -1, 0.3],
+    position: [3.5, -1, 0.4],
     rotation: [0.1, 0, 0],
     scale: 1,
   },
   apollo13InWater: {
     url: remoteUrl + 'apollo13/inWater.jpg',
-    position: [3, -0.35, 0.3],
+    position: [3, -0.35, 0.4],
     rotation: [-0.1, 0, 0],
     scale: 1,
   },
   apollo13Helicopter: {
     url: remoteUrl + 'apollo13/helicopter.jpg',
-    position: [3.5, 0.35, 0.3],
+    position: [3.5, 0.35, 0.4],
     rotation: [0.1, 0, 0],
     scale: 1,
   },
   apollo13LoadOnDeck: {
     url: remoteUrl + 'apollo13/loadOnDeck.jpg',
-    position: [3, 1, 0.3],
+    position: [3, 1, 0.4],
     rotation: [-0.1, 0, 0],
     scale: 1,
   },
@@ -164,25 +164,25 @@ export default {
 
   apollo17Lrv: {
     url: remoteUrl + 'apollo17/lrv2.jpg',
-    position: [3.5, -1.2, 0.3],
+    position: [3.5, -1.2, 0.4],
     rotation: [0.1, 0, 0],
     scale: 2,
   },
   apollo17Digging: {
     url: remoteUrl + 'apollo17/digging.jpg',
-    position: [3, -0.35, 0.3],
+    position: [3, -0.35, 0.4],
     rotation: [-0.1, 0, 0],
     scale: 1,
   },
   apollo17Reflector: {
     url: remoteUrl + 'apollo17/reflector.jpg',
-    position: [3.5, 0.35, 0.3],
+    position: [3.5, 0.35, 0.4],
     rotation: [0.1, 0, 0],
     scale: 1,
   },
   apollo17Boulder: {
     url: remoteUrl + 'apollo17/boulder.jpg',
-    position: [3, 1.3, 0.3],
+    position: [3, 1.3, 0.4],
     rotation: [-0.1, 0, 0],
     scale: 2,
   },
