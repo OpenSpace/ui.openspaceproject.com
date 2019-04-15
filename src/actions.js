@@ -12,6 +12,14 @@ export default (openspace) => {
     return "screenspace-image-" + identifier;
   }
 
+  function getClose() {
+    openspace.setPropertyValue("NavigationHandler.OrbitalNavigator.StereoscopicDepthOfFocusSurface", 1.5, 1);
+  }
+
+  function stepAway() {
+    openspace.setPropertyValue("NavigationHandler.OrbitalNavigator.StereoscopicDepthOfFocusSurface", 8, 1);
+  }
+
   async function addImage(identifier) {
     const imageData = images[identifier];
 
@@ -66,6 +74,7 @@ export default (openspace) => {
     // Ideally, we want to:
     // openspace.removeScreenSpaceRenderable(uri);
     // However, there is an issue with interpolations and removing property owners.
+
   }
 
   function clearImages() {
@@ -200,8 +209,8 @@ export default (openspace) => {
 
 
   function enableApollo17Lro(enabled) {
-    fadeLayer('Scene.Moon.Renderable.Layers.ColorLayers.LRO_NAC_Apollo_17', enabled)
-    openspace.setPropertyValueSingle("Scene.Moon.Renderable.Layers.HeightLayers.LRO_NAC_Apollo_17.Enabled", enabled);
+    fadeLayer('Scene.Moon.Renderable.Layers.ColorLayers.LRO NAC Apollo 17', enabled)
+    openspace.setPropertyValueSingle("Scene.Moon.Renderable.Layers.HeightLayers.LRO NAC Apollo 17.Enabled", enabled);
   }
 
   function enableApollo17Travmap(enabled) {
@@ -211,14 +220,27 @@ export default (openspace) => {
     fadeLayer('Scene.Moon.Renderable.Layers.ColorLayers.A17_travmap', enabled)
   }
 
-  function enableNavigationSats(enable) {
-    openspace.setPropertyValue("Scene.beidou_*.Renderable.Enabled", enable);
-    openspace.setPropertyValue("Scene.galileo_*.Renderable.Enabled", enable);
-    openspace.setPropertyValue("Scene.glo-*.Renderable.Enabled", enable);
+  async function enableNavigationSats(enable) {
+    //openspace.setPropertyValue("Scene.beidou_*.Renderable.Enabled", enable);
+    //openspace.setPropertyValue("Scene.galileo_*.Renderable.Enabled", enable);
+    //openspace.setPropertyValue("Scene.glo-*.Renderable.Enabled", enable);
+      
+    if (!enable) {
+      openspace.setPropertyValue("Scene.gps-*.Renderable.Opacity", 1);
+      openspace.setPropertyValue("Scene.gps-*.Renderable.Opacity", 0, 1);
+      await sleep(1000);
+    }
+
     openspace.setPropertyValue("Scene.gps-*.Renderable.Enabled", enable);
-    openspace.setPropertyValue("Scene.musson_*.Renderable.Enabled", enable);
-    openspace.setPropertyValue("Scene.nnss_*.Renderable.Enabled", enable);
-    openspace.setPropertyValue("Scene.sbas_*.Renderable.Enabled", enable);
+
+    if (enable) {
+      openspace.setPropertyValue("Scene.gps-*.Renderable.Opacity", 1, 1);
+    }
+
+    
+    //openspace.setPropertyValue("Scene.musson_*.Renderable.Enabled", enable);
+    //openspace.setPropertyValue("Scene.nnss_*.Renderable.Enabled", enable);
+    //openspace.setPropertyValue("Scene.sbas_*.Renderable.Enabled", enable);
   }
 
   return [
@@ -281,7 +303,7 @@ export default (openspace) => {
         'Gagarin': () => { addImage('gagarin'); },
         'Vostok': () => { addImage('vostokSpacecraft'); },
         'News': () => { addImage('sovietNews'); /* stamps */ },
-        'Teresjkova': () => { addImage('teresjkova'); addImage('teresjkovaMedals');/* stamps */ },
+        'Teresjkova': () => { addImage('teresjkovaMedals'); addImage('teresjkovaMedals');/* stamps */ },
         'Hide': () => {
           removeImage('gagarin');
           removeImage('vostokSpacecraft');
@@ -354,14 +376,12 @@ export default (openspace) => {
         'Layers On': () => { enableApollo11Layers(true); },
         'Layers Off': () => { enableApollo11Layers(false); },
 
-        'Eagle Landing': () => { addImage('eagleLanding'); },
-        'Aldrin Ladder': () => { addImage('aldrinLadder'); },
-        'Lunar Module': () => { addImage('apollo11Lem'); },
+        'News': async () => { addImage('apollo11News1'); await sleep(1000); addImage('apollo11News2'); },
+        'Armstrong': () => { addImage('armstrongLadder'); },
+        'Aldrin': () => { addImage('aldrinLadder'); },
         'Footprints': () => { addImage('apollo11Footprints'); },
-        'Hide moon images': () => { removeImage('eagleLanding'); removeImage('aldrinLadder'); removeImage('apollo11Lem'); removeImage('apollo11Footprints'); },
-
         'Nixon': () => { addImage('nixon'); },
-        'Hide Nixon': () => { removeImage('nixon'); },
+        'Hide moon images': () => { removeImage('armstrongLadder'); removeImage('aldrinLadder'); removeImage('apollo11Footprints'); removeImage('nixon'); removeImage('apollo11News1'); removeImage('apollo11News2');  },
       }
     },
     {
@@ -436,7 +456,7 @@ export default (openspace) => {
     {
       title: "Satellites",
       buttons: {
-        'Load navigation sats': () => { openspace.asset.add("scene/solarsystem/planets/earth/satellites/satellites_navigation"); },
+        'Load navigation sats': () => { openspace.asset.add("scene/solarsystem/planets/earth/satellites/navigation/gps"); },
         'Show navigation sats': () => { enableNavigationSats(true); },
         'Hide navigation sats': () => { enableNavigationSats(false); }
       }
@@ -447,9 +467,9 @@ export default (openspace) => {
         'Clear all images (fragile)': () => { clearImages() },
         'Disable atmospheres': () => { enableAtmospheres(false) },
         'Enable atmospheres': () => { enableAtmospheres(true) },
+        'Get Close': () => { getClose(); },
+        'Step Away': () => { stepAway(); }
       }
-    },
-
-
+    }
   ];
 } 

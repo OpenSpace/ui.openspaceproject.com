@@ -32,17 +32,14 @@ export default {
   laika: {
     url: remoteUrl + 'soviet/laika.jpg',
     position: [5, -0.6, 0.3],
-    rotation: [0.2, 0, 0.3]
   },
   luna2: {
     url: remoteUrl + 'soviet/luna2.jpg',
     position: [4.5, 0, 0.3],
-    rotation: [-0.05, 0, 0.3]
   },
   luna3: {
-    url: remoteUrl + 'soviet/luna3.jpg',
+    url: remoteUrl + 'soviet/luna3Backside.jpg',
     position: [4, 0.6, 0.3],
-    rotation: [-0.2, 0, 0.3]
   },
   gagarin: {
     url: remoteUrl + 'soviet/gagarin.jpg',
@@ -102,28 +99,40 @@ export default {
     position: [3.5, -1, 0.5],
     tweenPosition: true
   },
+  armstrongLadder: {
+    url: remoteUrl + 'apollo11/armstrongLadder.jpg',
+    position: [3.5, -1, 0.5],
+    tweenPosition: true
+  },
   aldrinLadder: {
     url: remoteUrl + 'apollo11/aldrinLadder.jpg',
     position: [3.5, -0.35, 0.4],
     tweenPosition: true
   },
-  apollo11Lem: {
+  /*apollo11Lem: {
     url: remoteUrl + 'apollo11/lunarModule.jpg',
     position: [3.5, 0.35, 0.4],
     tweenPosition: true
-  },
+  },*/
   apollo11Footprints: {
     url: remoteUrl + 'apollo11/footprint.jpg',
-    position: [3.5, 1, 0.4],
+    position: [3.5, 0.35, 0.4],
     tweenPosition: true
   },
   nixon: {
     url: remoteUrl + 'apollo11/nixon.jpg',
-    position: [3.5, 0, 0.4],
-    tweenPosition: true,
-    scale: 1.5
+    position: [3.5, 1.1, 0.4], // position: [3.5, 0, 0.4],
+    tweenPosition: true
   },
-
+  apollo11News1: {
+    url: remoteUrl + 'apollo11/news1.png',
+    position: [3.5, -0.4, 1],
+    tweenPosition: true
+  },
+  apollo11News2: {
+    url: remoteUrl + 'apollo11/news2.png',
+    position: [3.0, 0.4, 1]
+  },
   apollo13Problem: {
     url: remoteUrl + 'apollo13/problem.jpg',
     position: [3.5, 0, 1],
