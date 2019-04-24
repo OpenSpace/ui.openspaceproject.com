@@ -119,6 +119,10 @@ export default {
     position: [3.5, 0.35, 0.4],
     tweenPosition: true
   },
+  apollo11MoreFootprints: {
+    url: remoteUrl + 'apollo11/moreFootprints.jpg',
+    position: [3.0, 0.35, 0.4],
+  },
   nixon: {
     url: remoteUrl + 'apollo11/nixon.jpg',
     position: [3.5, 1.1, 0.4], // position: [3.5, 0, 0.4],

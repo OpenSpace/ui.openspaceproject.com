@@ -272,6 +272,7 @@ export default (openspace) => {
     },
     {
       title: "Flying",
+      description: "Skip this on a normal show.",
       buttons: {
         'Man in the Moon': () => { addImage('manInTheMoone'); },
         'Jules Verne': async () => { addImage('julesVerne1'); await sleep(1000); addImage('julesVerne2'); },
@@ -367,7 +368,11 @@ export default (openspace) => {
       }
     },
     {
-      title: "Apollo 11",
+      title: "Apollo 11 Launch",
+      description: "Insert projector: Saturn V."
+    },
+    {
+      title: "Apollo 11 Site",
       description: "Land at Apollo 11 site. Use arrow keys for flip book. Show lander.",
       /* TODO */
       buttons: {
@@ -380,14 +385,23 @@ export default (openspace) => {
         'Armstrong': () => { addImage('armstrongLadder'); },
         'Aldrin': () => { addImage('aldrinLadder'); },
         'Footprints': () => { addImage('apollo11Footprints'); },
+        'More Footprints': () => { addImage('apollo11MoreFootprints'); },
         'Nixon': () => { addImage('nixon'); },
-        'Hide moon images': () => { removeImage('armstrongLadder'); removeImage('aldrinLadder'); removeImage('apollo11Footprints'); removeImage('nixon'); removeImage('apollo11News1'); removeImage('apollo11News2');  },
+        'Hide moon images': () => {
+          removeImage('armstrongLadder');
+          removeImage('aldrinLadder');
+          removeImage('apollo11Footprints');
+          removeImage('apollo11MoreFootprints');
+          removeImage('nixon');
+          removeImage('apollo11News1');
+          removeImage('apollo11News2');
+        },
       }
     },
     {
-      title: "Apollo 13",
+      title: "Apollo 11 Landing",
       buttons: {
-        'Problem': () => { addImage('apollo13Problem'); },
+        //'Problem': () => { addImage('apollo13Problem'); },
         'Landing': async () => {
           addImage('apollo13Landing');
           await sleep(500);
@@ -397,10 +411,10 @@ export default (openspace) => {
           await sleep(500);
           addImage('apollo13LoadOnDeck');
          },
-        'Happy': async () => { removeImage('apollo13Problem'); await sleep(500); addImage('apollo13Happy'); },
+        //'Happy': async () => { removeImage('apollo13Problem'); await sleep(500); addImage('apollo13Happy'); },
         'Hide': () => {
-          removeImage('apollo13Problem');
-          removeImage('apollo13Happy');
+          //removeImage('apollo13Problem');
+          //removeImage('apollo13Happy');
           removeImage('apollo13Landing');
           removeImage('apollo13InWater');
           removeImage('apollo13Helicopter')
