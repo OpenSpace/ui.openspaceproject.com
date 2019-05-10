@@ -41,12 +41,10 @@ export default (openspace) => {
         Name: identifier,
         URL: url,
         Enabled: true,
-        UseRadiusAzimuthElevation: true,
-        FaceCamera: true,
-        RadiusAzimuthElevation: initialPosition,
-        UsePerspectiveProjection: true,
+        FaceCamera: false,
+        CartesianPosition: initialPosition,
         Alpha: 0,
-        Scale: imageData.scale || 1
+        Scale: imageData.scale || 0.4
     };
 
     // If image is already added, this will throw an error, but that's fine for the moment.
@@ -56,7 +54,7 @@ export default (openspace) => {
     // Enable the image if it already existed but was invisible.
     openspace.setPropertyValue("ScreenSpace." + uri + ".Alpha", 0);
     openspace.setPropertyValue("ScreenSpace." + uri + ".Enabled", true);  
-    openspace.setPropertyValue("ScreenSpace." + uri + ".RadiusAzimuthElevation", initialPosition);
+    // openspace.setPropertyValue("ScreenSpace." + uri + ".RadiusAzimuthElevation", initialPosition);
     openspace.setPropertyValue("ScreenSpace." + uri + ".Rotation", imageData.rotation || [0, 0, 0]);
 
 
@@ -109,17 +107,11 @@ export default (openspace) => {
 
   function jumpToPreEarthrise() {
     // Atmosphere needs to be disabled, due to a bug with stereo separation.
-    openspace.setPropertyValue('Scene.EarthAtmosphere.Renderable.Enabled', false)
+    // openspace.setPropertyValue('Scene.EarthAtmosphere.Renderable.Enabled', false)
     openspace.time.setDeltaTime(1);
     openspace.time.setPause(true);
     openspace.time.setTime("1968 DEC 24 16:37:31");
-    openspace.navigation.setCameraState({
-      Anchor: "Apollo8Pivot",
-      Aim: "",
-      ReferenceFrame: "Apollo8Pivot",
-      Position: [-7.174805E0, -1.820108E1, -3.634688E1],
-      Rotation: [0.697424E0, -0.694746E0, 0.539866E-1, 0.167373E0],
-    });
+    openspace.navigation.setCameraState({Aim: "",Anchor: "Apollo8Pivot",Position: [4.049747E1,1.136734E0,7.908180E0],ReferenceFrame: "Apollo8Pivot",Rotation: [0.662561E0,-0.180404E0,0.636182E0,-0.351767E0]});
   }
 
   function jumpInsideApollo8() {
@@ -209,8 +201,8 @@ export default (openspace) => {
 
 
   function enableApollo17Lro(enabled) {
-    fadeLayer('Scene.Moon.Renderable.Layers.ColorLayers.LRO NAC Apollo 17', enabled)
-    openspace.setPropertyValueSingle("Scene.Moon.Renderable.Layers.HeightLayers.LRO NAC Apollo 17.Enabled", enabled);
+    fadeLayer('Scene.Moon.Renderable.Layers.ColorLayers.LRO_NAC_Apollo_17', enabled)
+    openspace.setPropertyValueSingle("Scene.Moon.Renderable.Layers.HeightLayers.LRO_NAC_Apollo_17.Enabled", enabled);
   }
 
   function enableApollo17Travmap(enabled) {
@@ -250,6 +242,11 @@ export default (openspace) => {
         'Load Apollo 8': () => { openspace.asset.add("scene/solarsystem/missions/apollo/apollo8") },
         'Full Moon': async () => { hideAllTrails(); await sleep(1500); openspace.time.setTime("2018-09-24 13:00:00") },
         'Hide All Trails': () => { hideAllTrails(); },
+        'Setup camera': async () => { openspace.setPropertyValue("NavigationHandler.OrbitalNavigator.Anchor", 'Apollo8'); await sleep(250);
+    openspace.setPropertyValue("NavigationHandler.OrbitalNavigator.RetargetAnchor", null); await sleep(250);
+openspace.setPropertyValue("NavigationHandler.OrbitalNavigator.Aim", 'Earth'); await sleep(250)
+openspace.setPropertyValue("NavigationHandler.OrbitalNavigator.RetargetAim", null);
+   }
       }
     },
     {
@@ -437,7 +434,11 @@ export default (openspace) => {
         'LRO On': () => { enableApollo17Lro(true); },
         'LRO Off': () => { enableApollo17Lro(false); },
         'Travmap On': () => { enableApollo17Travmap(true); },
-        'Travmap Off': () => { enableApollo17Travmap(false); } 
+        'Travmap Off': () => { enableApollo17Travmap(false); },
+        'LEM Inset On': () => { openspace.setPropertyValueSingle('Scene.Moon.Renderable.Layers.ColorLayers.A17_LEM.Enabled', true);},
+        'LEM Inset Off': () => { openspace.setPropertyValueSingle('Scene.Moon.Renderable.Layers.ColorLayers.A17_LEM.Enabled', false);},
+        'Station 6 Inset On': () => { openspace.setPropertyValueSingle('Scene.Moon.Renderable.Layers.ColorLayers.A17_station6a.Enabled', true);},
+        'Station 6 Inset Off': () => { openspace.setPropertyValueSingle('Scene.Moon.Renderable.Layers.ColorLayers.A17_station6a.Enabled', false);},
       }
     },
     {
