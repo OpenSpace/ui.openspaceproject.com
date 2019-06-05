@@ -29,7 +29,7 @@
           openspace.setPropertyValue("Scene.*Trail.Renderable.Enabled", false)  
         }, duration * 1000)
       }
-      //helper function to fade out and then disable trails
+      //helper function to set the focus target
       var setFocus = (focus) => {
         openspace.setPropertyValue('NavigationHandler.OrbitalNavigator.Anchor', focus);
         openspace.setPropertyValue('NavigationHandler.OrbitalNavigator.RetargetAnchor', null);
