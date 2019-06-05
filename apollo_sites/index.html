@@ -128,7 +128,10 @@
         api.onDisconnect(() => {
           console.log("disconnected");
           document.getElementById('container').className = "disconnected";
-          document.getElementById('connection-status').innerHTML = "Disconnected from OpenSpace; Refresh to try to reconnect.";
+          var disconnectedString = "Connect to OpenSpace: ";
+          disconnectedString += '<input id="ipaddress" type=text placeholder="Enter ip address" /> ';
+          disconnectedString += '<button onClick="connectToOpenSpace();">Connect</button>';
+          document.getElementById('connection-status').innerHTML = disconnectedString;
           openspace = null;
         });
         //notify users and map buttons when connected
@@ -159,6 +162,9 @@
       </div>
       <div id="main">
       </div>
+      <script type="text/javascript">
+        connectToOpenSpace('localhost');
+      </script>
     </div>
   <body>
 </html>
