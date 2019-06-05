@@ -17,9 +17,20 @@ code {
     monospace;
 }
 
+input[type=text] {
+    padding:5px;
+    border:1px solid #ccc;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+}
+
+input[type=text]:focus {
+    border-color:#333;
+}
+
 .connection-status {
   transition: all 0.5s;
-  height: 20px;
+  height: 30px;
   width: calc(100% - 1em);
   padding: 0.5em;
 }

@@ -119,43 +119,46 @@
           document.getElementById('main').innerHTML += cardHTML;
         });
       }
+      //helper function to connect to opensapce
+      var connectToOpenSpace = () => {
+        //setup the api params
+        var host = document.getElementById('ipaddress').value;
+        var api = window.openspaceApi(host, 4682);
+        //notify users on disconnect
+        api.onDisconnect(() => {
+          console.log("disconnected");
+          document.getElementById('container').className = "disconnected";
+          document.getElementById('connection-status').innerHTML = "Disconnected from OpenSpace; Refresh to try to reconnect.";
+          openspace = null;
+        });
+        //notify users and map buttons when connected
+        api.onConnect(async () => {
+          try {
+            document.getElementById('container').className = "connected";
+            document.getElementById('connection-status').innerHTML = "Connected to OpenSpace";
+            openspace = await api.library();
+            console.log('connected');
+            mapButtons(openspace);
+          } catch (e) {
+            console.log('OpenSpace library could not be loaded: Error: \n', e)
+            return;
+          }
+        })
+        //connect
+        api.connect();
+      };
     </script>
   </head>
   <body>
     <!-- HTML Containers -->
     <div id="container" class="disconnected">
       <div id="connection-status" class="connection-status">
-        Connecting to OpenSpace
+        Connect to OpenSpace:
+        <input id='ipaddress' type=text placeholder="Enter ip address" /> 
+        <button onClick="connectToOpenSpace();">Connect</button>
       </div>
       <div id="main">
       </div>
     </div>
-    <!-- setup JS library, connect, and once connected, map the buttons -->
-    <script>
-      //setup the api params
-      let api = window.openspaceApi('localhost', 4682);    
-      //notify users on disconnect
-      api.onDisconnect(() => { 
-        console.log("disconnected");
-        document.getElementById('container').className = "disconnected";
-        document.getElementById('connection-status').innerHTML = "Disconnected from OpenSpace; Refresh to try to reconnect.";
-        openspace = null;
-      });
-      //notify users and map buttons when connected
-      api.onConnect(async () => {
-        try {
-          document.getElementById('container').className = "connected";
-          document.getElementById('connection-status').innerHTML = "Connected to OpenSpace";
-          openspace = await api.library();          
-          console.log('connected');
-          mapButtons(openspace);
-        } catch (e) {
-          console.log('OpenSpace library could not be loaded: Error: \n', e)
-          return;
-        }
-      })
-      //connect
-      api.connect();
-    </script>
   <body>
 </html>
