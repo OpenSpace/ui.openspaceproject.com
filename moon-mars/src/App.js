@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import openspaceApi from 'openspace-api-js';
 import actions from './actions';
+import displayEnvironment from './displayEnvironment';
 
 class App extends Component {
   constructor(props) {
@@ -31,9 +32,13 @@ class App extends Component {
     })
 
     this.state = {
-      connected: false
+      connected: false,
+      isDome: false
     }
     api.connect();
+
+
+    this.onChangeDisplayEnvironment = this.onChangeDisplayEnvironment.bind(this);
   }
 
   get connectionStatus() {
@@ -41,17 +46,29 @@ class App extends Component {
       return <div className="connection-status connection-status-connected">
         Connected to OpenSpace
        </div>
-  } else {
-    return <div className="connection-status connection-status-disconnected">
+    } else {
+      return <div className="connection-status connection-status-disconnected">
         Disconnected from OpenSpace
        </div>
+    }
   }
-}
+
+  onChangeDisplayEnvironment(evt) {
+    const isDome = evt.target.checked;
+    displayEnvironment.setIsDome(isDome);
+    this.setState({
+      isDome
+    });
+  }
 
   render() {
     return <div>
       {this.connectionStatus}
       <div className="main">
+      <div className="configuration-card">
+        <h2>Configuration</h2>
+        <label className={this.state.isDome ? "checked" : ""}><input type="checkbox" onChange={this.onChangeDisplayEnvironment}/>Optimize for dome</label>
+      </div>
       {
         actions(this.openspace).map((action, id) => {
           return <div key={id} className="card">

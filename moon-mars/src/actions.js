@@ -1,4 +1,5 @@
 import images from './images';
+import displayEnvironment from './displayEnvironment';
 
 let screenspaceRenderables = [];
 
@@ -10,6 +11,46 @@ export default (openspace) => {
 
   function fullImageUri(identifier) {
     return "screenspace-image-" + identifier;
+  }
+
+  async function fadeOut(duration) {
+    if (duration === undefined) {
+      duration = 1;
+    }
+    openspace.setPropertyValue("RenderEngine.BlackoutFactor", 0, duration * 0.8);
+    await sleep(duration * 1000);
+  }
+
+  async function fadeIn(duration) {
+    if (duration === undefined) {
+      duration = 1;
+    }
+    openspace.setPropertyValue("RenderEngine.BlackoutFactor", 1, duration * 0.8);
+    await sleep(duration * 1000);
+  }
+
+  async function kennedySpeechLocation() {
+    await fadeOut();
+    openspace.time.setDeltaTime(1);
+    openspace.time.setPause(true);
+    openspace.time.setTime("1962-09-12T18:00:00")
+
+    openspace.navigation.setNavigationState({
+      Anchor: "Earth",
+      Position: [6.116502E6,-1.992908E7,4.872328E6],
+      Up: [0.272363E0,0.306573E0,0.912048E0]
+    });
+    await fadeIn();
+  }
+
+  function fullMoon() {
+    openspace.time.setTime("2018-09-24 13:00:00");
+    openspace.navigation.setNavigationState({
+      Anchor: "Moon",
+      Position: [4.245410E6,-8.237393E5,5.265029E5],
+      ReferenceFrame: "Earth",
+      Up: [0, 0, 1]
+    });
   }
 
   function getClose() {
@@ -30,10 +71,19 @@ export default (openspace) => {
 
     const url = imageData.url;
     const uri = fullImageUri(identifier);
-    const position = imageData.position || [3, 0, 0];
+    let position = undefined;
+    
+    if (displayEnvironment.isDome()) {
+      position = imageData.domePosition || imageData.flatPosition || [3, 0, 0];
+    } else {
+      position = imageData.flatPosition || imageData.domePosition || [3, 0, 0];
+    }
+
     const tweenPosition = imageData.tweenPosition;
 
-    const initialPosition = tweenPosition ? [position[0] + 10, position[1], position[2]] : position;
+    const tweenDistance = displayEnvironment.isDome() ? 10 : 3;
+
+    const initialPosition = tweenPosition ? [position[0] + tweenDistance, position[1], position[2]] : position;
 
     const spec = {
         Type: "ScreenSpaceImageOnline",
@@ -42,7 +92,7 @@ export default (openspace) => {
         URL: url,
         Enabled: true,
         UseRadiusAzimuthElevation: true,
-        FaceCamera: true,
+        FaceCamera: displayEnvironment.isDome(),
         RadiusAzimuthElevation: initialPosition,
         UsePerspectiveProjection: true,
         Alpha: 0,
@@ -124,7 +174,10 @@ export default (openspace) => {
     openspace.setPropertyValue("NavigationHandler.OrbitalNavigator.UseAdaptiveStereoscopicDepth", true);
   }
 
-  function showTrails(objects) {
+  async function showTrails(objects, duration) {
+    if (duration === undefined) {
+      duration = 1;
+    }
     objects.map(async (object) => {
       let isEnabled = false;
       const returnValue = await openspace.getPropertyValue("Scene." + object + "Trail.Renderable.Enabled");
@@ -136,21 +189,65 @@ export default (openspace) => {
         openspace.setPropertyValue("Scene." + object + "Trail.Renderable.Opacity", 0)
         openspace.setPropertyValue("Scene." + object + "Trail.Renderable.Enabled", true)
       }
-      openspace.setPropertyValue("Scene." + object + "Trail.Renderable.Opacity", 1, 1)
+      openspace.setPropertyValue("Scene." + object + "Trail.Renderable.Opacity", 1, duration)
     })
+    await sleep(duration * 1000);
   }
 
-  async function hideAllTrails() {
-    const duration = 1;
-    openspace.setPropertyValue("Scene.*Trail.Renderable.Opacity", 0, 1)
-    setTimeout(() => {
-      openspace.setPropertyValue("Scene.*Trail.Renderable.Enabled", false)  
-    }, duration * 1000)
+  async function hideAllTrails(duration) {
+    if (duration === undefined) {
+      duration = 1;
+    }
+    openspace.setPropertyValue("Scene.*Trail.Renderable.Opacity", 0, duration)
+    await sleep(duration * 1000);
+    openspace.setPropertyValue("Scene.*Trail.Renderable.Enabled", false)  
   }
 
-  function playRealtime() {
+  function playRealtimeVideo(duration) {
+    if (duration === undefined) {
+      duration = 1;
+    }
     openspace.time.setDeltaTime(1);
     openspace.time.setPause(false);
+    openspace.setPropertyValue("ScreenSpace.ApolloVideos.Alpha", 0)
+    openspace.setPropertyValue("ScreenSpace.ApolloVideos.Enabled", true)
+    openspace.setPropertyValue("ScreenSpace.ApolloVideos.Alpha", 1, duration)
+  }
+
+  function apolloVideoToSide(duration) {
+    if (duration === undefined) {
+      duration = 1;
+    }
+    
+    if (displayEnvironment.isDome()) {
+      openspace.setPropertyValue("ScreenSpace.ApolloVideos.FaceCamera", true);
+      openspace.setPropertyValue("ScreenSpace.ApolloVideos.RadiusAzimuthElevation", [3, 0.5, 0.5], duration)
+    } else {
+      openspace.setPropertyValue("ScreenSpace.ApolloVideos.FaceCamera", false);
+      openspace.setPropertyValue("ScreenSpace.ApolloVideos.RadiusAzimuthElevation", [4, 0.5, 0], duration)
+    }
+  }
+
+  function apolloVideoToCenter(duration) {
+    if (duration === undefined) {
+      duration = 1;
+    }
+    if (displayEnvironment.isDome()) {
+      openspace.setPropertyValue("ScreenSpace.ApolloVideos.FaceCamera", true);
+      openspace.setPropertyValue("ScreenSpace.ApolloVideos.RadiusAzimuthElevation", [3, 0, 0.5], duration)
+    } else {
+      openspace.setPropertyValue("ScreenSpace.ApolloVideos.FaceCamera", false);
+      openspace.setPropertyValue("ScreenSpace.ApolloVideos.RadiusAzimuthElevation", [2, 0, 0], duration)
+    }
+  }
+
+  async function hideRealtimeVideo(duration) {
+    if (duration === undefined) {
+      duration = 1;
+    }
+    openspace.setPropertyValue("ScreenSpace.ApolloVideos.Alpha", 0, duration)
+    await sleep(duration * 1000);
+    openspace.setPropertyValue("ScreenSpace.ApolloVideos.Enabled", false)
   }
 
   async function fadeLayer(layer, enable) {
@@ -209,12 +306,27 @@ export default (openspace) => {
       }
     },
     {
+      title: "Dreaming about flying",
+      description: "Pictures in front of dome",
+      buttons: {
+        'Man in the moone': () => { addImage('manInTheMoone'); },
+        'Jules Verne': async () => { addImage('julesVerne1'); await sleep(1000); addImage('julesVerne2') },
+        'Goddard': () => { addImage('goddard'); },
+        'Hide': () => {
+          removeImage('manInTheMoone');
+          removeImage('julesVerne1');
+          removeImage('julesVerne2');
+          removeImage('goddard');
+        }
+      }
+    },
+    {
       title: "Early Soviet Missions",
       description: "Pictures in front of dome",
       buttons: {
         'Laika': () => { addImage('laika'); },
         'Luna 2': () => { addImage('luna2'); },
-        'Luna 3': () => { addImage('luna3'); /* stamps */ },
+        'Luna 3': () => { addImage('luna3'); },
         'Hide': () => {
           removeImage('laika');
           removeImage('luna2');
@@ -228,8 +340,8 @@ export default (openspace) => {
       buttons: {
         'Gagarin': () => { addImage('gagarin'); },
         'Vostok': () => { addImage('vostokSpacecraft'); },
-        'News': () => { addImage('sovietNews'); /* stamps */ },
-        'Teresjkova': () => { addImage('teresjkovaMedals'); addImage('teresjkovaMedals');/* stamps */ },
+        'News': () => { addImage('sovietNews'); },
+        'Teresjkova': () => { addImage('teresjkovaMedals'); addImage('teresjkovaMedals'); },
         'Hide': () => {
           removeImage('gagarin');
           removeImage('vostokSpacecraft');
@@ -253,11 +365,21 @@ export default (openspace) => {
       }
     },
     {
+      title: "Kennedy Speech",
+      buttons: {
+        'Jump to Washington DC': () => { kennedySpeechLocation(); apolloVideoToCenter(0); } ,
+        'Start speech': () => { playRealtimeVideo() },        
+        'Hide video': () => { hideRealtimeVideo() },
+      }
+    },
+    {
       title: "Apollo 8 Launch",
       buttons: {
-        'Jump to launch time': async () => { hideAllTrails(); await sleep(3000); openspace.time.setTime("1968-12-21T12:51:51.0"); showTrails(['Apollo8Launch']) },
+        'Jump to launch time': async () => { await fadeOut(); hideAllTrails(0); await sleep(100); openspace.time.setTime("1968-12-21T12:51:51.0"); showTrails(['Apollo8Launch']); fadeIn(); },
         'Show Insignia': () => { addImage('apollo8Insignia'); },
         'Hide Insignia': () => { removeImage('apollo8Insignia'); },
+        'Launch trail': async () => { await hideAllTrails(); await showTrails(['Apollo8Launch']); },
+        'Translunar trail': async () => { await hideAllTrails(); await showTrails(['Moon']); showTrails(['Apollo8EarthBarycenter']) },
       }
     },
     {
@@ -265,8 +387,8 @@ export default (openspace) => {
       description: "Earthrise starts at 1968 DEC 24 16:37:31 UTC",
 
       buttons: {
-        'Jump to Pre-Earthrise': () => { hideAllTrails(); jumpToPreEarthrise(); },
-        'Play realtime': () => { playRealtime(); },
+        'Jump to Pre-Earthrise': async () => { await fadeOut(); hideAllTrails(0); jumpToPreEarthrise(); fadeIn(); },
+        'Play realtime': () => { playRealtimeVideo(); },
         //'Interior': () => { jumpInsideApollo8() },
         //'Exterior': () => { jumpOutOfApollo8() },
         'Show real photo': () => { addImage('earthrise'); },
@@ -275,25 +397,41 @@ export default (openspace) => {
       }
     },
     {
-      title: "Apollo Landing Sites - Overview",
-      buttons: {
-        'Full Moon September 2018': async () => { hideAllTrails(); await sleep(1500); openspace.time.setTime("2018-09-24 13:00:00") },
-        'Show Insignias': () => { showInsignias() },
-        'Hide Insignias': () => { hideInsignias() },
-      }
-    },
-    {
-      title: "Apollo 11",
-      description: "Images and Globe browsing layers",
+      title: "Apollo 11 Launch",
       buttons: {
         'Show Insignia': () => { addImage('apollo11Insignia'); },
         'Hide Insignia': () => { removeImage('apollo11Insignia'); },
-        'News': async () => { addImage('apollo11News1'); await sleep(1000); addImage('apollo11News2'); },
+
+        'Jump to Washington DC': () => { kennedySpeechLocation(); } ,
+        'Start speech': () => { playRealtimeVideo() },        
+        'Hide video': () => { hideRealtimeVideo() },
+      }
+    },
+    {
+      title: "Apollo 11 Landing",
+      description: "Make sure to focus on Apollo Lunar Lander Position first.",
+      buttons: {
+        'Focus on Moon': () => { openspace.setPropertyValueSingle('NavigationHandler.OrbitalNavigator.Anchor', 'Moon') },
+        'Hide all trails': () => { hideAllTrails(); },
+        'Landing time': () => { apolloVideoToSide(0); openspace.time.setTime('1969-07-20T20:14:40'); openspace.time.setDeltaTime(1.0); openspace.time.setPause(true); },
+        'Show CSM trail': () => { showTrails(['Apollo11Moon']); },
+        'Show LEM trail': () => { showTrails(['Apollo11Lem']); },
+        'Focus on LEM': () => { openspace.setPropertyValueSingle('NavigationHandler.OrbitalNavigator.Anchor', 'Apollo11LemPosition') },
+        'Start landing': () => { playRealtimeVideo(); },
+        'Hide video': () => { hideRealtimeVideo() },
+        'Globe Browsing Layers On': () => { enableApollo11Layers(true); },
+        'Layers Off': () => { enableApollo11Layers(false); },
+      }
+    },
+    {
+      title: "Apollo 11 Pictures",
+      buttons: {
         'Armstrong': () => { addImage('armstrongLadder'); },
         'Aldrin': () => { addImage('aldrinLadder'); },
         'Footprints': () => { addImage('apollo11Footprints'); },
         'More Footprints': () => { addImage('apollo11MoreFootprints'); },
         'Nixon': () => { addImage('nixon'); },
+        'News': async () => { addImage('apollo11News1'); await sleep(1000); addImage('apollo11News2'); },
         'Hide Pictures': () => {
           removeImage('armstrongLadder');
           removeImage('aldrinLadder');
@@ -303,8 +441,18 @@ export default (openspace) => {
           removeImage('apollo11News1');
           removeImage('apollo11News2');
         },
-        'Globe Browsing Layers On': () => { enableApollo11Layers(true); },
-        'Layers Off': () => { enableApollo11Layers(false); },
+      }
+    },
+    {
+      title: "Apollo 13",
+      buttons: {
+        'We\'ve had a problem': async () => {
+          addImage('apollo13Problem');
+          await sleep(500);
+         },
+        'Hide': () => {
+          removeImage('apollo13Problem');
+        },
       }
     },
     {
@@ -325,6 +473,14 @@ export default (openspace) => {
           removeImage('apollo13Helicopter')
           removeImage('apollo13LoadOnDeck');
         },
+      }
+    },
+    {
+      title: "Apollo Landing Sites - Overview",
+      buttons: {
+        'Full Moon September 2018': async () => { hideAllTrails(); await fadeOut(); fullMoon(); fadeIn(); },
+        'Show Insignias': () => { showInsignias() },
+        'Hide Insignias': () => { hideInsignias() },
       }
     },
     {
