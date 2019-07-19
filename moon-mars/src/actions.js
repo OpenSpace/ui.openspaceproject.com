@@ -415,7 +415,7 @@ export default (openspace) => {
         'Show Insignia': () => { addImage('apollo11Insignia'); },
         'Hide Insignia': () => { removeImage('apollo11Insignia'); },
 
-        'Jump to launch time': () => { apollo11LaunchTime(); },
+        'Jump to launch time': () => { apollo11LaunchTime(); apolloVideoToCenter(0); },
         'Start launch': () => { playRealtimeVideo() },
         'Hide video': () => { hideRealtimeVideo() },
       }
