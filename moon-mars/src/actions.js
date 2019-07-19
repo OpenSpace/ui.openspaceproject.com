@@ -43,6 +43,18 @@ export default (openspace) => {
     await fadeIn();
   }
 
+  async function tripToTheMoonTime() {
+    openspace.time.setDeltaTime(1);
+    openspace.time.setPause(true);
+    openspace.time.setTime("1962-09-13T18:00:00")
+  }
+
+  async function apollo11LaunchTime() {
+    openspace.time.setDeltaTime(1);
+    openspace.time.setPause(true);
+    openspace.time.setTime("1969-07-16T13:32:00")
+  }
+
   function fullMoon() {
     openspace.time.setTime("2018-09-24 13:00:00");
     openspace.navigation.setNavigationState({
@@ -365,10 +377,11 @@ export default (openspace) => {
       }
     },
     {
-      title: "Kennedy Speech",
+      title: "Kennedy Speech & Trip to the moon",
       buttons: {
         'Jump to Washington DC': () => { kennedySpeechLocation(); apolloVideoToCenter(0); } ,
-        'Start speech': () => { playRealtimeVideo() },        
+        'Trip to the moon': () => { tripToTheMoonTime(); } ,
+        'Start video': () => { playRealtimeVideo() },
         'Hide video': () => { hideRealtimeVideo() },
       }
     },
@@ -402,8 +415,8 @@ export default (openspace) => {
         'Show Insignia': () => { addImage('apollo11Insignia'); },
         'Hide Insignia': () => { removeImage('apollo11Insignia'); },
 
-        'Jump to Washington DC': () => { kennedySpeechLocation(); } ,
-        'Start speech': () => { playRealtimeVideo() },        
+        'Jump to launch time': () => { apollo11LaunchTime(); },
+        'Start launch': () => { playRealtimeVideo() },
         'Hide video': () => { hideRealtimeVideo() },
       }
     },
