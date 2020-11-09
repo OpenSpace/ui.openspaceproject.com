@@ -1,0 +1,114 @@
+html {
+  background-color: #222;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#logo {
+  width: 30%;
+}
+
+button {
+  transition: all 0.5s;
+  border-radius: 0.5em;
+  background-color: #080;
+  color: #efe;
+  border: none;
+  padding: 0.5em;
+  color: #fff;
+  margin-right: 0.5em;
+  margin-bottom: 0.5em;
+  font-size: 1em;
+  font-weight: bold;
+}
+
+.card {
+  background-color: rgba(0, 0, 0, 0.6);
+  margin: 1em 1em 1em;
+  padding: 0.5em 1em 1em;
+  color: #eee;
+}
+
+.footer {
+  text-align: center;
+}
+
+.header {
+  font-size: larger;
+  color: #eee;
+  text-align: center;
+}
+
+.header h1 {
+  margin-top: 0.2em;
+  margin-bottom: 0.2em;
+}
+
+p {
+  margin-top: 0.2em;
+  margin-bottom: 0.2em;
+  font-size: small;
+}
+
+h1, h2 {
+  font-family: 'Roboto', sans-serif;
+}
+
+h2 {
+  margin-top: 0;
+  margin-bottom: 0.5em;
+}
+
+.description {
+  text-align: left;
+}
+
+@media only screen and (max-width:620px) {
+  /* For mobile phones: */
+  .main{
+    width: 100%;
+  }
+  #logo {
+    width: 70%;
+  }
+  .description {
+    height: 18em;
+    overflow: scroll;
+  }
+  p {
+    font-size: medium;
+  }
+}
+
+div.disconnected button {
+  background-color: #777;
+}
+
+div.disconnected button:hover {
+  background-color: #777;
+}
+
+.connection-status {
+  transition: all 0.5s;
+  height: 30px;
+  width: calc(100% - 1em);
+  padding-left: 0.5em;
+  margin: 1em;
+}
+
+div.disconnected .connection-status {
+  background-color: #800;
+  color: #fee;
+}
+
+div.connected .connection-status {
+  background-color: #080;
+  color: #efe;
+}
+
