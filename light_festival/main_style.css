@@ -170,6 +170,29 @@ div.connecting #connection-status {
   opacity: 1;
 }
 
+div.waiting #connection-status {
+  opacity: 1;
+}
+
+#reload-button {
+  width: 15em;
+  display: inline-block;
+  transition: all 1s;
+  border-radius: 0.5em;
+  background-color: #157b9d;
+  color: #eef;
+  border: none;
+  padding: 0.5em;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 1em;
+  font-weight: bold;
+  opacity: 1;
+  pointer-events: auto;
+}
+
 /* Scrollbar - area */
 ::-webkit-scrollbar {
   width: 0.4em;

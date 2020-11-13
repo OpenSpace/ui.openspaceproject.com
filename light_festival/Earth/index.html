@@ -48,8 +48,20 @@
       }
 
       // helper function to take user to new state
-      function setupEarthState(openspace) {
-        openspace.statemachine.goTo("Earth");
+      async function setupEarthState(openspace) {
+        var isIdle = await openspace.statemachine.isIdle();
+        if(isIdle[1] == "False") {
+          console.log("Busy");
+          document.getElementById('container').className = "waiting";
+          var waitString = "OpenSpace was busy and could not go to Earth";
+          waitString += '<button id="reload-button" onClick="setupEarthState(openspace);">Go to Earth</button>';
+          document.getElementById('connection-status').innerHTML = waitString;
+        }
+        else {
+          openspace.statemachine.goTo("Earth");
+          document.getElementById('container').className = "connected";
+          document.getElementById('connection-status').innerHTML = "";
+        }
       }
 
       function loadEarthButtons() {
