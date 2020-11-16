@@ -1,0 +1,167 @@
+<html>
+  <style>
+    body {
+      background-image: url('../images/Mars.png');
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center;
+    }
+  </style>
+  <head>
+    <title>OpenSpace Light Festival - Mars</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="../main_style.css">
+    <link rel="stylesheet" type="text/css" href="../4/Mars_style.css">
+    <script type="text/javascript" src="openspace-api.js"></script>
+    <script type="text/javascript" src="openspace-statemachine.js"></script>
+    <script type="text/javascript">
+      // variable for js libarary
+      var openspace = null;
+
+      var htmlFunction = (action, id) => {
+          var cardHTML = "<div class='card'>";
+          if(action.title) {
+            cardHTML += "<h2>" + action.title + "</h2>";
+          }
+          if (action.description) {
+            action.description.split('\n').map(item => {
+              cardHTML += "<p>" + item + "</p>";
+            });
+          }
+          if (action.buttons) {
+            Object.keys(action.buttons).map(button => {
+              const fn = action.buttons[button];
+              cardHTML += "<button id=\"" + action.title+button + "\">"+ button +"</button>";
+            });
+          }
+          cardHTML += "</div>";
+          document.getElementById('bottom-button-panel').innerHTML += cardHTML;
+      };
+      var clickFunction = (action, id) => {
+        if (action.buttons) {
+          Object.keys(action.buttons).map(button => {
+              const fn = action.buttons[button];
+              document.getElementById(action.title+button).addEventListener("click", fn);
+          });
+        }
+      }
+
+      // helper function to take user to new state
+      async function setupState(openspace) {
+        var isIdle = await openspace.statemachine.isIdle();
+        if(isIdle[1] == "False") {
+          console.log("Busy");
+          document.getElementById('container').className = "waiting";
+          var waitString = "OpenSpace var upptagen och kunde inte åka till mars";
+          waitString += '<button id="reload-button" onClick="setupState(openspace);">Åk till mars</button>';
+          document.getElementById('connection-status').innerHTML = waitString;
+        }
+        else {
+          openspace.statemachine.goTo("Mars");
+          if(document.getElementById('reload-button') != null) {
+            document.getElementById('container').className = "connected";
+            document.getElementById('connection-status').innerHTML = "";
+          }
+        }
+      }
+
+      function loadButtons() {
+        marsButtonGroups.map(htmlFunction);
+        marsButtonGroups.map(clickFunction);
+      }
+      
+      // helper function to connect to opensapce
+      var connectToOpenSpace = () => {
+        // Give feedback to user that webpage is trying to reconnect
+        if(document.getElementById('connect-button') != null) {
+          document.getElementById('container').className = "connecting";
+          var conectingString = "Lyckades inte ansluta till OpenSpace. ";
+          conectingString += '<button id="connect-button" onClick="connectToOpenSpace();">Ansluter...</button>';
+          document.getElementById('connection-status').innerHTML = conectingString;
+        }
+
+        // setup the api params
+        var host = 'localhost';
+        var api = window.openspaceApi(host, 4682);
+        // notify users on disconnect
+        api.onDisconnect(() => {
+          console.log("disconnected");
+          document.getElementById('container').className = "disconnected";
+          var disconnectedString = "Lyckades inte ansluta till OpenSpace. ";
+          disconnectedString += '<button id="connect-button" onClick="connectToOpenSpace();">Anslut igen</button>';
+          document.getElementById('connection-status').innerHTML = disconnectedString;
+          openspace = null;
+        });
+        // notify users and map buttons when connected
+        api.onConnect(async () => {
+          try {
+            if(document.getElementById('connect-button') != null) {
+              document.getElementById('connection-status').innerHTML = "Anslutning lyckades!";
+            }
+            else {
+              document.getElementById('connection-status').innerHTML = "";
+            }
+
+            document.getElementById('container').className = "connected";
+            openspace = await api.library();
+            console.log('connected');
+            setupState(openspace);
+          } catch (e) {
+            console.log('OpenSpace library could not be loaded: Error: \n', e)
+            return;
+          }
+        })
+        // connect
+        api.connect();
+      };
+    </script>
+  </head>
+  <body>
+    <!-- HTML Containers -->
+    <div id="container" class="disconnected">
+      <div id="connection-status"></div>
+      <div id="main">
+        <div class='header'>
+            <h1>Mars</h1>
+        </div>
+        <div class='card description'>
+          <!-- TODO: Write content text -->
+          <p>
+          PLACEHOLDER! Our home, Earth,  is the third planet from the Sun and the only astronomical object known 
+          to harbor life. About 29% of Earth's surface is land consisting of continents 
+          and islands. The remaining 71% is covered with water, mostly by oceans but 
+          also lakes, rivers and other fresh water, which together constitute the 
+          hydrosphere. Much of Earth's polar regions are covered in ice.
+          </p>
+
+          <p>
+          Our home, Earth,  is the third planet from the Sun and the only astronomical object known 
+          to harbor life. About 29% of Earth's surface is land consisting of continents 
+          and islands. The remaining 71% is covered with water, mostly by oceans but 
+          also lakes, rivers and other fresh water, which together constitute the 
+          hydrosphere. Much of Earth's polar regions are covered in ice.
+          </p>
+
+          <p>
+          Our home, Earth,  is the third planet from the Sun and the only astronomical object known 
+          to harbor life. About 29% of Earth's surface is land consisting of continents 
+          and islands. The remaining 71% is covered with water, mostly by oceans but 
+          also lakes, rivers and other fresh water, which together constitute the 
+          hydrosphere. Much of Earth's polar regions are covered in ice.
+          </p>
+        </div>
+        <div id='bottom-button-panel'></div>
+      </div>
+      <script type="text/javascript">
+        connectToOpenSpace();
+        loadButtons();
+      </script>
+    </div>
+    <div class="footer">
+      <img id="logo" src="../images/openspace-horiz-logo.png" alt="OpenSpace logo">
+    </div>
+  <body>
+</html>
