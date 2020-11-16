@@ -1,6 +1,8 @@
 html {
   background-color: rgb(0, 0, 0);
   position: relative;
+  letter-spacing: .06rem;
+  line-height: 1.2;
 }
 
 body {
@@ -10,6 +12,7 @@ body {
   margin: 0;
   padding: 0;
   font-family: 'Open Sans', sans-serif;
+  font-weight: 300;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -22,14 +25,14 @@ button {
   transition: all 0.5s;
   border-radius: 0.5em;
   background-color: #157b9d;
-  color: #eef;
   border: none;
   padding: 0.5em;
   color: #fff;
   margin-right: 0.5em;
   margin-bottom: 0.5em;
+  font-family: 'Open Sans', sans-serif;
   font-size: 1em;
-  font-weight: bold;
+  font-weight: 700;
   pointer-events: auto;
 }
 
@@ -43,6 +46,7 @@ button:active {
   margin: 1em 1em 1em;
   padding: 0.5em 1em 1em;
   color: #fff;
+  letter-spacing: .08rem;
 }
 
 .footer {
@@ -62,16 +66,13 @@ button:active {
 
 p {
   margin-top: 0.2em;
-  margin-bottom: 0.2em;
+  margin-bottom: 1em;
   font-size: small;
-  letter-spacing: .1rem;
-  line-height: 1.2;
   color: #fff;
 }
 
 h1, h2 {
   font-family: 'Roboto', sans-serif;
-  letter-spacing: .1rem;
   line-height: 1.2;
 }
 
@@ -123,7 +124,7 @@ div.disconnected button:hover {
   transition: all 1s;
   border-radius: 0.5em;
   background-color: #157b9d;
-  color: #eef;
+  color: #fff;
   border: none;
   padding: 0.5em;
   margin-top: 1em;
@@ -180,7 +181,7 @@ div.waiting #connection-status {
   transition: all 1s;
   border-radius: 0.5em;
   background-color: #157b9d;
-  color: #eef;
+  color: #fff;
   border: none;
   padding: 0.5em;
   margin-top: 1em;

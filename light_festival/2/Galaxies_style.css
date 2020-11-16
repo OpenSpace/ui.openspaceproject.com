@@ -1,0 +1,25 @@
+/* Base color */
+button {
+  background-color: #7b159d;
+}
+
+#connect-button {
+  background-color: #7b159d;
+}
+
+#reload-button {
+  background-color: #7b159d;
+}
+
+/* Active color */
+button:active {
+  background-color: #b01fe0;
+}
+
+#connect-button:active {
+  background-color: #b01fe0;
+}
+
+div.connecting #connect-button {
+  background-color: #b01fe0;
+}
