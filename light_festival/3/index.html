@@ -1,12 +1,4 @@
 <html>
-  <style>
-    body {
-      background-image: url('../images/asteroids.png');
-      background-repeat: no-repeat;
-      background-size: cover;
-      background-position: center;
-    }
-  </style>
   <head>
     <title>OpenSpace Light Festival - Asteroider</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -60,6 +52,7 @@
           document.getElementById('connection-status').innerHTML = waitString;
         }
         else {
+          openspace.statemachine.goTo("Default");
           openspace.statemachine.goTo("Asteroids");
           if(document.getElementById('reload-button') != null) {
             document.getElementById('container').className = "connected";
