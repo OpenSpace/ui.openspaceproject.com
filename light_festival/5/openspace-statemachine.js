@@ -50,82 +50,186 @@ function applyLinearFlight(height, zoomSpeedFactor) {
 }
 
 function fadeArtToOpacity(targetValue, interpolationTime) {
-    openspace.setPropertyValue('Scene.ConstellationArt*.Renderable.Opacity',
-      targetValue,
-      interpolationTime
-    )
+  openspace.setPropertyValue('Scene.ConstellationArt*.Renderable.Opacity',
+    targetValue,
+    interpolationTime
+  )
 }
+
+var depthActive = false;
+const targetDistance = 2E9;
+const depthDistance = 5E17;
+const artMaxOpacity = 0.15;
+const fadeDuration = 4;
+const flightZoomSpeed = 1;
+const anchorInterpolation = 5;
 
 var locationButtons = {
   title: "Platser",
   buttons: {
     'Överblick': () => {
-      changeAnchor("Earth", 2);
-      startOrbiting();
+      if(depthActive) {
+        applyLinearFlight(targetDistance, flightZoomSpeed);
+        fadeArtToOpacity(artMaxOpacity, fadeDuration);
+        depthActive = false;
+      }
+      else {
+        changeAnchor("Earth", anchorInterpolation);
+        startOrbiting();
+      }
       console.log("Overview");
     },
     '3D Djup': () => {
+      depthActive = true;
+      fadeArtToOpacity(0.0, fadeDuration)
+      changeAnchor("Earth", anchorInterpolation);
+      applyLinearFlight(depthDistance, flightZoomSpeed);
+      startOrbiting();
       console.log("Going to show the depth");
     },
     'Vattumannen': () => {
       stopOrbiting();
+
+      if(depthActive) {
+        applyLinearFlight(targetDistance, flightZoomSpeed);
+        fadeArtToOpacity(artMaxOpacity, fadeDuration);
+        depthActive = false;
+        // TODO: Wait for linear flight to finish before focusing
+      }
       console.log("Going to Vattumannen");
-      changeAnchor("ConstellationArt-Aqr", 2);
+      changeAnchor("ConstellationArt-Aqr", anchorInterpolation);
     }, 
     'Fiskarna': () => {
       stopOrbiting();
+
+      if(depthActive) {
+        applyLinearFlight(targetDistance, flightZoomSpeed);
+        fadeArtToOpacity(artMaxOpacity, fadeDuration);
+        depthActive = false;
+        // TODO: Wait for linear flight to finish before focusing
+      }
       console.log("Going to Fiskarna");
-      changeAnchor("ConstellationArt-Psc", 2);
+      changeAnchor("ConstellationArt-Psc", anchorInterpolation);
     },
     'Väduren': () => {
       stopOrbiting();
+
+      if(depthActive) {
+        applyLinearFlight(targetDistance, flightZoomSpeed);
+        fadeArtToOpacity(artMaxOpacity, fadeDuration);
+        depthActive = false;
+        // TODO: Wait for linear flight to finish before focusing
+      }
       console.log("Going to Väduren");
-      changeAnchor("ConstellationArt-Ari", 2);
+      changeAnchor("ConstellationArt-Ari", anchorInterpolation);
     },
     'Oxen': () => {
       stopOrbiting();
+
+      if(depthActive) {
+        applyLinearFlight(targetDistance, flightZoomSpeed);
+        fadeArtToOpacity(artMaxOpacity, fadeDuration);
+        depthActive = false;
+        // TODO: Wait for linear flight to finish before focusing
+      }
       console.log("Going to Oxen");
-      changeAnchor("ConstellationArt-Tau", 2);
+      changeAnchor("ConstellationArt-Tau", anchorInterpolation);
     },
     'Tvillingarna': () => {
       stopOrbiting();
+
+      if(depthActive) {
+        applyLinearFlight(targetDistance, flightZoomSpeed);
+        fadeArtToOpacity(artMaxOpacity, fadeDuration);
+        depthActive = false;
+        // TODO: Wait for linear flight to finish before focusing
+      }
       console.log("Going to Tvillingarna");
-      changeAnchor("ConstellationArt-Gem", 2);
+      changeAnchor("ConstellationArt-Gem", anchorInterpolation);
     },
     'Kräftan': () => {
       stopOrbiting();
+
+      if(depthActive) {
+        applyLinearFlight(targetDistance, flightZoomSpeed);
+        fadeArtToOpacity(artMaxOpacity, fadeDuration);
+        depthActive = false;
+        // TODO: Wait for linear flight to finish before focusing
+      }
       console.log("Going to Kräftan");
-      changeAnchor("ConstellationArt-Cnc", 2);
+      changeAnchor("ConstellationArt-Cnc", anchorInterpolation);
     },
     'Lejonet': () => {
       stopOrbiting();
+
+      if(depthActive) {
+        applyLinearFlight(targetDistance, flightZoomSpeed);
+        fadeArtToOpacity(artMaxOpacity, fadeDuration);
+        depthActive = false;
+        // TODO: Wait for linear flight to finish before focusing
+      }
       console.log("Going to Lejonet");
-      changeAnchor("ConstellationArt-Leo", 2);
+      changeAnchor("ConstellationArt-Leo", anchorInterpolation);
     },
     'Jungfrun': () => {
       stopOrbiting();
+
+      if(depthActive) {
+        applyLinearFlight(targetDistance, flightZoomSpeed);
+        fadeArtToOpacity(artMaxOpacity, fadeDuration);
+        depthActive = false;
+        // TODO: Wait for linear flight to finish before focusing
+      }
       console.log("Going to Jungfrun");
-      changeAnchor("ConstellationArt-Vir", 2);
+      changeAnchor("ConstellationArt-Vir", anchorInterpolation);
     },
     'Vågen': () => {
       stopOrbiting();
+
+      if(depthActive) {
+        applyLinearFlight(targetDistance, flightZoomSpeed);
+        fadeArtToOpacity(artMaxOpacity, fadeDuration);
+        depthActive = false;
+        // TODO: Wait for linear flight to finish before focusing
+      }
       console.log("Going to Vågen");
-      changeAnchor("ConstellationArt-Lib", 2);
+      changeAnchor("ConstellationArt-Lib", anchorInterpolation);
     },
     'Skorpionen': () => {
       stopOrbiting();
+
+      if(depthActive) {
+        applyLinearFlight(targetDistance, flightZoomSpeed);
+        fadeArtToOpacity(artMaxOpacity, fadeDuration);
+        depthActive = false;
+        // TODO: Wait for linear flight to finish before focusing
+      }
       console.log("Going to Skorpionen");
-      changeAnchor("ConstellationArt-Sco", 2);
+      changeAnchor("ConstellationArt-Sco", anchorInterpolation);
     },
     'Skytten': () => {
       stopOrbiting();
+
+      if(depthActive) {
+        applyLinearFlight(targetDistance, flightZoomSpeed);
+        fadeArtToOpacity(artMaxOpacity, fadeDuration);
+        depthActive = false;
+        // TODO: Wait for linear flight to finish before focusing
+      }
       console.log("Going to Skytten");
-      changeAnchor("ConstellationArt-Sgr", 2);
+      changeAnchor("ConstellationArt-Sgr", anchorInterpolation);
     },
     'Stenbocken': () => {
       stopOrbiting();
+
+      if(depthActive) {
+        applyLinearFlight(targetDistance, flightZoomSpeed);
+        fadeArtToOpacity(artMaxOpacity, fadeDuration);
+        depthActive = false;
+        // TODO: Wait for linear flight to finish before focusing
+      }
       console.log("Going to Stenbocken");
-      changeAnchor("ConstellationArt-Cap", 2);
+      changeAnchor("ConstellationArt-Cap", anchorInterpolation);
     }
   }
 };
