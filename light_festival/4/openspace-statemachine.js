@@ -33,15 +33,18 @@ function goToOlympusMonsAbove(openspace) {
 }
 
 // Valles Marineris
-const vallesMarinerisGeo = {
-  lat: -13.9, lon: -59.2, height: 5e6
-};
-
-const vallesMarinerisNavState =  {
+const vallesMarinerisTiltedNavState = {
   Anchor: "Mars", ReferenceFrame: "Mars",
   Position: [1153974.125, -3147836.75, -764025.4375],
   Up: [0.10838311165571213, -0.19677796959877014, 0.9744390845298767],
   Pitch: 1.1448750495910645, Yaw: -0.07529527693986893
+}
+
+const vallesMarinerisAboveNavState ={
+  Anchor: "Mars", ReferenceFrame: "Mars",
+  Position: [1986306.875, -4939418.5, -880679.875],
+  Up: [0.23815040290355682, -0.07685504853725433, 0.9681826829910278],
+  Pitch: -1.0651531739958031e-12, Yaw: 3.5783407487111063e-12
 }
 
 function goToVallesMarinerisTilted(openspace) {
@@ -49,7 +52,7 @@ function goToVallesMarinerisTilted(openspace) {
     Instructions: [
       {
         Type: "NavigationState",
-        NavigationState: vallesMarinerisNavState,
+        NavigationState: vallesMarinerisTiltedNavState,
         Duration: 20
       }
     ]
@@ -61,15 +64,19 @@ function goToVallesMarinerisTilted(openspace) {
 }
 
 function goToVallesMarinerisAbove(openspace) {
-  stopOrbiting(openspace);
+  var spec = {
+    Instructions: [
+      {
+        Type: "NavigationState",
+        NavigationState: vallesMarinerisAboveNavState,
+        Duration: 20
+      }
+    ]
+  }
+  startOrbiting(openspace);
   chooseZoomOutOverviewCurveType(openspace);
   openspace.time.setPause(true);
-  openspace.autonavigation.goToGeo(
-    'Mars', 
-    vallesMarinerisGeo.lat,
-    vallesMarinerisGeo.lon,
-    vallesMarinerisGeo.height
-  );
+  openspace.autonavigation.generatePath(spec);
 }
 
 // Layers
