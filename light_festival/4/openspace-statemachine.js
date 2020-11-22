@@ -53,7 +53,6 @@ function goToVallesMarinerisTilted(openspace) {
       {
         Type: "NavigationState",
         NavigationState: vallesMarinerisTiltedNavState,
-        Duration: 20
       }
     ]
   }
@@ -73,7 +72,7 @@ function goToVallesMarinerisAbove(openspace) {
       }
     ]
   }
-  startOrbiting(openspace);
+  stopOrbiting(openspace);
   chooseZoomOutOverviewCurveType(openspace);
   openspace.time.setPause(true);
   openspace.autonavigation.generatePath(spec);
