@@ -48,3 +48,17 @@ function applyLinearFlight(openspace, height, zoomSpeedFactor) {
     true
   );
 }
+
+function chooseAvoidCollisionCurveType(openspace) {
+  openspace.setPropertyValueSingle(
+    "Modules.AutoNavigation.AutoNavigationHandler.DefaultCurveOption", 
+    0
+  )
+}
+
+function chooseZoomOutOverviewCurveType(openspace) {
+  openspace.setPropertyValueSingle(
+    "Modules.AutoNavigation.AutoNavigationHandler.DefaultCurveOption", 
+    2
+  )
+}
