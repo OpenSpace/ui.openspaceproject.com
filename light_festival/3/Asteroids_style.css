@@ -10,6 +10,10 @@ button {
   background-color: #15379d;
 }
 
+button.off{
+  background-color: #15379d;
+}
+
 #connect-button {
   background-color: #15379d;
 }
@@ -19,15 +23,19 @@ button {
 }
 
 /* Active color */
+button.on{
+  background-color: #4b72e7;
+}
+
 button:active {
-  background-color: #1f4fe0;
+  background-color: #4b72e7;
 }
 
 #connect-button:active {
-  background-color: #1f4fe0;
+  background-color: #4b72e7;
 }
 
 div.connecting #connect-button {
-  background-color: #1f4fe0;
+  background-color: #4b72e7;
 }
 
