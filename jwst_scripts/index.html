@@ -161,6 +161,17 @@
         directJWST(openspace);
       }
 
+      function pointToHUDF() {
+        document.getElementById('rah').value = "3";
+        document.getElementById('ram').value = "32";
+        document.getElementById('ras').value = "38.92"
+
+        document.getElementById('decd').value = "-27";
+        document.getElementById('decm').value = "47";
+        document.getElementById('decs').value = "29.37";
+        directJWST(openspace);
+      }
+
       async function directJWST(openspace) {
         if(openspace == null) {
           console.log("ERROR: No connection to an OpenSpace application");
@@ -229,15 +240,17 @@
       <div id="radecinput">
         <div class='card'>
           Point the JWST towards a Ra Dec coordinate:<br />
-          Ra: <input id="rah" type=text class="coord" placeholder="Hours" />
-          <input id="ram" type=text class="coord" placeholder="Minutes" />
-          <input id="ras" type=text class="coord"placeholder="Seconds" />
-          <br />
-          Dec: <input id="decd" type=text class="coord" placeholder="Degrees" />
-          <input id="decm" type=text class="coord" placeholder="Minutes" />
-          <input id="decs" type=text class="coord" placeholder="Seconds" />
-          <br />
+          Ra: <input id="rah" type=text class="coord" placeholder="Hours"/>
+          <input id="ram" type=text class="coord" placeholder="Minutes"/>
+          <input id="ras" type=text class="coord"placeholder="Seconds"/>
+          <br/>
+          Dec: <input id="decd" type=text class="coord" placeholder="Degrees"/>
+          <input id="decm" type=text class="coord" placeholder="Minutes"/>
+          <input id="decs" type=text class="coord" placeholder="Seconds"/>
+          <br/>
           <button onClick="pointToRaDec();">Enter</button>
+          <br/>
+          <button onClick="pointToHUDF();">Go To HUDF</button>
         </div>
       </div>
       <div id="main">
