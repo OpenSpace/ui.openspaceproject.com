@@ -131,22 +131,18 @@
         // Choose option 1 or 2
         // Same
         if(Math.abs(op1 - op2) < 0.00001) {
-          console.log("Same!");
           newYAngle = op1;
         }
         // Same but different signs
         else if(Math.abs(Math.abs(op1) - Math.abs(op2)) < 0.00001) {
-          console.log("Same, Diff sign!");
           newYAngle = op1;
         }
         // Different and same signs
         else if (Math.sign(op1) == Math.sign(op2)) {
-          console.log("Diff, same sign!");
           newYAngle = op2;
         }
         // Different and different signs
         else {
-          console.log("Diff, Diff sign!");
           newYAngle = -op2;
         }
 
@@ -184,31 +180,28 @@
         var dec_m = document.getElementById('decm').value;
         var dec_s = document.getElementById('decs').value;
 
-        console.log("Ra " + ra_h + "h" + ra_m + "m" + ra_s + "s, Dec " + dec_d + "d" + dec_m + "m" + dec_s + "s");
-
         // Convert ra dec coordinate to cartesian coordinate in solar system reference frame
         var coordinates = convertRaDec(ra_h, ra_m, ra_s, dec_d, dec_m, dec_s);
-        console.log("Coordinate (" + coordinates[0] + ", " + coordinates[1] + ", " + coordinates[2] + ")");
 
         // Get JWST position
         const JWSTPosition = await openspace.worldPosition("JWSTModel");
-        console.log("JWST (" + JWSTPosition[1][0] + ", " + JWSTPosition[1][1] + ", " + JWSTPosition[1][2] + ")");
+        if(JWSTPosition == null) {
+          console.log("ERROR: Could not find the JWST inside the connected OpenSpace instance");
+          return;
+        }
 
         // Calculate the vector from JWST towards the coordinate
         var JWSTtoCoord =
         [ coordinates[0] - JWSTPosition[1][0],
           coordinates[1] - JWSTPosition[1][1],
           coordinates[2] - JWSTPosition[1][2] ];
-        console.log("JWST to coordinate (" + JWSTtoCoord[0] + ", " + JWSTtoCoord[1] + ", " + JWSTtoCoord[2] + ")");
 
         // Apply the worldRotation before calculating the angles
         const JWSTRotation = await openspace.worldRotation("JWSTRotation");
         var JWSTtoCoordRotated = applyMatrix(JWSTRotation[1], JWSTtoCoord);
-        console.log("JWST to coordinate (Rotated) (" + JWSTtoCoordRotated[0] + ", " + JWSTtoCoordRotated[1] + ", " + JWSTtoCoordRotated[2] + ")");
 
         // Calculate the JWST new angles to be pointing towards the coordinate
         var JWSTAngles = calculateJWSTAngles(JWSTtoCoordRotated[0], JWSTtoCoordRotated[1], JWSTtoCoordRotated[2]);
-        console.log("Angles (" + JWSTAngles[0] + ", " + JWSTAngles[1] + ")");
 
         // Check if the new angle violate the sunshield
         // -45deg to 5deg is valid in x rotation
@@ -217,7 +210,7 @@
         }
         // If not then change the JWST rotation towards the coordinate
         else {
-          console.log("VALID");
+          console.log("Coordinate is valid for sunshield");
           //openspace.setPropertyValueSingle('Scene.JWSTModel.Rotation.Rotation', [ JWSTAngles[0], JWSTAngles[1],  0.0], 3.0);
         }
         // Debug
