@@ -1,0 +1,253 @@
+<html>
+  <head>
+    <title>JWST Controls</title>
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <script type="text/javascript" src="openspace-api.js"></script>
+    <script type="text/javascript" src="openspace-default-buttons.js"></script>
+    <script type="text/javascript">
+      //variable for js libarary
+      var openspace = null;
+
+      var htmlFunction = (action, id) => {
+          var cardHTML = "<div id=\"" + action.title + "\" class='card'><h2>" + action.title + "</h2>";
+          if (action.description) {
+            action.description.split('\n').map(item => {
+              cardHTML += "<p>" + item + "</p>";
+            });
+          }
+          if (action.buttons) {
+            Object.keys(action.buttons).map(button => {
+              const fn = action.buttons[button];
+              cardHTML += "<button id=\"" + action.title+button + "\">"+ button +"</button>";
+            });
+          }
+          cardHTML += "</div>";
+          document.getElementById('main').innerHTML += cardHTML;
+      };
+      var clickFunction = (action, id) => {
+        if (action.buttons) {
+          Object.keys(action.buttons).map(button => {
+              const fn = action.buttons[button];
+              document.getElementById(action.title+button).addEventListener("click", fn);
+          });
+        }
+      }
+      //helper function to map the buttons to html
+      function mapButtons(openspace) {
+        document.getElementById('main').innerHTML += "<div class='card'>Default Buttons</div>"
+        defaultButtonGroups.map(htmlFunction);
+        defaultButtonGroups.map(clickFunction);
+      }
+      //helper function to connect to opensapce
+      var connectToOpenSpace = () => {
+        //setup the api params
+        var host = document.getElementById('ipaddress').value;
+        var api = window.openspaceApi(host, 4682);
+        //notify users on disconnect
+        api.onDisconnect(() => {
+          console.log("disconnected");
+          document.getElementById('container').className = "disconnected";
+          var disconnectedString = "Connect to OpenSpace: ";
+          disconnectedString += '<input id="ipaddress" type=text placeholder="Enter ip address" /> ';
+          disconnectedString += '<button onClick="connectToOpenSpace();">Connect</button>';
+          document.getElementById('connection-status').innerHTML = disconnectedString;
+          openspace = null;
+        });
+        //notify users and map buttons when connected
+        api.onConnect(async () => {
+          try {
+            document.getElementById('container').className = "connected";
+            document.getElementById('connection-status').innerHTML = "Connected to OpenSpace";
+            openspace = await api.library();
+            console.log('connected');
+            mapButtons(openspace);
+          } catch (e) {
+            console.log('OpenSpace library could not be loaded: Error: \n', e)
+            return;
+          }
+        })
+        //connect
+        api.connect();
+      };
+
+      // function that takes in a ra dec coordinate and converts it into a cartesian coordinate in galactic reference frame
+      function convertRaDec(RA_hours, RA_minutes, RA_seconds, Dec_degrees, Dec_minutes, Dec_seconds) {
+        var distance = 9.2E15;
+
+        var A = (RA_hours * 15.0) + (RA_minutes * 15/60.0) + (RA_seconds * 15/3600.0);
+        var B = ( Math.abs(Dec_degrees) + (Dec_minutes / 60.0) + (Dec_seconds / 3600.0)) * Math.sign(Dec_degrees);
+
+        A = A * (Math.PI/180.0);
+        B = B * (Math.PI/180.0);
+
+        // J2000
+        const A0 = 3.36603327;
+        const B0 = 0.473479901;
+        const L0 = 2.14556816;
+
+        // convert to galactic reference frame
+        var a = L0 - Math.atan2(Math.cos(B)*Math.sin(A - A0), Math.sin(B)*Math.cos(B0) - Math.cos(B)*Math.sin(B0)*Math.cos(A - A0));
+        var b = Math.asin(Math.sin(B)*Math.sin(B0) + Math.cos(B)*Math.cos(B0)*Math.cos(A - A0));
+
+        var X = (distance * Math.cos(b)) * Math.cos(a);
+        var Y = (distance * Math.cos(b)) * Math.sin(a);
+        var Z = distance * Math.sin(b);
+
+        return [X, Y, Z];
+      }
+
+      function normalize(v) {
+        var l = length(v);
+        v[0] = v[0] / l;
+        v[1] = v[1] / l;
+        v[2] = v[2] / l;
+      }
+
+      function length(v) {
+        return Math.sqrt(v[0]*v[0] + v[1]*v[1]+ v[2]*v[2]);
+      }
+
+      function applyMatrix(m, v) {
+        var res = [0.0, 0.0, 0.0];
+        res[0] = m[1]*v[0] + m[2]*v[1] + m[3]*v[2]; //ax + by + cz
+        res[1] = m[4]*v[0] + m[5]*v[1] + m[6]*v[2]; //dx + ey + fz
+        res[2] = m[7]*v[0] + m[8]*v[1] + m[9]*v[2]; //gx + hy + iz
+        return res;
+      }
+
+      // function that calculates the new x and y local angles of JWST to point towards the input coordinate
+      function calculateJWSTAngles(cx, cy, cz) {
+        // Normalize
+        c = [cx, cy, cz];
+        normalize(c);
+
+        // Then Calculate the angle for X and Y seperatly
+        var newXAngle = Math.asin(-c[1]); // asin(-cy)
+        var newYAngle = 0.0;
+
+        var op1 = Math.asin(c[0] / (Math.cos(newXAngle))); // asin(cx/(cos(asin(-cy))))
+        var op2 = Math.acos(c[2] / (Math.cos(newXAngle))); // acos(cz/(cos(asin(-cy))))
+
+        // Choose option 1 or 2
+        // Same
+        if(Math.abs(op1 - op2) < 0.00001) {
+          newYAngle = op1;
+        }
+        // Same but different signs
+        else if(Math.abs(Math.abs(op1) - Math.abs(op2)) < 0.00001) {
+          newYAngle = op1;
+        }
+        // Different and same signs
+        else if (Math.sign(op1) == Math.sign(op2)) {
+          newYAngle = op2;
+        }
+        // Different and different signs
+        else {
+          newYAngle = -op2;
+        }
+
+        return [newXAngle, newYAngle];
+      }
+
+      // function that uses the given Ra Dec coordinates and rotates the JWST towards it, if possible
+      function pointToRaDec() {
+        directJWST(openspace);
+      }
+
+      function pointToHUDF() {
+        document.getElementById('rah').value = "3";
+        document.getElementById('ram').value = "32";
+        document.getElementById('ras').value = "38.92"
+
+        document.getElementById('decd').value = "-27";
+        document.getElementById('decm').value = "47";
+        document.getElementById('decs').value = "29.37";
+        directJWST(openspace);
+      }
+
+      async function directJWST(openspace) {
+        if(openspace == null) {
+          console.log("ERROR: No connection to an OpenSpace application");
+          return;
+        }
+
+        // Get input
+        var ra_h = document.getElementById('rah').value;
+        var ra_m = document.getElementById('ram').value;
+        var ra_s = document.getElementById('ras').value;
+
+        var dec_d = document.getElementById('decd').value;
+        var dec_m = document.getElementById('decm').value;
+        var dec_s = document.getElementById('decs').value;
+
+        // Convert ra dec coordinate to cartesian coordinate in solar system reference frame
+        var coordinates = convertRaDec(ra_h, ra_m, ra_s, dec_d, dec_m, dec_s);
+
+        // Get JWST position
+        const JWSTPosition = await openspace.worldPosition("JWSTModel");
+        if(JWSTPosition == null) {
+          console.log("ERROR: Could not find the JWST inside the connected OpenSpace instance");
+          return;
+        }
+
+        // Calculate the vector from JWST towards the coordinate
+        var JWSTtoCoord =
+        [ coordinates[0] - JWSTPosition[1][0],
+          coordinates[1] - JWSTPosition[1][1],
+          coordinates[2] - JWSTPosition[1][2] ];
+
+        // Apply the worldRotation before calculating the angles
+        const JWSTRotation = await openspace.worldRotation("JWSTRotation");
+        var JWSTtoCoordRotated = applyMatrix(JWSTRotation[1], JWSTtoCoord);
+
+        // Calculate the JWST new angles to be pointing towards the coordinate
+        var JWSTAngles = calculateJWSTAngles(JWSTtoCoordRotated[0], JWSTtoCoordRotated[1], JWSTtoCoordRotated[2]);
+
+        // Check if the new angle violate the sunshield
+        // -45deg to 5deg is valid in x rotation
+        if(JWSTAngles[0] < -0.785398163 || JWSTAngles[0] > 0.0872664626) {
+          console.log("ERROR: Coordinate violates the sunshield");
+        }
+        // If not then change the JWST rotation towards the coordinate
+        else {
+          console.log("Coordinate is valid for sunshield");
+          //openspace.setPropertyValueSingle('Scene.JWSTModel.Rotation.Rotation', [ JWSTAngles[0], JWSTAngles[1],  0.0], 3.0);
+        }
+        // Debug
+        openspace.setPropertyValueSingle('Scene.JWSTModel.Rotation.Rotation', [ JWSTAngles[0], JWSTAngles[1],  0.0], 3.0);
+      }
+
+    </script>
+  </head>
+  <body>
+    <!-- HTML Containers -->
+    <div id="container" class="disconnected">
+      <div id="connection-status" class="connection-status">
+        Connect to OpenSpace:
+        <input id='ipaddress' type=text placeholder="Enter ip address"/>
+        <button onClick="connectToOpenSpace();">Connect</button>
+      </div>
+      <div id="radecinput">
+        <div class='card'>
+          Point the JWST towards a Ra Dec coordinate:<br />
+          Ra: <input id="rah" type=text class="coord" placeholder="Hours"/>
+          <input id="ram" type=text class="coord" placeholder="Minutes"/>
+          <input id="ras" type=text class="coord"placeholder="Seconds"/>
+          <br/>
+          Dec: <input id="decd" type=text class="coord" placeholder="Degrees"/>
+          <input id="decm" type=text class="coord" placeholder="Minutes"/>
+          <input id="decs" type=text class="coord" placeholder="Seconds"/>
+          <br/>
+          <button onClick="pointToRaDec();">Enter</button>
+          <br/>
+          <button onClick="pointToHUDF();">Go To HUDF</button>
+        </div>
+      </div>
+      <div id="main">
+      </div>
+      <script type="text/javascript">
+        connectToOpenSpace('localhost');
+      </script>
+    </div>
+  <body>
+</html>
