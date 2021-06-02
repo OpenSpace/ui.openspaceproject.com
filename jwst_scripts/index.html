@@ -204,16 +204,13 @@
         var JWSTAngles = calculateJWSTAngles(JWSTtoCoordRotated[0], JWSTtoCoordRotated[1], JWSTtoCoordRotated[2]);
 
         // Check if the new angle violate the sunshield
-        // -45deg to 5deg is valid in x rotation
+        // -45 deg to 5 deg is valid in x rotation
         if(JWSTAngles[0] < -0.785398163 || JWSTAngles[0] > 0.0872664626) {
-          console.log("ERROR: Coordinate violates the sunshield");
+          console.log("WARNING: Coordinate violates the sunshield");
         }
-        // If not then change the JWST rotation towards the coordinate
         else {
           console.log("Coordinate is valid for sunshield");
-          //openspace.setPropertyValueSingle('Scene.JWSTModel.Rotation.Rotation', [ JWSTAngles[0], JWSTAngles[1],  0.0], 3.0);
         }
-        // Debug
         openspace.setPropertyValueSingle('Scene.JWSTModel.Rotation.Rotation', [ JWSTAngles[0], JWSTAngles[1],  0.0], 3.0);
       }
 
