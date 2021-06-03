@@ -30,6 +30,8 @@ input[type=text].coord {
   -webkit-border-radius: 3px;
   border-radius: 3px;
   width: 9ch;
+  margin-right: 0.5em;
+  margin-top: 0.5em;
 }
 
 input[type=text]:focus {
@@ -68,8 +70,8 @@ button {
   border: none;
   padding: 0.5em;
   color: #fff;
-  margin-right: 0.2em;
-  margin-bottom: 0.2em;
+  margin-right: 0.5em;
+  margin-top: 0.5em;
 }
 
 div.disconnected button {
