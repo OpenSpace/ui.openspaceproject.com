@@ -193,6 +193,12 @@
           return false;
         }
 
+        // Numbers
+        if(isNaN(ra_h) || isNaN(ra_m) || isNaN(ra_s) || isNaN(dec_d) || isNaN(dec_m) || isNaN(dec_s) ) {
+          console.log("WARNING: All input fields must be numbers ");
+          return false;
+        }
+
         // Ra
         if(ra_h < 0.0 || ra_h >= 24.0) {
           console.log("WARNING: Right ascension hours is outside the allowed range of 0 to 24 hours (exclusive)");
