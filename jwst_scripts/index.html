@@ -47,6 +47,7 @@
         api.onDisconnect(() => {
           console.log("disconnected");
           document.getElementById('container').className = "disconnected";
+          document.getElementById('connection-status').style.opacity = 1;
           var disconnectedString = "Connect to OpenSpace: ";
           disconnectedString += '<input id="ipaddress" type=text placeholder="Enter ip address" /> ';
           disconnectedString += '<button onClick="connectToOpenSpace();">Connect</button>';
@@ -57,18 +58,40 @@
         api.onConnect(async () => {
           try {
             document.getElementById('container').className = "connected";
-            document.getElementById('connection-status').innerHTML = "Connected to OpenSpace";
+            document.getElementById('connection-status').innerHTML = "";
             openspace = await api.library();
             console.log('connected');
             mapButtons(openspace);
           } catch (e) {
-            console.log('OpenSpace library could not be loaded: Error: \n', e)
+            console.log('OpenSpace library could not be loaded: Error: \n', e);
             return;
           }
         })
         //connect
         api.connect();
       };
+
+      function logMessage(message) {
+        console.log(message);
+        document.getElementById('connection-status').innerHTML = message;
+        document.getElementById("connection-status").style.opacity = 1;
+        fadeOut();
+      }
+
+      // function that fades out the log div after 5 seconds
+      function fadeOut() {
+        setTimeout(function() {
+          var fade = document.getElementById("connection-status");
+          var timerId = setInterval(function() {
+            var opacity = fade.style.opacity;
+            if (opacity == 0.0) {
+              clearInterval(timerId);
+            } else {
+              fade.style.opacity = opacity - 0.05;
+            }
+          }, 100);
+        }, 5000);
+      }
 
       // function that takes in a ra dec coordinate and converts it into a cartesian coordinate in galactic reference frame
       function convertRaDec(RA_hours, RA_minutes, RA_seconds, Dec_degrees, Dec_minutes, Dec_seconds) {
@@ -180,7 +203,7 @@
 
       function resetJWST(openspace) {
         if(openspace == null) {
-          console.log("ERROR: No connection to an OpenSpace application");
+          console.log("Error: No connection to an OpenSpace application");
           return;
         }
         openspace.setPropertyValueSingle('Scene.JWSTModel.Rotation.Rotation', [0.0, 0.0,  0.0], 3.0);
@@ -189,45 +212,54 @@
       function isInputValid(ra_h, ra_m, ra_s, dec_d, dec_m, dec_s) {
         // Empty
         if(ra_h == "" || ra_m == "" || ra_s == "" || dec_d == "" || dec_m == "" || dec_s == "") {
-          console.log("WARNING: At least one of the input fields were empty");
+          var messageString = "Warning: At least one of the coordinate input fields were empty";
+          logMessage(messageString);
           return false;
         }
 
         // Numbers
         if(isNaN(ra_h) || isNaN(ra_m) || isNaN(ra_s) || isNaN(dec_d) || isNaN(dec_m) || isNaN(dec_s) ) {
-          console.log("WARNING: All input fields must be numbers ");
+          var messageString = "Warning: All coordinate input fields must be numbers";
+          logMessage(messageString);
           return false;
         }
 
         // Ra
         if(ra_h < 0.0 || ra_h >= 24.0) {
-          console.log("WARNING: Right ascension hours is outside the allowed range of 0 to 24 hours (exclusive)");
+          var messageString = "Warning: Right ascension hours is outside the allowed range of 0 to 24 hours (exclusive)";
+          logMessage(messageString);
           return false;
         }
         if(ra_m < 0.0 || ra_m >= 60.0) {
-          console.log("WARNING: Right ascension minutes is outside the allowed range of 0 to 60 minutes (exclusive)");
+          var messageString = "Warning: Right ascension minutes is outside the allowed range of 0 to 60 minutes (exclusive)";
+          logMessage(messageString);
           return false;
         }
         if(ra_s < 0.0 || ra_s >= 60.0) {
-          console.log("WARNING: Right ascension seconds is outside the allowed range of 0 to 60 seconds (exclusive)");
+          var messageString = "Warning: Right ascension seconds is outside the allowed range of 0 to 60 seconds (exclusive)";
+          logMessage(messageString);
           return false;
         }
 
         // Dec
         if(dec_d < -90.0 || dec_d > 90.0) {
-          console.log("WARNING: Declination degree is outside the allowed range of -90 to 90 degrees (inclusive)");
+          var messageString = "Warning: Declination degrees is outside the allowed range of -90 to 90 degrees (inclusive)";
+          logMessage(messageString);
           return false;
         }
         else if((dec_d == -90.0 || dec_d == 90.0) && (dec_m != 0 || dec_s != 0)) {
-          console.log("WARNING: Total declination is outside the allowed range of -90 to 90 degrees (inclusive)");
+          var messageString = "Warning: Total declination is outside the allowed range of -90 to 90 degrees (inclusive)";
+          logMessage(messageString);
           return false;
         }
         if(dec_m < 0.0 || dec_m >= 60.0) {
-          console.log("WARNING: Declination minutes is outside the allowed range of 0 to 60 minutes (exclusive)");
+          var messageString = "Warning: Declination minutes is outside the allowed range of 0 to 60 minutes (exclusive)";
+          logMessage(messageString);
           return false;
         }
         if(dec_s < 0.0 || dec_s >= 60.0) {
-          console.log("WARNING: Declination seconds is outside the allowed range of 0 to 60 seconds (exclusive)");
+          var messageString = "Warning: Declination seconds is outside the allowed range of 0 to 60 seconds (exclusive)";
+          logMessage(messageString);
           return false;
         }
 
@@ -236,7 +268,7 @@
 
       async function directJWST(openspace) {
         if(openspace == null) {
-          console.log("ERROR: No connection to an OpenSpace application");
+          console.log("Error: No connection to an OpenSpace application");
           return;
         }
 
@@ -262,7 +294,10 @@
         // Get JWST position
         const JWSTPosition = await openspace.worldPosition("JWSTModel");
         if(JWSTPosition == null) {
-          console.log("ERROR: Could not find the JWST inside the connected OpenSpace instance");
+          var errorString = "Error: Could not find the JWST model inside the connected OpenSpace instance";
+          console.log(errorString);
+          document.getElementById("connection-status").style.opacity = 1;
+          document.getElementById('connection-status').innerHTML = errorString;
           return;
         }
 
@@ -276,7 +311,10 @@
         // Apply the worldRotation before calculating the angles
         const JWSTRotation = await openspace.worldRotation("JWSTRotation");
         if(JWSTRotation == null) {
-          console.log("ERROR: Could not find the JWST rotation inside the connected OpenSpace instance");
+          var errorString = "Error: Could not find the JWST rotation inside the connected OpenSpace instance";
+          console.log(errorString);
+          document.getElementById("connection-status").style.opacity = 1;
+          document.getElementById('connection-status').innerHTML = errorString;
           return;
         }
         var JWSTtoCoordRotated = applyMatrix(JWSTRotation[1], JWSTtoCoord);
@@ -287,7 +325,7 @@
         // Check if the new angle violate the sunshield
         // -45 deg to 5 deg is valid in x rotation
         if(JWSTAngles[0] < -0.785398163 || JWSTAngles[0] > 0.0872664626) {
-          console.log("WARNING: Coordinate violates the sunshield");
+          logMessage("Warning: Coordinate violates the sunshield");
         }
         else {
           console.log("Coordinate is valid for sunshield");

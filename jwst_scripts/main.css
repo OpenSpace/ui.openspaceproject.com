@@ -39,7 +39,7 @@ input[type=text]:focus {
 }
 
 .connection-status {
-  transition: all 0.5s;
+  transition: all 1s;
   height: 30px;
   width: calc(100% - 1em);
   padding: 0.5em;
@@ -51,8 +51,8 @@ div.disconnected .connection-status {
 }
 
 div.connected .connection-status {
-  background-color: #080;
-  color: #efe;
+  background-color: #222;
+  color: #eee;
 }
 
 .card {
