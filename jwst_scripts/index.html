@@ -24,6 +24,7 @@
           cardHTML += "</div>";
           document.getElementById('main').innerHTML += cardHTML;
       };
+
       var clickFunction = (action, id) => {
         if (action.buttons) {
           Object.keys(action.buttons).map(button => {
@@ -32,12 +33,14 @@
           });
         }
       }
+
       //helper function to map the buttons to html
       function mapButtons(openspace) {
         document.getElementById('main').innerHTML += "<div class='card'>Default Buttons</div>"
         defaultButtonGroups.map(htmlFunction);
         defaultButtonGroups.map(clickFunction);
       }
+
       //helper function to connect to opensapce
       var connectToOpenSpace = () => {
         //setup the api params
@@ -97,23 +100,23 @@
       function convertRaDec(RA_hours, RA_minutes, RA_seconds, Dec_degrees, Dec_minutes, Dec_seconds) {
         var distance = 9.2E15;
 
-        var A = (RA_hours * 15.0) + (RA_minutes * 15/60.0) + (RA_seconds * 15/3600.0);
-        var B = ( Math.abs(Dec_degrees) + (Dec_minutes / 60.0) + (Dec_seconds / 3600.0)) * Math.sign(Dec_degrees);
+        var a = (RA_hours * 15.0) + (RA_minutes * 15/60.0) + (RA_seconds * 15/3600.0);
+        var d = ( Math.abs(Dec_degrees) + (Dec_minutes / 60.0) + (Dec_seconds / 3600.0)) * Math.sign(Dec_degrees);
 
-        A = A * (Math.PI/180.0);
-        B = B * (Math.PI/180.0);
+        a = a * (Math.PI/180.0);
+        d = d * (Math.PI/180.0);
 
         // J2000
-        const A0 = 3.36603327;
-        const B0 = 0.473479901;
-        const L0 = 2.14556816;
+        const A0 = 192.8595 * (Math.PI/180.0);
+        const D0 = 27.1284 * (Math.PI/180.0);
+        const L0 = 122.9320 * (Math.PI/180.0);
 
         // convert to galactic reference frame
-        var a = L0 - Math.atan2(Math.cos(B)*Math.sin(A - A0), Math.sin(B)*Math.cos(B0) - Math.cos(B)*Math.sin(B0)*Math.cos(A - A0));
-        var b = Math.asin(Math.sin(B)*Math.sin(B0) + Math.cos(B)*Math.cos(B0)*Math.cos(A - A0));
+        var l = L0 - Math.atan2(Math.cos(d)*Math.sin(a - A0), Math.sin(d)*Math.cos(D0) - Math.cos(d)*Math.sin(D0)*Math.cos(a - A0));
+        var b = Math.asin(Math.sin(d)*Math.sin(D0) + Math.cos(d)*Math.cos(D0)*Math.cos(a - A0));
 
-        var X = (distance * Math.cos(b)) * Math.cos(a);
-        var Y = (distance * Math.cos(b)) * Math.sin(a);
+        var X = (distance * Math.cos(b)) * Math.cos(l);
+        var Y = (distance * Math.cos(b)) * Math.sin(l);
         var Z = distance * Math.sin(b);
 
         return [X, Y, Z];
@@ -281,7 +284,10 @@
         var dec_m = document.getElementById('decm').value;
         var dec_s = document.getElementById('decs').value;
 
-        console.log("Ra " + ra_h + "h" + ra_m + "m" + ra_s + "s, Dec " + dec_d + "d" + dec_m + "m" + dec_s + "s");
+        var RA = ra_h.toString() + 'h' + ra_m.toString() + 'm' + ra_s.toString() + 's';
+        var DEC = dec_d.toString() + 'd' + dec_m.toString() + 'm' + dec_s.toString() + 's';
+        var distJS = 9.2E15
+        //console.log("Ra " + RA +" Dec " + DEC);
 
         // Check input
         if(!isInputValid(ra_h, ra_m, ra_s, dec_d, dec_m, dec_s)) {
