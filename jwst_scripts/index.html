@@ -193,6 +193,39 @@
         directJWST(openspace);
       }
 
+      function pointToOrion() {
+        document.getElementById('rah').value = "5";
+        document.getElementById('ram').value = "35";
+        document.getElementById('ras').value = "17"
+
+        document.getElementById('decd').value = "-5";
+        document.getElementById('decm').value = "23";
+        document.getElementById('decs').value = "28";
+        directJWST(openspace);
+      }
+
+      function pointToM51() {
+        document.getElementById('rah').value = "13";
+        document.getElementById('ram').value = "29";
+        document.getElementById('ras').value = "53"
+
+        document.getElementById('decd').value = "47";
+        document.getElementById('decm').value = "11";
+        document.getElementById('decs').value = "43";
+        directJWST(openspace);
+      }
+
+      function pointToTrifid() {
+        document.getElementById('rah').value = "18";
+        document.getElementById('ram').value = "2";
+        document.getElementById('ras').value = "23"
+
+        document.getElementById('decd').value = "-23";
+        document.getElementById('decm').value = "1";
+        document.getElementById('decs').value = "48";
+        directJWST(openspace);
+      }
+
       function reset() {
         document.getElementById('rah').value = "";
         document.getElementById('ram').value = "";
@@ -363,6 +396,9 @@
           <button onClick="reset();">Reset</button>
           <br/>
           <button onClick="pointToHUDF();">Go To HUDF</button>
+          <button onClick="pointToOrion();">Go To Orion Nebula</button>
+          <button onClick="pointToM51();">Go To M51</button>
+          <button onClick="pointToTrifid();">Go To Trifid Nebula</button>
         </div>
       </div>
       <div id="main">
