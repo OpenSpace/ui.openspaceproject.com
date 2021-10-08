@@ -224,6 +224,61 @@
         directJWST(openspace);
       }
 
+      function pointToM82() {
+        document.getElementById('rah').value = "9";
+        document.getElementById('ram').value = "55";
+        document.getElementById('ras').value = "52"
+
+        document.getElementById('decd').value = "69";
+        document.getElementById('decm').value = "40";
+        document.getElementById('decs').value = "47";
+        directJWST(openspace);
+      }
+
+      function pointToHH212() {
+        document.getElementById('rah').value = "5";
+        document.getElementById('ram').value = "43";
+        document.getElementById('ras').value = "51.41"
+
+        document.getElementById('decd').value = "-1";
+        document.getElementById('decm').value = "2";
+        document.getElementById('decs').value = "53.1";
+        directJWST(openspace);
+      }
+
+      function pointToRing() {
+        document.getElementById('rah').value = "18";
+        document.getElementById('ram').value = "53";
+        document.getElementById('ras').value = "35"
+
+        document.getElementById('decd').value = "33";
+        document.getElementById('decm').value = "1";
+        document.getElementById('decs').value = "45";
+        directJWST(openspace);
+      }
+
+      function pointToCrab() {
+        document.getElementById('rah').value = "5";
+        document.getElementById('ram').value = "34";
+        document.getElementById('ras').value = "32"
+
+        document.getElementById('decd').value = "22";
+        document.getElementById('decm').value = "0";
+        document.getElementById('decs').value = "52";
+        directJWST(openspace);
+      }
+
+      function pointToSN1987a() {
+        document.getElementById('rah').value = "5";
+        document.getElementById('ram').value = "35";
+        document.getElementById('ras').value = "28"
+
+        document.getElementById('decd').value = "-69";
+        document.getElementById('decm').value = "16";
+        document.getElementById('decs').value = "11";
+        directJWST(openspace);
+      }
+
       function reset() {
         document.getElementById('rah').value = "";
         document.getElementById('ram').value = "";
@@ -396,7 +451,14 @@
           <button onClick="pointToHUDF();">Go To HUDF</button>
           <button onClick="pointToOrion();">Go To Orion Nebula</button>
           <button onClick="pointToM51();">Go To M51</button>
+          <br/>
           <button onClick="pointToTrifid();">Go To Trifid Nebula</button>
+          <button onClick="pointToM82();">Go To M82</button>
+          <button onClick="pointToHH212();">Go To HH 212</button>
+          <br/>
+          <button onClick="pointToRing();">Go To the Ring Nebula</button>
+          <button onClick="pointToCrab();">Go To the Crab Nebula</button>
+          <button onClick="pointToSN1987a();">Go To Supernova SN 1987a</button>
         </div>
       </div>
       <div id="main">
