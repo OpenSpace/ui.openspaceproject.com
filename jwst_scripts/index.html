@@ -181,15 +181,13 @@
       }
 
       function pointToHUDF() {
-        // Actual coordinate of HUDF: Ra 3h32m38.92s, Dec -27d47m29.37s
-        // Instead an approximated coordiante is used that agrees with the speck file better
         document.getElementById('rah').value = "3";
-        document.getElementById('ram').value = "34";
-        document.getElementById('ras').value = "45"
+        document.getElementById('ram').value = "32";
+        document.getElementById('ras').value = "38.92"
 
         document.getElementById('decd').value = "-27";
-        document.getElementById('decm').value = "38";
-        document.getElementById('decs').value = "0";
+        document.getElementById('decm').value = "47";
+        document.getElementById('decs').value = "29.37";
         directJWST(openspace);
       }
 
