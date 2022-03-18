@@ -279,6 +279,17 @@
         directJWST(openspace);
       }
 
+      function pointToHD84406() {
+        document.getElementById('rah').value = "9";
+        document.getElementById('ram').value = "47";
+        document.getElementById('ras').value = "30.55"
+
+        document.getElementById('decd').value = "63";
+        document.getElementById('decm').value = "14";
+        document.getElementById('decs').value = "52.09";
+        directJWST(openspace);
+      }
+
       function reset() {
         document.getElementById('rah').value = "";
         document.getElementById('ram').value = "";
@@ -448,17 +459,19 @@
           <button onClick="pointToRaDec();">Enter</button>
           <button onClick="reset();">Reset</button>
           <br/>
-          <button onClick="pointToHUDF();">Go To HUDF</button>
-          <button onClick="pointToOrion();">Go To Orion Nebula</button>
-          <button onClick="pointToM51();">Go To M51</button>
+          <button onClick="pointToHUDF();">Point To HUDF</button>
+          <button onClick="pointToOrion();">Point To Orion Nebula</button>
+          <button onClick="pointToM51();">Point To M51</button>
           <br/>
-          <button onClick="pointToTrifid();">Go To Trifid Nebula</button>
-          <button onClick="pointToM82();">Go To M82</button>
-          <button onClick="pointToHH212();">Go To HH 212</button>
+          <button onClick="pointToTrifid();">Point To Trifid Nebula</button>
+          <button onClick="pointToM82();">Point To M82</button>
+          <button onClick="pointToHH212();">Point To HH 212</button>
           <br/>
-          <button onClick="pointToRing();">Go To the Ring Nebula</button>
-          <button onClick="pointToCrab();">Go To the Crab Nebula</button>
-          <button onClick="pointToSN1987a();">Go To Supernova SN 1987a</button>
+          <button onClick="pointToRing();">Point To the Ring Nebula</button>
+          <button onClick="pointToCrab();">Point To the Crab Nebula</button>
+          <br/>
+          <button onClick="pointToSN1987a();">Point To Supernova SN 1987a</button>
+          <button onClick="pointToHD84406();">Point To HD 84406</button>
         </div>
       </div>
       <div id="main">
