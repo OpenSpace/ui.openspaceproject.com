@@ -189,6 +189,11 @@
         document.getElementById('decm').value = "47";
         document.getElementById('decs').value = "29.37";
         directJWST(openspace);
+
+        if (document.getElementById("showImagesCheck").checked) {
+          resetImages();
+          openspace.setPropertyValueSingle("ScreenSpace.HUDFImage.Enabled", true);
+        }
       }
 
       function pointToOrion() {
@@ -200,6 +205,11 @@
         document.getElementById('decm').value = "23";
         document.getElementById('decs').value = "28";
         directJWST(openspace);
+
+        if (document.getElementById("showImagesCheck").checked) {
+          resetImages();
+          openspace.setPropertyValueSingle("ScreenSpace.OrionImage.Enabled", true);
+        }
       }
 
       function pointToM51() {
@@ -211,6 +221,11 @@
         document.getElementById('decm').value = "11";
         document.getElementById('decs').value = "43";
         directJWST(openspace);
+
+        if (document.getElementById("showImagesCheck").checked) {
+          resetImages();
+          openspace.setPropertyValueSingle("ScreenSpace.M51Image.Enabled", true);
+        }
       }
 
       function pointToTrifid() {
@@ -222,6 +237,11 @@
         document.getElementById('decm').value = "1";
         document.getElementById('decs').value = "48";
         directJWST(openspace);
+
+        if (document.getElementById("showImagesCheck").checked) {
+          resetImages();
+          openspace.setPropertyValueSingle("ScreenSpace.TrifidImage.Enabled", true);
+        }
       }
 
       function pointToM82() {
@@ -233,6 +253,11 @@
         document.getElementById('decm').value = "40";
         document.getElementById('decs').value = "47";
         directJWST(openspace);
+
+        if (document.getElementById("showImagesCheck").checked) {
+          resetImages();
+          openspace.setPropertyValueSingle("ScreenSpace.M82Image.Enabled", true);
+        }
       }
 
       function pointToHH212() {
@@ -244,6 +269,11 @@
         document.getElementById('decm').value = "2";
         document.getElementById('decs').value = "53.1";
         directJWST(openspace);
+
+        if (document.getElementById("showImagesCheck").checked) {
+          resetImages();
+          openspace.setPropertyValueSingle("ScreenSpace.HH212Image.Enabled", true);
+        }
       }
 
       function pointToRing() {
@@ -255,6 +285,11 @@
         document.getElementById('decm').value = "1";
         document.getElementById('decs').value = "45";
         directJWST(openspace);
+
+        if (document.getElementById("showImagesCheck").checked) {
+          resetImages();
+          openspace.setPropertyValueSingle("ScreenSpace.RingImage.Enabled", true);
+        }
       }
 
       function pointToCrab() {
@@ -266,6 +301,11 @@
         document.getElementById('decm').value = "0";
         document.getElementById('decs').value = "52";
         directJWST(openspace);
+
+        if (document.getElementById("showImagesCheck").checked) {
+          resetImages();
+          openspace.setPropertyValueSingle("ScreenSpace.CrabImage.Enabled", true);
+        }
       }
 
       function pointToSN1987a() {
@@ -277,6 +317,11 @@
         document.getElementById('decm').value = "16";
         document.getElementById('decs').value = "11";
         directJWST(openspace);
+
+        if (document.getElementById("showImagesCheck").checked) {
+          resetImages();
+          openspace.setPropertyValueSingle("ScreenSpace.SN1987aImage.Enabled", true);
+        }
       }
 
       function pointToHD84406() {
@@ -288,6 +333,11 @@
         document.getElementById('decm').value = "14";
         document.getElementById('decs').value = "52.09";
         directJWST(openspace);
+
+        if (document.getElementById("showImagesCheck").checked) {
+          resetImages();
+          // TODO: Add target Image
+        }
       }
 
       function reset() {
@@ -299,6 +349,16 @@
         document.getElementById('decm').value = "";
         document.getElementById('decs').value = "";
         resetJWST(openspace);
+      }
+
+      function resetImages() {
+        openspace.setPropertyValue("{mission_jwst_target}.Enabled", false);
+      }
+
+      function showImagesCheckOnChange() {
+        if (!document.getElementById("showImagesCheck").checked){
+          resetImages();
+        }
       }
 
       function resetJWST(openspace) {
@@ -458,6 +518,7 @@
           <br/>
           <button onClick="pointToRaDec();">Enter</button>
           <button onClick="reset();">Reset</button>
+          Show images: <input type="checkbox" id="showImagesCheck" onclick="showImagesCheckOnChange()">
           <br/>
           <button onClick="pointToHUDF();">Point To HUDF</button>
           <button onClick="pointToOrion();">Point To Orion Nebula</button>
