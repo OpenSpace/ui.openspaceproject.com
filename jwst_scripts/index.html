@@ -189,6 +189,11 @@
         document.getElementById('decm').value = "47";
         document.getElementById('decs').value = "29.37";
         directJWST(openspace);
+
+        if (document.getElementById("showImagesCheck").checked) {
+          resetImages();
+          openspace.setPropertyValueSingle("ScreenSpace.HUDFImage.Enabled", true);
+        }
       }
 
       function pointToOrion() {
@@ -200,6 +205,11 @@
         document.getElementById('decm').value = "23";
         document.getElementById('decs').value = "28";
         directJWST(openspace);
+
+        if (document.getElementById("showImagesCheck").checked) {
+          resetImages();
+          openspace.setPropertyValueSingle("ScreenSpace.OrionImage.Enabled", true);
+        }
       }
 
       function pointToM51() {
@@ -211,6 +221,11 @@
         document.getElementById('decm').value = "11";
         document.getElementById('decs').value = "43";
         directJWST(openspace);
+
+        if (document.getElementById("showImagesCheck").checked) {
+          resetImages();
+          openspace.setPropertyValueSingle("ScreenSpace.M51Image.Enabled", true);
+        }
       }
 
       function pointToTrifid() {
@@ -222,6 +237,11 @@
         document.getElementById('decm').value = "1";
         document.getElementById('decs').value = "48";
         directJWST(openspace);
+
+        if (document.getElementById("showImagesCheck").checked) {
+          resetImages();
+          openspace.setPropertyValueSingle("ScreenSpace.TrifidImage.Enabled", true);
+        }
       }
 
       function pointToM82() {
@@ -233,6 +253,11 @@
         document.getElementById('decm').value = "40";
         document.getElementById('decs').value = "47";
         directJWST(openspace);
+
+        if (document.getElementById("showImagesCheck").checked) {
+          resetImages();
+          openspace.setPropertyValueSingle("ScreenSpace.M82Image.Enabled", true);
+        }
       }
 
       function pointToHH212() {
@@ -244,6 +269,11 @@
         document.getElementById('decm').value = "2";
         document.getElementById('decs').value = "53.1";
         directJWST(openspace);
+
+        if (document.getElementById("showImagesCheck").checked) {
+          resetImages();
+          openspace.setPropertyValueSingle("ScreenSpace.HH212Image.Enabled", true);
+        }
       }
 
       function pointToRing() {
@@ -255,6 +285,11 @@
         document.getElementById('decm').value = "1";
         document.getElementById('decs').value = "45";
         directJWST(openspace);
+
+        if (document.getElementById("showImagesCheck").checked) {
+          resetImages();
+          openspace.setPropertyValueSingle("ScreenSpace.RingImage.Enabled", true);
+        }
       }
 
       function pointToCrab() {
@@ -266,6 +301,11 @@
         document.getElementById('decm').value = "0";
         document.getElementById('decs').value = "52";
         directJWST(openspace);
+
+        if (document.getElementById("showImagesCheck").checked) {
+          resetImages();
+          openspace.setPropertyValueSingle("ScreenSpace.CrabImage.Enabled", true);
+        }
       }
 
       function pointToSN1987a() {
@@ -277,6 +317,27 @@
         document.getElementById('decm').value = "16";
         document.getElementById('decs').value = "11";
         directJWST(openspace);
+
+        if (document.getElementById("showImagesCheck").checked) {
+          resetImages();
+          openspace.setPropertyValueSingle("ScreenSpace.SN1987aImage.Enabled", true);
+        }
+      }
+
+      function pointToHD84406() {
+        document.getElementById('rah').value = "9";
+        document.getElementById('ram').value = "47";
+        document.getElementById('ras').value = "30.55"
+
+        document.getElementById('decd').value = "63";
+        document.getElementById('decm').value = "14";
+        document.getElementById('decs').value = "52.09";
+        directJWST(openspace);
+
+        if (document.getElementById("showImagesCheck").checked) {
+          resetImages();
+          openspace.setPropertyValueSingle("ScreenSpace.HD84406Image.Enabled", true);
+        }
       }
 
       function reset() {
@@ -287,7 +348,21 @@
         document.getElementById('decd').value = "";
         document.getElementById('decm').value = "";
         document.getElementById('decs').value = "";
+
+        if (document.getElementById("showImagesCheck").checked) {
+          resetImages();
+        }
         resetJWST(openspace);
+      }
+
+      function resetImages() {
+        openspace.setPropertyValue("{mission_jwst_target}.Enabled", false);
+      }
+
+      function showImagesCheckOnChange() {
+        if (!document.getElementById("showImagesCheck").checked){
+          resetImages();
+        }
       }
 
       function resetJWST(openspace) {
@@ -447,18 +522,21 @@
           <br/>
           <button onClick="pointToRaDec();">Enter</button>
           <button onClick="reset();">Reset</button>
+          Show images: <input type="checkbox" id="showImagesCheck" onclick="showImagesCheckOnChange()">
           <br/>
-          <button onClick="pointToHUDF();">Go To HUDF</button>
-          <button onClick="pointToOrion();">Go To Orion Nebula</button>
-          <button onClick="pointToM51();">Go To M51</button>
+          <button onClick="pointToHUDF();">Point To HUDF</button>
+          <button onClick="pointToOrion();">Point To Orion Nebula</button>
+          <button onClick="pointToM51();">Point To M51</button>
           <br/>
-          <button onClick="pointToTrifid();">Go To Trifid Nebula</button>
-          <button onClick="pointToM82();">Go To M82</button>
-          <button onClick="pointToHH212();">Go To HH 212</button>
+          <button onClick="pointToTrifid();">Point To Trifid Nebula</button>
+          <button onClick="pointToM82();">Point To M82</button>
+          <button onClick="pointToHH212();">Point To HH 212</button>
           <br/>
-          <button onClick="pointToRing();">Go To the Ring Nebula</button>
-          <button onClick="pointToCrab();">Go To the Crab Nebula</button>
-          <button onClick="pointToSN1987a();">Go To Supernova SN 1987a</button>
+          <button onClick="pointToRing();">Point To the Ring Nebula</button>
+          <button onClick="pointToCrab();">Point To the Crab Nebula</button>
+          <br/>
+          <button onClick="pointToSN1987a();">Point To Supernova SN 1987a</button>
+          <button onClick="pointToHD84406();">Point To HD 84406</button>
         </div>
       </div>
       <div id="main">
