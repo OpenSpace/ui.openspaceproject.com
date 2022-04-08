@@ -348,6 +348,10 @@
         document.getElementById('decd').value = "";
         document.getElementById('decm').value = "";
         document.getElementById('decs').value = "";
+
+        if (document.getElementById("showImagesCheck").checked) {
+          resetImages();
+        }
         resetJWST(openspace);
       }
 
