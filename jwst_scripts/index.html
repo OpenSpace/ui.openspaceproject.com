@@ -497,7 +497,10 @@
         else {
           console.log("Coordinate is valid for sunshield");
         }
-        openspace.setPropertyValueSingle('Scene.JWSTModel.Rotation.Rotation', [ JWSTAngles[0], JWSTAngles[1],  0.0], 3.0);
+
+        let timing = parseInt(document.getElementById("rotation-time").value);
+        console.log(timing);
+        openspace.setPropertyValueSingle('Scene.JWSTModel.Rotation.Rotation', [ JWSTAngles[0], JWSTAngles[1],  0.0], timing);
       }
     </script>
   </head>
@@ -537,12 +540,26 @@
           <br/>
           <button onClick="pointToSN1987a();">Point To Supernova SN 1987a</button>
           <button onClick="pointToHD84406();">Point To HD 84406</button>
+
+          <br />
+          <br />
+          Rotation time (seconds): <br />
+          <input type="range" min="0" max="120" value="3" class="slider" id="rotation-time">
+          <div style="display: inline" id="rotation-time-value"></div>s
         </div>
       </div>
       <div id="main">
       </div>
       <script type="text/javascript">
         connectToOpenSpace('localhost');
+
+        let slider = document.getElementById("rotation-time");
+        let output = document.getElementById("rotation-time-value");
+        slider.value = 3;
+        output.innerHTML = slider.value;
+        slider.oninput = function() {
+          output.innerHTML = this.value;
+        }
       </script>
     </div>
   <body>
