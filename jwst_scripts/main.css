@@ -16,12 +16,33 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+.header {
+  color: #fff;
+  margin: 1.5em;
+}
+
+.row {
+  display: flex;
+  justify-content: center;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.two-text-column {
+  float: left;
+  width: calc(50% - 4em);
+}
 
 input[type=text] {
-    padding:5px;
-    border:1px solid #ccc;
-    -webkit-border-radius: 3px;
-    border-radius: 3px;
+  padding:5px;
+  border:1px solid #ccc;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
 }
 
 input[type=text].coord {
@@ -32,6 +53,10 @@ input[type=text].coord {
   width: 9ch;
   margin-right: 0.5em;
   margin-top: 0.5em;
+}
+
+input[type=text].degree {
+  width: 15ch;
 }
 
 input[type=text]:focus {
@@ -57,9 +82,10 @@ div.connected .connection-status {
 
 .card {
   background-color: #111;
-  margin: 1em;
-  padding: 0.5em;
-  color: #eee;
+  border-radius: 0.5em;
+  margin: 0.5em 1em 0.5em;
+  padding: 1em;
+  color: #fff;
 }
 
 button {

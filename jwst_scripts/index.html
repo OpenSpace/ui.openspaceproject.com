@@ -341,13 +341,18 @@
       }
 
       function reset() {
+        document.getElementById('ra-deg').value = "";
         document.getElementById('rah').value = "";
         document.getElementById('ram').value = "";
         document.getElementById('ras').value = ""
 
+        document.getElementById('dec-deg').value = "";
         document.getElementById('decd').value = "";
         document.getElementById('decm').value = "";
         document.getElementById('decs').value = "";
+
+        document.getElementById("rotation-time").value = 3;
+        document.getElementById("rotation-time-value").innerHTML = 3;
 
         if (document.getElementById("showImagesCheck").checked) {
           resetImages();
@@ -502,6 +507,148 @@
         console.log(timing);
         openspace.setPropertyValueSingle('Scene.JWSTModel.Rotation.Rotation', [ JWSTAngles[0], JWSTAngles[1],  0.0], timing);
       }
+
+      function convertHMStoDeg() {
+        var RA_hours = document.getElementById('rah').value;
+        var RA_minutes = document.getElementById('ram').value;
+        var RA_seconds = document.getElementById('ras').value;
+
+        var Dec_d = document.getElementById('decd').value;
+        var Dec_minutes = document.getElementById('decm').value;
+        var Dec_seconds = document.getElementById('decs').value;
+
+        var RA_degrees = (RA_hours * 15.0) + (RA_minutes * 15/60.0) + (RA_seconds * 15/3600.0);
+        var DEC_degrees = ( Math.abs(Dec_d) + (Dec_minutes / 60.0) + (Dec_seconds / 3600.0)) * Math.sign(Dec_d);
+
+        return [RA_degrees, DEC_degrees];
+      }
+
+      function convertDegtoHMS() {
+        var RA_degrees = document.getElementById('ra-deg').value;
+        var DEC_degrees = document.getElementById('dec-deg').value;
+
+        var RA_hours = Math.trunc(RA_degrees/15.0);
+        var rest = RA_degrees/15.0 - RA_hours;
+        var RA_minutes = Math.trunc(rest * 60)
+        rest = rest * 60 - RA_minutes;
+        var RA_seconds = rest * 60;
+
+        var Dec_d = Math.trunc(DEC_degrees);
+        rest = Math.abs(DEC_degrees) - Math.abs(Dec_d);
+        var Dec_minutes = Math.trunc(rest * 60);
+        rest = rest * 60 - Dec_minutes;
+        var Dec_seconds = rest * 60;
+
+        return [RA_hours, RA_minutes, RA_seconds, Dec_d, Dec_minutes, Dec_seconds];
+      }
+
+      function raDegHandler() {
+        if (document.getElementById('ra-deg').value == "") {
+          document.getElementById('rah').value = "";
+          document.getElementById('ram').value = "";
+          document.getElementById('ras').value = "";
+          return;
+        }
+
+        var hms = convertDegtoHMS();
+        document.getElementById('rah').value = hms[0];
+        document.getElementById('ram').value = hms[1];
+        document.getElementById('ras').value = hms[2];
+      }
+
+      function raHourHandler() {
+        if (document.getElementById('rah').value == "" &&
+            document.getElementById('ram').value == "" &&
+            document.getElementById('ras').value == "")
+        {
+          document.getElementById('ra-deg').value = "";
+          return;
+        }
+
+        var degrees = convertHMStoDeg();
+        document.getElementById('ra-deg').value = degrees[0];
+      }
+
+      function raMinHandler() {
+        if (document.getElementById('rah').value == "" &&
+            document.getElementById('ram').value == "" &&
+            document.getElementById('ras').value == "")
+        {
+          document.getElementById('ra-deg').value = "";
+          return;
+        }
+
+        var degrees = convertHMStoDeg();
+        document.getElementById('ra-deg').value = degrees[0];
+      }
+
+      function raSecHandler() {
+        if (document.getElementById('rah').value == "" &&
+            document.getElementById('ram').value == "" &&
+            document.getElementById('ras').value == "")
+        {
+          document.getElementById('ra-deg').value = "";
+          return;
+        }
+
+        var degrees = convertHMStoDeg();
+        document.getElementById('ra-deg').value = degrees[0];
+      }
+
+      function decDegHandler() {
+        if (document.getElementById('dec-deg').value == "") {
+          document.getElementById('decd').value = "";
+          document.getElementById('decm').value = "";
+          document.getElementById('decs').value = "";
+          return;
+        }
+
+        var hms = convertDegtoHMS();
+        document.getElementById('decd').value = hms[3];
+        document.getElementById('decm').value = hms[4];
+        document.getElementById('decs').value = hms[5];
+
+      }
+
+      function decDHandler() {
+        if (document.getElementById('decd').value == "" &&
+            document.getElementById('decm').value == "" &&
+            document.getElementById('decs').value == "")
+        {
+          document.getElementById('dec-deg').value = "";
+          return;
+        }
+
+        var degrees = convertHMStoDeg();
+        document.getElementById('dec-deg').value = degrees[1];
+      }
+
+      function decMinHandler() {
+        if (document.getElementById('decd').value == "" &&
+            document.getElementById('decm').value == "" &&
+            document.getElementById('decs').value == "")
+        {
+          document.getElementById('dec-deg').value = "";
+          return;
+        }
+
+        var degrees = convertHMStoDeg();
+        document.getElementById('dec-deg').value = degrees[1];
+      }
+
+      function decSecHandler() {
+        if (document.getElementById('decd').value == "" &&
+            document.getElementById('decm').value == "" &&
+            document.getElementById('decs').value == "")
+        {
+          document.getElementById('dec-deg').value = "";
+          return;
+        }
+
+        var degrees = convertHMStoDeg();
+        document.getElementById('dec-deg').value = degrees[1];
+      }
+
     </script>
   </head>
   <body>
@@ -512,41 +659,72 @@
         <input id='ipaddress' type=text placeholder="Enter ip address"/>
         <button onClick="connectToOpenSpace();">Connect</button>
       </div>
-      <div id="radecinput">
-        <div class='card'>
-          Point the JWST towards a Ra Dec coordinate:<br />
-          Ra: <input id="rah" type=text class="coord" placeholder="Hours"/>
-          <input id="ram" type=text class="coord" placeholder="Minutes"/>
-          <input id="ras" type=text class="coord"placeholder="Seconds"/>
+      <div class='header'>
+        <h1>Point the JWST towards a Ra Dec coordinate</h1>
+      </div>
+      <div id="radecinput" class="row">
+        <div id="left-col" class="card two-text-column">
+          Ra: <input id="rah" type=text class="coord" placeholder="Hours"
+                onchange="raHourHandler();" onkeypress="this.onchange();"
+                onpaste="this.onchange();" oninput="this.onchange();"
+              />
+          <input id="ram" type=text class="coord" placeholder="Minutes"
+            onchange="raMinHandler();" onkeypress="this.onchange();"
+            onpaste="this.onchange();" oninput="this.onchange();"
+          />
+          <input id="ras" type=text class="coord"placeholder="Seconds"
+            onchange="raSecHandler();" onkeypress="this.onchange();"
+            onpaste="this.onchange();" oninput="this.onchange();"
+          />
           <br/>
-          Dec: <input id="decd" type=text class="coord" placeholder="Degrees"/>
-          <input id="decm" type=text class="coord" placeholder="Minutes"/>
-          <input id="decs" type=text class="coord" placeholder="Seconds"/>
-          <br/>
-          <button onClick="pointToRaDec();">Enter</button>
-          <button onClick="reset();">Reset</button>
-          Show images: <input type="checkbox" id="showImagesCheck" onclick="showImagesCheckOnChange()">
-          <br/>
-          <button onClick="pointToHUDF();">Point To HUDF</button>
-          <button onClick="pointToOrion();">Point To Orion Nebula</button>
-          <button onClick="pointToM51();">Point To M51</button>
-          <br/>
-          <button onClick="pointToTrifid();">Point To Trifid Nebula</button>
-          <button onClick="pointToM82();">Point To M82</button>
-          <button onClick="pointToHH212();">Point To HH 212</button>
-          <br/>
-          <button onClick="pointToRing();">Point To the Ring Nebula</button>
-          <button onClick="pointToCrab();">Point To the Crab Nebula</button>
-          <br/>
-          <button onClick="pointToSN1987a();">Point To Supernova SN 1987a</button>
-          <button onClick="pointToHD84406();">Point To HD 84406</button>
-
-          <br />
-          <br />
-          Rotation time (seconds): <br />
-          <input type="range" min="0" max="120" value="3" class="slider" id="rotation-time">
-          <div style="display: inline" id="rotation-time-value"></div>s
+          Dec: <input id="decd" type=text class="coord" placeholder="Degrees"
+                 onchange="decDHandler();" onkeypress="this.onchange();"
+                 onpaste="this.onchange();" oninput="this.onchange();"
+               />
+          <input id="decm" type=text class="coord" placeholder="Minutes"
+            onchange="decMinHandler();" onkeypress="this.onchange();"
+            onpaste="this.onchange();" oninput="this.onchange();"
+          />
+          <input id="decs" type=text class="coord" placeholder="Seconds"
+            onchange="decSecHandler();" onkeypress="this.onchange();"
+            onpaste="this.onchange();" oninput="this.onchange();"
+          />
         </div>
+        <div id="right-col" class="card two-text-column">
+          Ra: <input id="ra-deg" type=text class="coord degree" placeholder="Degrees"
+                onchange="raDegHandler();" onkeypress="this.onchange();"
+                onpaste="this.onchange();" oninput="this.onchange();"
+              />
+          <br/>
+          Dec: <input id="dec-deg" type=text class="coord degree" placeholder="Degrees"
+                 onchange="decDegHandler();" onkeypress="this.onchange();"
+                 onpaste="this.onchange();" oninput="this.onchange();"
+               />
+        </div>
+      </div>
+      <div class="card">
+        <button onClick="pointToRaDec();">Enter</button>
+        <button onClick="reset();">Reset</button>
+        Show images: <input type="checkbox" id="showImagesCheck" onclick="showImagesCheckOnChange()">
+        <br/>
+        <button onClick="pointToHUDF();">Point To HUDF</button>
+        <button onClick="pointToOrion();">Point To Orion Nebula</button>
+        <button onClick="pointToM51();">Point To M51</button>
+        <br/>
+        <button onClick="pointToTrifid();">Point To Trifid Nebula</button>
+        <button onClick="pointToM82();">Point To M82</button>
+        <button onClick="pointToHH212();">Point To HH 212</button>
+        <br/>
+        <button onClick="pointToRing();">Point To the Ring Nebula</button>
+        <button onClick="pointToCrab();">Point To the Crab Nebula</button>
+        <br/>
+        <button onClick="pointToSN1987a();">Point To Supernova SN 1987a</button>
+        <button onClick="pointToHD84406();">Point To HD 84406</button>
+        <br/>
+        <br/>
+        Rotation time (seconds): <br />
+        <input type="range" min="0" max="120" value="3" class="slider" id="rotation-time">
+        <div style="display: inline" id="rotation-time-value"></div>s
       </div>
       <div id="main">
       </div>
