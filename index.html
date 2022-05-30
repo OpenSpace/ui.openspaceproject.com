@@ -1,36 +1,22 @@
 <html>
   <head>
-    <style>
-      body {
-        background-color: #222222;
-        font-family: 'Buenard';
-        font-size: 12px;
-        color: #dddddd
-      }
-    </style>
+    <link rel="stylesheet" type="text/css" href="./style.css">
   </head>
-  
+
   <body>
-    <table>
-      <tr>
-        <td>Apollo Sites</td>
-        <td><a href="apollo_sites/index.html">Link</a></td>
-      </tr>
-
-      <tr>
-        <td>JWST</td>
-        <td><a href="jwst_scripts/index.html">Link</a></td>
-      </tr>
-
-      <tr>
-        <td>Moon/Mars</td>
-        <td><a href="moon-mars/public/index.html">Link</a></td>
-      </tr>
-
-      <tr>
-        <td>NVAB Kosmos</td>
-        <td><a href="nvab_kosmos/index.html">Link</a></td>
-      </tr>
-    </table>
+    <div id="container">
+      <div class="card">
+        <button onclick="location.href='apollo_sites/index.html'" type="button">Apollo Sites</button>
+        <br/>
+        <button onclick="location.href='jwst_scripts/index.html'" type="button">JWST</button>
+        <br/>
+        <button onclick="location.href='moon-mars/public/index.html'" type="button">Moon and Mars</button>
+        <br/>
+        <button onclick="location.href='nvab_kosmos/index.html'" type="button">NVAB Kosmos</button>
+      </div>
+    </div>
+    <div id='logo-container'>
+      <img id="logo" src="./images/openspace-horiz-logo.png" alt="OpenSpace logo">
+    </div>
   </body>
 </html>
