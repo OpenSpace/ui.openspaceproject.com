@@ -1,3 +1,7 @@
+VERSION = "testing";
+//VERSION = "live";
+
+
 const DEFAULT_VIEW_ISS = {
   Aim: "Earth",
   Anchor: "ISS",
@@ -18,8 +22,8 @@ const DEFAULT_VIEW_CUPOLA = {
 }
 
 // NOTE: Assumes 29/01/2024 13:15 - 13:35 GMT
-// MAY NEED TO BE UPDATED
-const DEFAULT_ISS_ROTATION = [0.01, -0.8, 0.85];
+// UPDATED: 24/01/2024 10:43
+const DEFAULT_ISS_ROTATION = [0.01, -0.8, 0.385];
 
 // Button: Prepare
 /*
@@ -42,6 +46,13 @@ async function prepare() {
   }
 
   try {
+    // Hide stuff
+    await openspace.setPropertyValueSingle("Dashboard.IsEnabled", false);
+    await openspace.setPropertyValueSingle("RenderEngine.ShowLog", false);
+    await openspace.setPropertyValueSingle("RenderEngine.ShowVersion", false);
+    await openspace.setPropertyValueSingle("RenderEngine.ShowCamera", false);
+    await openspace.setPropertyValueSingle("Modules.CefWebGui.Visible", false);
+
     // Turn off all trails
     await openspace.setPropertyValue("{planetTrail_solarSystem}.Renderable.Enabled", false);
     await openspace.setPropertyValue("{moonTrail_solarSystem}.Renderable.Enabled", false);
@@ -52,6 +63,8 @@ async function prepare() {
     await openspace.setPropertyValueSingle("Scene.Earth.Renderable.Layers.ColorLayers.ESRI_World_Imagery.Enabled", true);
     await openspace.setPropertyValueSingle("Scene.Earth.Renderable.Layers.ColorLayers.ESRI_World_Imagery.Fade", 1.0);
 
+    // Turn off zoom limits
+    await openspace.setPropertyValueSingle("NavigationHandler.OrbitalNavigator.LimitZoom.EnabledMinimumAllowedDistance", false);
 
     // Set ISS rotation vector
     let rotVec = DEFAULT_ISS_ROTATION;
@@ -77,9 +90,9 @@ async function prepare() {
     await openspace.setPropertyValueSingle("NavigationHandler.OrbitalNavigator.IdleBehavior.SpeedFactor", 0.300000);
     await openspace.setPropertyValueSingle("NavigationHandler.OrbitalNavigator.IdleBehavior.DampenInterpolationTime", 0.000000);
 
-    // Set intial ISS cupola views
-      // CALL FUNCTION HERE
-
+    // Set initial ISS View
+    setViewDefault();
+    
   } catch (e) {
     alert(`Something went wrong: ${e}`);
     return
@@ -293,6 +306,41 @@ async function setViewIss7() {
   }, true);
 }
 
+async function setViewIss8() {
+  await setIssViewX({
+    Aim: "Earth",
+    Anchor: "ISSCupola",
+    Pitch: -0.30510520630196725,
+    Position: [-8.639572143554688,-8.550308227539062,13.857452392578125],
+    ReferenceFrame: "Root",
+    Up: [0.7554685081481468,-0.6515424883554592,0.06899071723058059],
+    Yaw: 0.303879809882952
+  });
+}
+
+async function hideBlackout() {
+  let fade = (await openspace.getPropertyValue("ScreenSpace.blackoutbrowser.Fade"))[1];
+  let enabled = (await openspace.getPropertyValue("ScreenSpace.blackoutbrowser.Enabled"))[1];
+  if (enabled) {
+    if (fade > 0.5) {
+      await openspace.setPropertyValueSingle(
+        "ScreenSpace.blackoutbrowser.Fade",
+        0,
+        2,
+        "Linear",
+        'openspace.setPropertyValueSingle("ScreenSpace.blackoutbrowser.Enabled", false)'
+      );
+    } else {
+      await openspace.setPropertyValueSingle("ScreenSpace.blackoutbrowser.Fade", 1, 2);
+    }
+  } else {
+    await openspace.setPropertyValueSingle("ScreenSpace.blackoutbrowser.Fade", 0);
+    await openspace.setPropertyValueSingle("ScreenSpace.blackoutbrowser.Enabled", true);
+    await openspace.setPropertyValueSingle("ScreenSpace.blackoutbrowser.Fade", 1, 2);
+  }
+  
+  
+}
 
 // =========================
 
@@ -328,4 +376,171 @@ async function stopIdleBehavior() {
 
 async function startIdleBehavior() {
   await openspace.setPropertyValueSingle("NavigationHandler.OrbitalNavigator.IdleBehavior.ApplyIdleBehavior", true);
+}
+
+
+// ==========================
+
+
+function clamp(number, min, max) {
+  return Math.max(min, Math.min(number, max));
+}
+
+function checkedFunc() {
+  let checked = document.getElementById("rot-override").checked;
+
+  if (checked) {
+    document.getElementById("rotx").disabled = false;
+    document.getElementById("roty").disabled = false;
+    document.getElementById("rotz").disabled = false;
+  } else {
+    document.getElementById("rotx").disabled = true;
+    document.getElementById("roty").disabled = true;
+    document.getElementById("rotz").disabled = true;
+  }
+} 
+
+async function enableBlackoutControls() {
+  let checked = document.getElementById("enableblackoutcontrols").checked;
+  if (checked) {
+    document.getElementById("blackoutcontrols").style.display = "block";
+    await addBlackoutControls();
+  } else {
+    document.getElementById("blackoutcontrols").style.display = "none";
+    document.getElementById("blackoutcontrols").innerHTML = "";
+  }
+}
+
+async function addBlackoutControls() {
+  // Get all controls
+  let pidArray = [];
+  let cornerIds = {
+    TL: 0,
+    TR: 0,
+    BR: 0,
+    BL: 0
+  };
+
+  let names = (await openspace.getProperty("UserProperties.p*"))[1];
+  for (let idx in names) {
+    let corner = "";
+    let name = names[idx].split(".")[1];
+    if (name.includes("Corner")) {
+      corner = name.split("Corner")[1];
+      name = name.split("Corner")[0];
+    }
+    let pid = Number(name.slice(1));
+    pidArray.push(pid);
+    
+    if (corner !== "") {
+      cornerIds[corner] = pid;
+    }
+  }
+  pidArray.sort( (a,b)=> {return a-b});
+
+  // Get all points and put in correct order
+  let points = [];
+  for (let id of pidArray) {
+    let propertyName;
+    if(Object.values(cornerIds).includes(id)) {
+      let vals = Object.values(cornerIds);
+      let idx = vals.indexOf(id);
+      let whichCorner = Object.entries(cornerIds)[idx][0];
+      propertyName = `UserProperties.p${id}Corner${whichCorner}`;
+    } else {
+      propertyName = `UserProperties.p${id}`;
+    }
+
+    let point = (await openspace.getPropertyValue(propertyName));
+    let x = clamp(Number(point[1][0]), 0.0, 1.0);
+    let y = clamp(Number(point[1][1]), 0.0, 1.0);
+    points.push({
+      name: propertyName.replace("UserProperties.", ""), 
+      x: x, 
+      y: y
+    });
+  }
+
+
+  // Create all elements
+  const ul = document.createElement("ul");
+  ul.setAttribute("id", "blackoutcontrolslist");
+  points.forEach( (p,idx)=> {
+    const id = pidArray[idx];
+    const li = document.createElement("li");
+    const inp1 = document.createElement("input");
+    const inp2 = document.createElement("input");
+    const lb = document.createElement("label");
+
+    li.setAttribute("class", "blackoutcontrolslist");
+    inp1.setAttribute("type", "number");
+    inp1.setAttribute("id", `p${id}x`);
+    inp1.setAttribute("class", "blackoutcontrolsboxes");
+    inp1.setAttribute("onfocusout", "checkEmpty(this)");
+    inp2.setAttribute("type", "number");
+    inp2.setAttribute("id", `p${id}y`);
+    inp2.setAttribute("class", "blackoutcontrolsboxes");
+    inp2.setAttribute("onfocusout", "checkEmpty(this)");
+    lb.setAttribute("style", "display: inline-block; width: 64px;");
+
+    let pval = p.name.split("Corner")[0];
+    let corner = p.name.split("Corner")[1];
+    lb.innerText = `${pval}${(corner) ? ` ${corner}` : ""}: `;
+    inp1.value = p.x;
+    inp2.value = p.y;
+
+    li.appendChild(lb);
+    li.appendChild(inp1);
+    li.appendChild(inp2);
+    ul.appendChild(li);    
+  });
+
+  document.getElementById("blackoutcontrols").appendChild(ul);
+
+  // Button
+  let btn = document.createElement("button");
+  btn.setAttribute("onclick", "setBlackoutValues()");
+  btn.setAttribute("id", "save");
+  btn.innerText = "save"
+  
+  document.getElementById("blackoutcontrols").appendChild(btn);
+}
+
+function checkEmpty(that) {
+  if (that.value === "") {
+    that.value = 0.0;
+    return
+  }
+  that.value = clamp(that.value, 0.0, 1.0);
+}
+
+async function setBlackoutValues(){
+  let elems = document.getElementsByClassName("blackoutcontrolslist");
+  for (let el of elems) {
+    let px = Number(el.children[1].value);
+    let py = Number(el.children[2].value);
+    
+    let text = el.children[0].innerText.split(":")[0];
+    let pval = text.split(" ") [0];
+    let corner = text.split(" ") [1];
+
+    let propertyName = pval;
+    if (corner) {
+      propertyName += `Corner${corner}`;
+    }
+
+    await openspace.setPropertyValue(`UserProperties.${propertyName}`, [px, py]);
+  }
+  await openspace.setPropertyValue("UserProperties.needsUpdate", true);
+}
+
+function checkVersion() {
+  let t = document.getElementById("version").innerText
+  if (t !== VERSION) {
+    alert("Please refresh using CTRL+F5 to get latest version");
+    return false;
+  } else {
+    console.log("Up-To-Date");
+    return true;
+  }
 }

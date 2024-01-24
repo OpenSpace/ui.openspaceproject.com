@@ -3,97 +3,13 @@
     <title>IFC - M. Wandt</title>
     <link rel="stylesheet" type="text/css" href="main.css">
     <script type="text/javascript" src="openspace-api.js"></script>
+    <script type="text/javascript" src="init.js"></script>
     <script type="text/javascript" src="actions.js"></script>
-    <script type="text/javascript">
-      //variable for js libarary
-      var openspace = null;
-
-      const delay = ms => new Promise(res => setTimeout(res, ms));
-
-      function checkedFunc() {
-        let cbox = document.getElementById("rot-override");
-
-        if (cbox.checked) {
-          document.getElementById("rotx").disabled = false;
-          document.getElementById("roty").disabled = false;
-          document.getElementById("rotz").disabled = false;
-        } else {
-          document.getElementById("rotx").disabled = true;
-          document.getElementById("roty").disabled = true;
-          document.getElementById("rotz").disabled = true;
-        }
-      } 
-
-      //helper function to connect to opensapce
-      var connectToOpenSpace = () => {
-        //setup the api params
-        var host = document.getElementById('ipaddress').value;
-        var api = window.openspaceApi(host, 4682);
-        //notify users on disconnect
-        api.onDisconnect(() => {
-          console.log("disconnected");
-          document.getElementById('container').className = "disconnected";
-          document.getElementById('connection-status').style.opacity = 1;
-          var disconnectedString = "Connect to OpenSpace: ";
-          disconnectedString += '<input id="ipaddress" type=text value="127.0.0.1" /> ';
-          disconnectedString += '<button onClick="connectToOpenSpace();">Connect</button>';
-          document.getElementById('connection-status').innerHTML = disconnectedString;
-          openspace = null;
-          document.getElementById("blocker").classList.add("blockit");
-        });
-        //notify users and map buttons when connected
-        api.onConnect(async () => {
-          try {
-            document.getElementById('container').className = "connected";
-            document.getElementById('connection-status').innerHTML = "";
-            openspace = await api.library();
-            console.log('connected');
-            // mapButtons(openspace);
-            document.getElementById("blocker").classList.remove("blockit");
-          } catch (e) {
-            console.log('OpenSpace library could not be loaded: Error: \n', e);
-            return;
-          }
-
-          document.getElementById("rotx").value = DEFAULT_ISS_ROTATION[0];
-          document.getElementById("roty").value = DEFAULT_ISS_ROTATION[1];
-          document.getElementById("rotz").value = DEFAULT_ISS_ROTATION[2];
-        })
-        //connect
-        api.connect();
-      };
-
-      function logMessage(message) {
-        console.log(message);
-        document.getElementById('connection-status').innerHTML = message;
-        document.getElementById("connection-status").style.transition = "all 0s";
-        document.getElementById("connection-status").style.opacity = 1;
-        document.getElementById("connection-status").style.color = "#ff0000"
-        document.getElementById("connection-status").style.fontSize = "16pt";
-        fadeOut();
-      }
-
-      // function that fades out the log div after 5 seconds
-      function fadeOut() {
-        setTimeout(function() {
-          var fade = document.getElementById("connection-status");
-          var timerId = setInterval(function() {
-            var opacity = fade.style.opacity;
-            if (opacity == 0.0) {
-              clearInterval(timerId);
-              document.getElementById("connection-status").style.color = null;
-              document.getElementById("connection-status").style.transition = null;
-              document.getElementById("connection-status").style.fontWeight = null;
-            } else {
-              fade.style.opacity = opacity - 0.05;
-            }
-          }, 100);
-        }, 5000);
-      }
-    </script>
   </head>
   <body>
-    <!-- HTML Containers -->
+    <!----------- IMPORTANT ------------>
+    <label id="version">testing</label>
+    <!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -->
     <div id="container" class="disconnected">
       <div id="connection-status" class="connection-status">
         Connect to OpenSpace:
@@ -126,6 +42,7 @@
             <button type="button" class="staticViewCupola" onclick="setViewCupola2()">Cupola (left)</button>
             <br>
             <button type="button" class="staticViewIss" onclick="setViewIss1()">ISS (middle)</button>
+            <button type="button" class="staticViewIss" onclick="setViewIss8()">ISS (of Cupola)</button>
             <button type="button" class="staticViewIss" onclick="setViewIss2()">ISS (top back)</button>
             <button type="button" class="staticViewIss" onclick="setViewIss5()">ISS (top front)</button>
             <button type="button" class="staticViewIss" onclick="setViewIss5b()">ISS(top front Alt.)</button>
@@ -145,6 +62,22 @@
               <li>Run Prepare-button once when connected and once just before the show starts</li>
               <li>Do <u>NOT</u> pause OpenSpace during the show</li>
             </ul>
+            <h4 style="margin-bottom: 0;">Links to streams:</h4>
+            <ul style="margin-top: 0">
+              <li><a href="https://youtube.com/live/KNJabNfB5UE?feature=share" style="color:white">Youtube (Standard)</a></li>
+              <li><a href="https://vdo.ninja/?view=ifcwandt&bitrate=20000&codec=av1" style="color:white">Alternative (Malmö)</a></li>
+            </ul>
+          </div>
+          <div class="card">
+            <h2>Blackout</h2>
+            <button id="hideBlackout" onclick="hideBlackout()">Toggle Blackout</button>
+            <p><b>Note: </b>The control points for the blackout area is drawn from: </br> 
+              topleft -> topright -> bottomright -> bottomleft -> topleft
+            </p>
+            <label>Enable Controls: </label>
+            <input type="checkbox" id="enableblackoutcontrols" onclick="enableBlackoutControls()"/>
+            <div id="blackoutcontrols" style="display:none">
+            </div>
           </div>
         </div>
       </div>

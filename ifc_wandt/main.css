@@ -49,6 +49,22 @@ input[type=text]:focus {
     border-color:#333;
 }
 
+input.blackoutcontrolsboxes {
+  margin-right: 8px;
+  width: 72px;
+  height: 28px;
+  font-size: 12pt;
+}
+
+ul#blackoutcontrolslist {
+  list-style-type: none;
+  padding: 0;
+}
+
+li.blackoutcontrolslist {
+  margin-bottom: 8px;
+}
+
 .connection-status {
   transition: all 1s;
   height: 30px;
@@ -91,6 +107,13 @@ button {
   color: #fff;
   margin-right: 0.5em;
   margin-top: 0.5em;
+}
+
+button#save {
+  background-color: #00a10d;
+}
+button#save:hover {
+  background-color: #00d312;
 }
 
 button.defaultView {
@@ -149,4 +172,12 @@ hr {
   margin-top: 1.0em;
   border: 0px;
   border-top: 1px dashed #bbb;
+}
+
+label#version {
+  position: absolute;
+  bottom: 1vh;
+  right: 1vw;
+  color: grey;
+  font-weight: bold;  
 }
