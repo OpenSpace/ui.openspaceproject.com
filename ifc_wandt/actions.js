@@ -38,10 +38,10 @@ const DEFAULT_ISS_ROTATION = [0.01, -0.8, 0.385];
 async function prepare() {
   // Check if asset is loaded
   let loadedAssets = await openspace.asset.allAssets();
-  let filtered = Object.values(loadedAssets[1]).filter( v => v.split("\\").pop() == "cupola.asset");
+  let filtered = Object.values(loadedAssets[1]).filter( v => v.split("\\").pop() == "ifcwandt.asset");
   
   if (filtered.length == 0) {
-    alert("Please load 'Cupola.asset' and try again...")
+    alert("Please load 'ifcwandt.asset' and try again...")
     return;
   }
 
