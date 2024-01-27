@@ -1,6 +1,8 @@
-VERSION = "testing";
-//VERSION = "live";
+//VERSION = "testing";
+VERSION = "live";
+READ_KEY = undefined;
 
+data = null;
 
 const DEFAULT_VIEW_ISS = {
   Aim: "Earth",
@@ -37,12 +39,8 @@ const DEFAULT_ISS_ROTATION = [0.01, -0.8, 0.385];
 */
 async function prepare() {
   // Check if asset is loaded
-  let loadedAssets = await openspace.asset.allAssets();
-  let filtered = Object.values(loadedAssets[1]).filter( v => v.split("\\").pop() == "ifcwandt.asset");
-  
-  if (filtered.length == 0) {
-    alert("Please load 'ifcwandt.asset' and try again...")
-    return;
+  if (await isAssetLoaded("ifcwandt.asset") === false) {
+    return
   }
 
   try {
@@ -93,12 +91,12 @@ async function prepare() {
     // Set initial ISS View
     setViewDefault();
     
+    // Message
+    logMessage("Completed", 3000, "lightgreen");
   } catch (e) {
     alert(`Something went wrong: ${e}`);
     return
   }
-
-  alert("Completed");
 }
 
 
@@ -378,6 +376,18 @@ async function startIdleBehavior() {
   await openspace.setPropertyValueSingle("NavigationHandler.OrbitalNavigator.IdleBehavior.ApplyIdleBehavior", true);
 }
 
+async function isAssetLoaded(asset, show = true) {
+  let loadedAssets = await openspace.asset.allAssets();
+  let filtered = Object.values(loadedAssets[1]).filter( v => v.split("\\").pop() == asset);
+  if (filtered.length == 0) {
+    if(show) {
+      alert(`Missing asset: ${asset}`);
+    }
+    return false;
+  }
+
+  return true;
+}
 
 // ==========================
 
@@ -400,73 +410,111 @@ function checkedFunc() {
   }
 } 
 
+async function validateServerCommuinication() {
+  const url = `https://eu-central-1.aws.data.mongodb-api.com/app/data-nqqkk/endpoint/ping`;
+  const options = {method: 'GET'};
+
+  await fetch(url, options).then(async function(response) {
+      if (!response.ok) {
+          throw new Error("Not 2xx response", {cause: response});
+      } else {
+        if (await isAssetLoaded("blackoutbrowser.asset", false) === false) {
+          hideBlackoutDiv("Add blackoutbrowser.asset and reload page if you want controls");
+        }
+      }
+  }).catch(function(err) {
+    let msg = "Cannot connect to blackout database";
+    hideBlackoutDiv(msg);
+  });
+}
+
+function hideBlackoutDiv(msg) {
+  document.getElementById("blackoutDiv").innerHTML = `<h2 style="color: orange;">${msg}</h2>`;
+}
+
 async function enableBlackoutControls() {
-  let checked = document.getElementById("enableblackoutcontrols").checked;
-  if (checked) {
-    document.getElementById("blackoutcontrols").style.display = "block";
+  // Check if asset is loaded
+  let loadedAssets = await openspace.asset.allAssets();
+  let filtered = Object.values(loadedAssets[1]).filter( v => v.split("\\").pop() == "blackoutbrowser.asset");
+  if (filtered.length == 0) {
+    alert("Missing asset: blackoutbrowser.asset")
+    return;
+  }
+  
+
+  if (READ_KEY === undefined) {
+    // Get readkey
+    const readURL = `https://eu-central-1.aws.data.mongodb-api.com/app/data-nqqkk/endpoint/getreadkey`;
+    const readOptions = {
+      method: 'PUT',
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        site: document.getElementById("siteinput").value.toLowerCase(),
+        passkey: btoa(document.getElementById("passinput").value)
+      })
+    }
+
+    try {
+      const response = await fetch(readURL, readOptions);
+      const parsedResponse = await response.json();
+      const numRes = Number(parsedResponse);
+      if (isNaN(numRes) === true) { // We got key back and not error code
+        READ_KEY = parsedResponse;
+      } else {
+        if (numRes === 0) {
+          logMessage("Incorrect site or password");
+        } else if (numRes === -1) {
+          logMessage("Too many incorrect attempts, try again later...");
+        }
+        else {
+          logMessage("Something went wrong, try again later...");
+        }
+        return
+      }
+    } catch(e)  {
+      console.error(e)
+    }
+  }
+
+  const url = `https://eu-central-1.aws.data.mongodb-api.com/app/data-nqqkk/endpoint/read?readkey=${READ_KEY}`;
+  const options = {method: 'GET'};
+
+  let parsedResponse = undefined;
+  try {
+    const response = await fetch(url, options);
+    parsedResponse = JSON.parse((await response.json()));
+  } catch (error) {
+    console.error(error);
+  }
+
+  if(Object.keys(parsedResponse).length > 0) {
+    data = parsedResponse;
+    document.getElementById("siteinput").disabled = true;
+    document.getElementById("passinput").disabled = true;
     await addBlackoutControls();
-  } else {
-    document.getElementById("blackoutcontrols").style.display = "none";
-    document.getElementById("blackoutcontrols").innerHTML = "";
+    await overrideBlackoutScalePos();
+    document.getElementById("blackoutbox").style.display = "block";
+    document.getElementById("goButton").disabled = true;
+    document.getElementById("goButton").style.display = "none";
   }
 }
 
 async function addBlackoutControls() {
-  // Get all controls
-  let pidArray = [];
-  let cornerIds = {
-    TL: 0,
-    TR: 0,
-    BR: 0,
-    BL: 0
-  };
 
-  let names = (await openspace.getProperty("UserProperties.p*"))[1];
-  for (let idx in names) {
-    let corner = "";
-    let name = names[idx].split(".")[1];
-    if (name.includes("Corner")) {
-      corner = name.split("Corner")[1];
-      name = name.split("Corner")[0];
-    }
-    let pid = Number(name.slice(1));
-    pidArray.push(pid);
-    
-    if (corner !== "") {
-      cornerIds[corner] = pid;
-    }
-  }
-  pidArray.sort( (a,b)=> {return a-b});
-
-  // Get all points and put in correct order
+  let names = [];
   let points = [];
-  for (let id of pidArray) {
-    let propertyName;
-    if(Object.values(cornerIds).includes(id)) {
-      let vals = Object.values(cornerIds);
-      let idx = vals.indexOf(id);
-      let whichCorner = Object.entries(cornerIds)[idx][0];
-      propertyName = `UserProperties.p${id}Corner${whichCorner}`;
-    } else {
-      propertyName = `UserProperties.p${id}`;
-    }
-
-    let point = (await openspace.getPropertyValue(propertyName));
-    let x = clamp(Number(point[1][0]), 0.0, 1.0);
-    let y = clamp(Number(point[1][1]), 0.0, 1.0);
-    points.push({
-      name: propertyName.replace("UserProperties.", ""), 
-      x: x, 
-      y: y
-    });
-  }
-
+  Object.entries(data.points).map(v => {
+    names.push(v[0]);
+    points.push(v[1]);
+  });
 
   // Create all elements
   const ul = document.createElement("ul");
   ul.setAttribute("id", "blackoutcontrolslist");
   points.forEach( (p,idx)=> {
-    const id = pidArray[idx];
+    const id = names[idx].split("Corner")[0].slice(1);
     const li = document.createElement("li");
     const inp1 = document.createElement("input");
     const inp2 = document.createElement("input");
@@ -476,16 +524,15 @@ async function addBlackoutControls() {
     inp1.setAttribute("type", "number");
     inp1.setAttribute("id", `p${id}x`);
     inp1.setAttribute("class", "blackoutcontrolsboxes");
-    inp1.setAttribute("onfocusout", "checkEmpty(this)");
+    inp1.setAttribute("onfocusout", "checkEmpty(this, 0.0, 1.0, 0.0)");
     inp2.setAttribute("type", "number");
     inp2.setAttribute("id", `p${id}y`);
     inp2.setAttribute("class", "blackoutcontrolsboxes");
-    inp2.setAttribute("onfocusout", "checkEmpty(this)");
+    inp2.setAttribute("onfocusout", "checkEmpty(this, 0.0, 1.0, 0.0)");
     lb.setAttribute("style", "display: inline-block; width: 64px;");
 
-    let pval = p.name.split("Corner")[0];
-    let corner = p.name.split("Corner")[1];
-    lb.innerText = `${pval}${(corner) ? ` ${corner}` : ""}: `;
+    let corner = names[idx].split("Corner")[1];
+    lb.innerText = `p${id}${(corner) ? ` ${corner}` : ""}: `;
     inp1.value = p.x;
     inp2.value = p.y;
 
@@ -494,28 +541,88 @@ async function addBlackoutControls() {
     li.appendChild(inp2);
     ul.appendChild(li);    
   });
+  document.getElementById("blackoutleft").appendChild(ul);
 
-  document.getElementById("blackoutcontrols").appendChild(ul);
+  const ulRight = document.createElement("ul");
+  const liScale = document.createElement("li");
+  const inpScale = document.createElement("input");
+  const lbScale = document.createElement("label");
+
+  lbScale.setAttribute("style", "display: inline-block; width: 64px;");
+  lbScale.innerText = "Scale: ";
+
+  inpScale.setAttribute("type", "number");
+  inpScale.setAttribute("id", "inputscale");
+  inpScale.setAttribute("onfocusout", "checkEmpty(this, 0.0, 2.0, 0.25)");
+  inpScale.setAttribute("style", "width: 48px; height: 28px;");
+  inpScale.value = data.scale.toFixed(2);
+
+  const lbPosition = document.createElement("label");
+  const liPosition = document.createElement("li");
+  const inpPosRa = document.createElement("input");
+  const inpPosAz = document.createElement("input");
+  const inpPosEl = document.createElement("input");
+
+  lbPosition.setAttribute("style", "display: inline-block; width: 64px;");
+  lbPosition.innerText = "Position: ";
+
+  inpPosRa.setAttribute("type", "number");
+  inpPosAz.setAttribute("type", "number");
+  inpPosEl.setAttribute("type", "number");
+  inpPosRa.setAttribute("id", "inputPosRa");
+  inpPosAz.setAttribute("id", "inputPosAz");
+  inpPosEl.setAttribute("id", "inputPosEl");
+  inpPosRa.setAttribute("onfocusout", "checkEmpty(this, 0.0, 10.0, 2.0)");
+  inpPosAz.setAttribute("onfocusout", "checkEmpty(this, -3.14, 3.14, 0.0)");
+  inpPosEl.setAttribute("onfocusout", "checkEmpty(this, -1.57, 1.57, 0.0)");
+  inpPosRa.setAttribute("style", "width: 48px; height: 28px;");
+  inpPosAz.setAttribute("style", "width: 48px; height: 28px;");
+  inpPosEl.setAttribute("style", "width: 48px; height: 28px;");
+  
+  inpPosRa.value = data.position[0].toFixed(2);
+  inpPosAz.value = data.position[1].toFixed(2);
+  inpPosEl.value = data.position[2].toFixed(2);
+
+  liScale.appendChild(lbScale);
+  liScale.appendChild(inpScale);
+  liPosition.appendChild(lbPosition);
+  liPosition.appendChild(inpPosRa);
+  liPosition.appendChild(inpPosAz);
+  liPosition.appendChild(inpPosEl);
+  
+  ulRight.appendChild(liScale);
+  ulRight.appendChild(liPosition);
+
+  document.getElementById("blackoutright").appendChild(ulRight);
 
   // Button
-  let btn = document.createElement("button");
-  btn.setAttribute("onclick", "setBlackoutValues()");
-  btn.setAttribute("id", "save");
-  btn.innerText = "save"
-  
-  document.getElementById("blackoutcontrols").appendChild(btn);
+  let btnsave = document.createElement("button");
+  btnsave.setAttribute("onclick", "setBlackoutValues()");
+  btnsave.setAttribute("id", "save");
+  btnsave.setAttribute("style", "width: 100%;");
+  btnsave.innerText = "save all"
+  document.getElementById("blackoutbox").appendChild(btnsave);
+
+  let btnoverride = document.createElement("button");
+  btnoverride.setAttribute("onclick", "overrideBlackoutScalePos()");
+  btnoverride.setAttribute("id", "override");
+  btnoverride.setAttribute("style", "width: 100%;");
+  btnoverride.innerText = "set"
+  document.getElementById("blackoutright").appendChild(btnoverride);
+
 }
 
-function checkEmpty(that) {
+function checkEmpty(that, min, max, def) {
   if (that.value === "") {
-    that.value = 0.0;
+    that.value = def;
     return
   }
-  that.value = clamp(that.value, 0.0, 1.0);
+  that.value = clamp(that.value, min, max);
 }
 
 async function setBlackoutValues(){
   let elems = document.getElementsByClassName("blackoutcontrolslist");
+  let bodyData = {};
   for (let el of elems) {
     let px = Number(el.children[1].value);
     let py = Number(el.children[2].value);
@@ -529,9 +636,64 @@ async function setBlackoutValues(){
       propertyName += `Corner${corner}`;
     }
 
-    await openspace.setPropertyValue(`UserProperties.${propertyName}`, [px, py]);
+    bodyData[propertyName] = {x: px, y: py};
   }
-  await openspace.setPropertyValue("UserProperties.needsUpdate", true);
+
+  // Get current scale and position from OpenSpace
+  const scale = (await openspace.getPropertyValue("ScreenSpace.blackoutbrowser.Scale"))[1];
+  const position = (await openspace.getPropertyValue("ScreenSpace.blackoutbrowser.RadiusAzimuthElevation"))[1];
+  
+  // PUT Data
+  let site = (document.getElementById("siteinput").value).toLowerCase();
+  const url = `https://eu-central-1.aws.data.mongodb-api.com/app/data-nqqkk/endpoint/update`;
+  const options = {
+    method: 'PUT',
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      site: site,
+      passkey: btoa(document.getElementById("passinput").value),
+      scale: scale,
+      position: position,
+      points: bodyData
+    })
+  };
+
+  try {
+    const response = await fetch(url, options);
+
+    let couldUpdate = await response.json();
+    if (couldUpdate === 1) {
+      // Update OpenSpace
+      await openspace.setPropertyValueSingle("ScreenSpace.blackoutbrowser.Scale", scale);
+      await openspace.setPropertyValueSingle("ScreenSpace.blackoutbrowser.RadiusAzimuthElevation", position);
+      
+      // Update GUI
+      document.getElementById("inputscale").value = scale.toFixed(2);
+      document.getElementById("inputPosRa").value = position[0].toFixed(2);
+      document.getElementById("inputPosAz").value = position[1].toFixed(2);
+      document.getElementById("inputPosEl").value = position[2].toFixed(2);
+
+      // log to screen
+      logMessage("Success", 2000, "lightgreen");
+    }
+    return;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function overrideBlackoutScalePos() {
+  const scale = Number(document.getElementById("inputscale").value);
+  const position = [
+    Number(document.getElementById("inputPosRa").value),
+    Number(document.getElementById("inputPosAz").value),
+    Number(document.getElementById("inputPosEl").value)
+  ]
+
+  await openspace.setPropertyValueSingle("ScreenSpace.blackoutbrowser.Scale", scale);
+  await openspace.setPropertyValueSingle("ScreenSpace.blackoutbrowser.RadiusAzimuthElevation", position);
 }
 
 function checkVersion() {

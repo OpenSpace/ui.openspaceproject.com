@@ -1,5 +1,6 @@
 <html>
   <head>
+    <meta charset="UTF-8">
     <title>IFC - M. Wandt</title>
     <link rel="stylesheet" type="text/css" href="main.css">
     <script type="text/javascript" src="openspace-api.js"></script>
@@ -8,7 +9,7 @@
   </head>
   <body>
     <!----------- IMPORTANT ------------>
-    <label id="version">testing</label>
+    <label id="version">live</label>
     <!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -->
     <div id="container" class="disconnected">
       <div id="connection-status" class="connection-status">
@@ -20,6 +21,20 @@
         <div id="blocker" class="blockit">
         </div>
         <div id="left" style="width: 60%">
+          <div class="card">
+            <h2>Information</h3>
+            <ul>
+              <li>Run Prepare-button once when connected and once just before the show starts</li>
+              <li>Do <u>NOT</u> pause OpenSpace during the show</li>
+            </ul>
+            <h4 style="margin-bottom: 0;">Links to streams:</h4>
+            <ul style="margin-top: 0">
+              <li><a href="https://youtube.com/live/KNJabNfB5UE?feature=share" target="_blank" rel="noopener noreferrer">Youtube (Best)</a></li>
+              <li><a href="https://vdo.ninja/?view=ifcwandt&bitrate=8000" target="_blank" rel="noopener noreferrer">Ninja (Fast)</a></li>
+              <li><a href="https://vdo.ninja/?view=ifcwandt&bitrate=20000&codec=av1" target="_blank" rel="noopener noreferrer">Ninja (Quality)</a></li>
+              <li><a href="https://www.youtube.com/watch?v=AnbQEEET0vY" target="_blank" rel="noopener noreferrer">Youtube (RAW Stream)</a></li>
+            </ul>
+          </div>
           <div class='card'>
             <h2>Prepration step</h2>
             <label>Override: </label>
@@ -30,7 +45,7 @@
             <input type="number" id="roty" min="-1" max="1" disabled>
             <input type="number" id="rotz" min="-1" max="1" disabled>
             <hr>
-            <button type="button" onclick="prepare()">Pre-checks</button>
+            <button type="button" onclick="prepare()">Prepare</button>
           </div>
           <div class="card">
             <h2>Camera views</h2>
@@ -56,27 +71,30 @@
           </div>
         </div>
         <div id="right" style="flex-grow: 1;">
-          <div class="card">
-            <h2>Information</h3>
-            <ul>
-              <li>Run Prepare-button once when connected and once just before the show starts</li>
-              <li>Do <u>NOT</u> pause OpenSpace during the show</li>
-            </ul>
-            <h4 style="margin-bottom: 0;">Links to streams:</h4>
-            <ul style="margin-top: 0">
-              <li><a href="https://youtube.com/live/KNJabNfB5UE?feature=share" style="color:white">Youtube (Standard)</a></li>
-              <li><a href="https://vdo.ninja/?view=ifcwandt&bitrate=20000&codec=av1" style="color:white">Alternative (Malmö)</a></li>
-            </ul>
-          </div>
-          <div class="card">
+          <div id="blackoutDiv" class="card">
             <h2>Blackout</h2>
             <button id="hideBlackout" onclick="hideBlackout()">Toggle Blackout</button>
             <p><b>Note: </b>The control points for the blackout area is drawn from: </br> 
-              topleft -> topright -> bottomright -> bottomleft -> topleft
+              topleft (TL) -> topright (TR) -> bottomright (BR) -> bottomleft (BL) -> topleft (TL)
             </p>
-            <label>Enable Controls: </label>
-            <input type="checkbox" id="enableblackoutcontrols" onclick="enableBlackoutControls()"/>
-            <div id="blackoutcontrols" style="display:none">
+            <ul>
+              <li>
+                <label class="loginlbl">Site: </label>
+                <input id="siteinput" type="text"/>
+              </li>
+              <li>
+                <label class="loginlbl">Passkey: </label>
+                <input id="passinput" type="password"/>
+              </li>
+              <li>
+                <button id="goButton" onclick="enableBlackoutControls()">Enter</button>
+              </li>
+            </ul>
+            <div id="blackoutbox" style="display:none">
+              <div id="blackoutcontrols" style="display: flex;">
+                <div id="blackoutleft" style="width: 50%"></div>
+                <div id="blackoutright" style="flex-grow: 1;"></div>
+              </div>
             </div>
           </div>
         </div>

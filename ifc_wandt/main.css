@@ -17,6 +17,10 @@ code {
     monospace;
 }
 
+a {
+  color: white;
+}
+
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
@@ -33,6 +37,13 @@ input[type=text] {
     border:1px solid #ccc;
     -webkit-border-radius: 3px;
     border-radius: 3px;
+}
+
+input[type=password] {
+  padding:5px;
+  border:1px solid #ccc;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
 }
 
 input[type=text].coord {
@@ -56,12 +67,16 @@ input.blackoutcontrolsboxes {
   font-size: 12pt;
 }
 
-ul#blackoutcontrolslist {
+input:disabled {
+  color: lightgray;
+}
+
+ul {
   list-style-type: none;
   padding: 0;
 }
 
-li.blackoutcontrolslist {
+li {
   margin-bottom: 8px;
 }
 
@@ -114,6 +129,16 @@ button#save {
 }
 button#save:hover {
   background-color: #00d312;
+}
+
+button#goButton {
+  background-color: #00a10d;
+}
+button#goButton:hover {
+  background-color: #00d312;
+}
+button#goButton:disabled {
+  background-color: #777;
 }
 
 button.defaultView {
@@ -176,8 +201,13 @@ hr {
 
 label#version {
   position: absolute;
-  bottom: 1vh;
+  top: 1vh;
   right: 1vw;
   color: grey;
   font-weight: bold;  
+}
+
+label.loginlbl {
+  display: inline-block;
+  width: 64px;
 }

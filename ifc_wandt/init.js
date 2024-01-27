@@ -36,6 +36,8 @@ var connectToOpenSpace = () => {
       document.getElementById("roty").value = DEFAULT_ISS_ROTATION[1];
       document.getElementById("rotz").value = DEFAULT_ISS_ROTATION[2];
 
+      await validateServerCommuinication();
+
       document.getElementById("blocker").classList.remove("blockit");
     } catch (e) {
       console.log('OpenSpace library could not be loaded: Error: \n', e);
@@ -48,18 +50,18 @@ var connectToOpenSpace = () => {
   api.connect();
 };
 
-function logMessage(message) {
+function logMessage(message, time = 5000, color = "#ff0000") {
   console.log(message);
   document.getElementById('connection-status').innerHTML = message;
   document.getElementById("connection-status").style.transition = "all 0s";
   document.getElementById("connection-status").style.opacity = 1;
-  document.getElementById("connection-status").style.color = "#ff0000"
+  document.getElementById("connection-status").style.color = color;
   document.getElementById("connection-status").style.fontSize = "16pt";
-  fadeOut();
+  fadeOut(time);
 }
 
 // function that fades out the log div after 5 seconds
-function fadeOut() {
+function fadeOut(time) {
   setTimeout(function() {
     var fade = document.getElementById("connection-status");
     var timerId = setInterval(function() {
@@ -73,5 +75,5 @@ function fadeOut() {
         fade.style.opacity = opacity - 0.05;
       }
     }, 100);
-  }, 5000);
+  }, time);
 }
