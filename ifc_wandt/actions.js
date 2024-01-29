@@ -25,7 +25,7 @@ const DEFAULT_VIEW_CUPOLA = {
 
 // NOTE: Assumes 29/01/2024 13:15 - 13:35 GMT
 // UPDATED: 24/01/2024 10:43
-const DEFAULT_ISS_ROTATION = [0.01, -0.8, 0.385];
+const DEFAULT_ISS_ROTATION = [0.01, -0.8, 0.225];
 
 // Button: Prepare
 /*
