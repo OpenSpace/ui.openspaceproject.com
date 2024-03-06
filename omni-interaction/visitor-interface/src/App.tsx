@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import './App.css';
 import {
@@ -47,7 +47,44 @@ enum Mode {
 }
 
 function App() {
-  const [mode, setMode] = useState<Mode>(Mode.Poll);
+  const [mode, setMode] = useState<Mode>(Mode.EnterCode);
+
+  const socket = useRef<WebSocket | null>(null);
+
+  function connectToServer(code: string) {
+    const url = `wss://omni.itn.liu.se/ws/socket-server/`;
+    socket.current = new WebSocket(url);
+
+    socket.current.onopen = () => {
+      if (socket.current) {
+        socket.current.send(JSON.stringify({ token: code }));
+      }
+    };
+
+    socket.current.onclose = () => {
+      setMode(Mode.EnterCode);
+      socket.current = null;
+    };
+
+    socket.current.onmessage = (event: MessageEvent) => {
+      const data = JSON.parse(event.data);
+      console.log(data);
+
+      if (data.type === "server_authorized") {
+        setMode(Mode.Idle);
+      }
+      if (data.type === "server_disconnect") {
+        // confirm(data.message);
+      }
+      // if (data.type === "set_input") {
+      //   if (Object.values(Mode).includes(data.input)) {
+      //     setMode(data.input);
+      //   } else {
+      //     throw Error(`Unknown input mode: ${data.input}`);
+      //   }
+      // }
+    };
+  }
 
   const topBarHeight = 5;
   const bottomBarHeight = 8;
@@ -58,17 +95,17 @@ function App() {
       <CssBaseline />
       <div className="App">
         <AppBar position="static" sx={{ height: `${topBarHeight}%` }}>
-          <Toolbar/>
+          <Toolbar />
         </AppBar>
         <Container sx={{ display: 'flex', flexDirection: 'column', height: `${remainingHeight}%`, justifyContent: 'center' }}>
-          { mode === Mode.EnterCode && <VisitorCodeInput></VisitorCodeInput> }
-          { mode === Mode.Idle && <Idle></Idle> }
-          { mode === Mode.Poll && <Poll options={testoptions}></Poll>}
+          {mode === Mode.EnterCode && <VisitorCodeInput onEnter={connectToServer}/>}
+          {mode === Mode.Idle && <Idle />}
+          {mode === Mode.Poll && <Poll options={testoptions}></Poll>}
         </Container>
         <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, height: `${bottomBarHeight}%` }}>
           <Box
             component='img'
-            sx={{height: '100%', padding: '1.5vh'}}
+            sx={{ height: '100%', padding: '1.5vh' }}
             alt='OpenSpace Logo'
             src={logo}
           />
