@@ -42,6 +42,7 @@ function Poll({
 }: PollProps)
 {
   const [selected, setSelected] = useState<string | null>(null);
+  const [hasSubmitted, setSubmitted] = useState<boolean>(false);
 
   const Item = styled(Paper)({
     padding: "1em",
@@ -67,34 +68,63 @@ function Poll({
     );
   }
 
-  return (
-    <div>
+  function onSubmit() {
+    if (selected) {
+      setSubmitted(true);
+    }
+  }
+
+  function poll() {
+    return (
+      <div>
+        <Container>
+          <p>Make your vote</p>
+          { styleSettings.layout === 'list' &&
+            <Stack spacing={3} >
+              {options.map((option) => item(option))}
+            </Stack>
+          }
+          { styleSettings.layout === 'grid' &&
+            <Grid
+              container
+              spacing={3}
+              justifyContent="space-evenly"
+              alignItems="center"
+            >
+              {options.map((option) => (
+                <Grid item xs={6} key={option.key}>
+                  { item(option) }
+                </Grid>
+              ))}
+            </Grid>
+          }
+        </Container>
+        <Divider style={{margin: '1em'}}></Divider>
+        <Button
+          variant="outlined"
+          endIcon={<SendIcon />}
+          onClick={onSubmit}
+          disabled={selected == null}
+        >
+          Vote
+        </Button>
+      </div>
+    );
+  }
+
+  function onSubmitScreen() {
+    const option = options.find((el) => el.key === selected);
+    return (
       <Container>
-        <p>Choose your option</p>
-        { styleSettings.layout === 'list' &&
-          <Stack spacing={3} >
-            {options.map((option) => item(option))}
-          </Stack>
-        }
-        { styleSettings.layout === 'grid' &&
-          <Grid
-            container
-            spacing={3}
-            justifyContent="space-evenly"
-            alignItems="center"
-          >
-            {options.map((option) => (
-              <Grid item xs={6} key={option.key}>
-                { item(option) }
-              </Grid>
-            ))}
-          </Grid>
-        }
+        <p>You voted for:</p>
+        <Divider />
+        <p><b>{option?.name}</b></p>
+        <Divider />
       </Container>
-      <Divider style={{margin: '1em'}}></Divider>
-      <Button variant="outlined" endIcon={<SendIcon />}>Vote</Button>
-    </div>
-  );
+    );
+  }
+
+  return hasSubmitted ? onSubmitScreen() : poll();
 }
 
 export default Poll;
