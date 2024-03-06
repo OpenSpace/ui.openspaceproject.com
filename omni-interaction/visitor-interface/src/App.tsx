@@ -16,23 +16,27 @@ import VisitorCodeInput from './components/VisitorCodeInput';
 
 import logo from './assets/openspace-horiz-logo.png';
 
-const testoptions = [
-  {
-    key: "mars",
-    name: "Mars",
-    color: "rgb(200, 100, 100)"
-  },
-  {
-    key: "jupiter",
-    name: "Jupiter",
-    color: "rgb(180 209 101)"
-  },
-  {
-    key: "saturn",
-    name: "Saturn",
-    color: "rgb(129 105 105)"
-  }
-]
+const testdata = {
+  identifier: "test_poll",
+  description: "Vart vill du åka härnäst?",
+  options: [
+    {
+      key: "mars",
+      name: "Mars",
+      color: "rgb(200, 100, 100)"
+    },
+    {
+      key: "jupiter",
+      name: "Jupiter",
+      color: "rgb(180 209 101)"
+    },
+    {
+      key: "saturn",
+      name: "Saturn",
+      color: "rgb(129 105 105)"
+    }
+  ]
+}
 
 const darkTheme = createTheme({
   palette: {
@@ -47,7 +51,7 @@ enum Mode {
 }
 
 function App() {
-  const [mode, setMode] = useState<Mode>(Mode.EnterCode);
+  const [mode, setMode] = useState<Mode>(Mode.Poll);
 
   const socket = useRef<WebSocket | null>(null);
 
@@ -100,7 +104,7 @@ function App() {
         <Container sx={{ display: 'flex', flexDirection: 'column', height: `${remainingHeight}%`, justifyContent: 'center' }}>
           {mode === Mode.EnterCode && <VisitorCodeInput onEnter={connectToServer}/>}
           {mode === Mode.Idle && <Idle />}
-          {mode === Mode.Poll && <Poll options={testoptions}></Poll>}
+          {mode === Mode.Poll && <Poll data={testdata}></Poll>}
         </Container>
         <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, height: `${bottomBarHeight}%` }}>
           <Box

@@ -10,32 +10,40 @@ import {
 import { styled } from '@mui/material/styles';
 import SendIcon from '@mui/icons-material/Send';
 
-interface Option {
-  /* A unique key that represents the option */
-  key: string;
-  /* The name of the option - that will be visible*/
-  name: string;
-  /* A RGB color in the format rgb(R, G, B), with values 0-255 */
-  color?: string;
-}
-
 interface PollStyle {
   /* The list of options to show in the poll */
   layout?: 'grid' | 'list';
 }
 
-interface PollProps {
-  // identifier: string,
+interface Option {
+  /* A unique key that represents the option */
+  key: string;
+  /* The name of the option - that will be visible */
+  name: string;
+  /* A RGB color in the format rgb(R, G, B), with values 0-255 */
+  color?: string;
+  /* A url to use for an image to show on the button for the option */
+  url?: string;
+}
+
+interface DataTable {
+  // The scenario identifier
+  identifier: string,
   /* The list of options to show in the poll */
   options: Option[];
+  // An optional description to show at the top
+  description?: string,
+}
+
+interface PollProps {
+  /* The d*/
+  data: DataTable
   /* Settings related to how the poll should look, visually */
   styleSettings?: PollStyle;
-  // /* The number of items that a user may select */
-  // nAllowedOptions: number;
 }
 
 function Poll({
-  options,
+  data,
   styleSettings = {
     layout: 'grid'
   }
@@ -78,10 +86,10 @@ function Poll({
     return (
       <div>
         <Container>
-          <p>Make your vote</p>
+          <p>{data.description || "Make your vote"}</p>
           { styleSettings.layout === 'list' &&
             <Stack spacing={3} >
-              {options.map((option) => item(option))}
+              {data.options.map((option) => item(option))}
             </Stack>
           }
           { styleSettings.layout === 'grid' &&
@@ -91,7 +99,7 @@ function Poll({
               justifyContent="space-evenly"
               alignItems="center"
             >
-              {options.map((option) => (
+              {data.options.map((option) => (
                 <Grid item xs={6} key={option.key}>
                   { item(option) }
                 </Grid>
@@ -113,7 +121,7 @@ function Poll({
   }
 
   function onSubmitScreen() {
-    const option = options.find((el) => el.key === selected);
+    const option = data.options.find((el) => el.key === selected);
     return (
       <Container>
         <p>You voted for:</p>
