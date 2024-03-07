@@ -17,7 +17,7 @@ interface PollStyle {
 
 interface Option {
   /* A unique key that represents the option */
-  key: string;
+  identifier: string;
   /* The name of the option - that will be visible */
   name: string;
   /* A RGB color in the format rgb(R, G, B), with values 0-255 */
@@ -25,6 +25,7 @@ interface Option {
   /* A url to use for an image to show on the button for the option */
   url?: string;
 }
+// @TODO: handle URL
 
 interface DataTable {
   // The scenario identifier
@@ -34,9 +35,10 @@ interface DataTable {
   // An optional description to show at the top
   description?: string,
 }
+// @TODO: allowChangingVote and nAllowedVotes
 
 interface PollProps {
-  /* The d*/
+  /* The data used for creating the poll */
   data: DataTable
   /* Settings related to how the poll should look, visually */
   styleSettings?: PollStyle;
@@ -59,7 +61,7 @@ function Poll({
 
   function item(option: Option) {
     const style = {
-      backgroundColor: option.color
+      backgroundColor: option?.color
     };
     const styleSelected = {
       ...style,
@@ -67,9 +69,9 @@ function Poll({
     }
     return (
       <Item
-        key={option.key}
-        style={(option.key === selected) ? styleSelected : style}
-        onClick={() => setSelected(option.key)}
+        key={option.identifier}
+        style={(option.identifier === selected) ? styleSelected : style}
+        onClick={() => setSelected(option.identifier)}
       >
         {option.name}
       </Item>
@@ -99,8 +101,8 @@ function Poll({
               justifyContent="space-evenly"
               alignItems="center"
             >
-              {data.options.map((option) => (
-                <Grid item xs={6} key={option.key}>
+              { data.options.map((option) => (
+                <Grid item xs={6} key={option.identifier}>
                   { item(option) }
                 </Grid>
               ))}
@@ -121,7 +123,7 @@ function Poll({
   }
 
   function onSubmitScreen() {
-    const option = data.options.find((el) => el.key === selected);
+    const option = data.options.find((el) => el.identifier === selected);
     return (
       <Container>
         <p>You voted for:</p>

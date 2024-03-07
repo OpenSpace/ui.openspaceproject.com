@@ -16,27 +16,27 @@ import VisitorCodeInput from './components/VisitorCodeInput';
 
 import logo from './assets/openspace-horiz-logo.png';
 
-const testdata = {
-  identifier: "test_poll",
-  description: "Vart vill du åka härnäst?",
-  options: [
-    {
-      key: "mars",
-      name: "Mars",
-      color: "rgb(200, 100, 100)"
-    },
-    {
-      key: "jupiter",
-      name: "Jupiter",
-      color: "rgb(180 209 101)"
-    },
-    {
-      key: "saturn",
-      name: "Saturn",
-      color: "rgb(129 105 105)"
-    }
-  ]
-}
+// const testdata = {
+//   identifier: "test_poll",
+//   description: "Vart vill du åka härnäst?",
+//   options: [
+//     {
+//       key: "mars",
+//       name: "Mars",
+//       color: "rgb(200, 100, 100)"
+//     },
+//     {
+//       key: "jupiter",
+//       name: "Jupiter",
+//       color: "rgb(180 209 101)"
+//     },
+//     {
+//       key: "saturn",
+//       name: "Saturn",
+//       color: "rgb(129 105 105)"
+//     }
+//   ]
+// }
 
 const darkTheme = createTheme({
   palette: {
@@ -51,7 +51,8 @@ enum Mode {
 }
 
 function App() {
-  const [mode, setMode] = useState<Mode>(Mode.Poll);
+  const [mode, setMode] = useState<Mode>(Mode.EnterCode);
+  const [data, setData] = useState<any>(undefined);
 
   const socket = useRef<WebSocket | null>(null);
 
@@ -80,13 +81,18 @@ function App() {
       if (data.type === "server_disconnect") {
         // confirm(data.message);
       }
-      // if (data.type === "set_input") {
-      //   if (Object.values(Mode).includes(data.input)) {
-      //     setMode(data.input);
-      //   } else {
-      //     throw Error(`Unknown input mode: ${data.input}`);
-      //   }
-      // }
+      if (data.type === "setScenario") {
+        const payload = data.payload;
+        if (Object.values(Mode).includes(payload.inputMode)) {
+          setData(payload);
+          setMode(payload.inputMode);
+        } else {
+          throw Error(`Unknown input mode: ${payload.inputMode}`);
+        }
+      }
+      if (data.type === "setIdle") {
+        setMode(Mode.Idle);
+      }
     };
   }
 
@@ -104,7 +110,7 @@ function App() {
         <Container sx={{ display: 'flex', flexDirection: 'column', height: `${remainingHeight}%`, justifyContent: 'center' }}>
           {mode === Mode.EnterCode && <VisitorCodeInput onEnter={connectToServer}/>}
           {mode === Mode.Idle && <Idle />}
-          {mode === Mode.Poll && <Poll data={testdata}></Poll>}
+          {mode === Mode.Poll && <Poll data={data}></Poll>}
         </Container>
         <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, height: `${bottomBarHeight}%` }}>
           <Box
