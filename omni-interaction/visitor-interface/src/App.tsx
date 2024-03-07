@@ -96,6 +96,17 @@ function App() {
     };
   }
 
+  function sendData(data: Object) {
+		if (socket.current) {
+      const message = {
+        type: 'openspace',
+        ...data
+      };
+      console.log(message);
+			socket.current.send(JSON.stringify(message));
+		}
+  }
+
   const topBarHeight = 5;
   const bottomBarHeight = 8;
   const remainingHeight = 100 - topBarHeight - bottomBarHeight;
@@ -110,7 +121,7 @@ function App() {
         <Container sx={{ display: 'flex', flexDirection: 'column', height: `${remainingHeight}%`, justifyContent: 'center' }}>
           {mode === Mode.EnterCode && <VisitorCodeInput onEnter={connectToServer}/>}
           {mode === Mode.Idle && <Idle />}
-          {mode === Mode.Poll && <Poll data={data}></Poll>}
+          {mode === Mode.Poll && <Poll data={data} sendVoteData={sendData} />}
         </Container>
         <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, height: `${bottomBarHeight}%` }}>
           <Box

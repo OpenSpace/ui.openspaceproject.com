@@ -42,13 +42,16 @@ interface PollProps {
   data: DataTable
   /* Settings related to how the poll should look, visually */
   styleSettings?: PollStyle;
+  /* Function that is called when a vote is submitted */
+  sendVoteData: (data: Object) => void;
 }
 
 function Poll({
   data,
   styleSettings = {
     layout: 'grid'
-  }
+  },
+  sendVoteData
 }: PollProps)
 {
   const [selected, setSelected] = useState<string | null>(null);
@@ -81,6 +84,10 @@ function Poll({
   function onSubmit() {
     if (selected) {
       setSubmitted(true);
+      sendVoteData({
+        "identifier": data.identifier,
+        "vote": selected,
+      })
     }
   }
 
