@@ -11,18 +11,17 @@ import { styled } from '@mui/material/styles';
 import SendIcon from '@mui/icons-material/Send';
 
 interface PollStyle {
-  /* The list of options to show in the poll */
   layout?: 'grid' | 'list';
 }
 
 interface Option {
-  /* A unique key that represents the option */
+  // A unique key that represents the option
   identifier: string;
-  /* The name of the option - that will be visible */
+  // The name of the option - that will be visible
   name: string;
-  /* A RGB color in the format rgb(R, G, B), with values 0-255 */
+  // A RGB color in the format rgb(R, G, B), with values 0-255
   color?: string;
-  /* A url to use for an image to show on the button for the option */
+  // A url to use for an image to show on the button for the option
   url?: string;
 }
 // @TODO: handle URL
@@ -30,32 +29,27 @@ interface Option {
 interface DataTable {
   // The scenario identifier
   identifier: string,
-  /* The list of options to show in the poll */
+  // The list of options to show in the poll
   options: Option[];
   // An optional description to show at the top
   description?: string,
+  // Settings related to how the poll should look, visually
+  styleSettings?: PollStyle;
 }
 // @TODO: allowChangingVote and nAllowedVotes
 
 interface PollProps {
-  /* The data used for creating the poll */
+  // The data used for creating the poll
   data: DataTable
-  /* Settings related to how the poll should look, visually */
-  styleSettings?: PollStyle;
-  /* Function that is called when a vote is submitted */
+  // Function that is called when a vote is submitted
   sendVoteData: (data: Object) => void;
 }
 
-function Poll({
-  data,
-  styleSettings = {
-    layout: 'grid'
-  },
-  sendVoteData
-}: PollProps)
-{
+function Poll({ data, sendVoteData }: PollProps) {
   const [selected, setSelected] = useState<string | null>(null);
   const [hasSubmitted, setSubmitted] = useState<boolean>(false);
+
+  const layout = data.styleSettings?.layout || 'grid';
 
   const Item = styled(Paper)({
     padding: "1em",
@@ -96,12 +90,12 @@ function Poll({
       <div>
         <Container>
           <p>{data.description || "Make your vote"}</p>
-          { styleSettings.layout === 'list' &&
+          { (layout === 'list') &&
             <Stack spacing={3} >
               {data.options.map((option) => item(option))}
             </Stack>
           }
-          { styleSettings.layout === 'grid' &&
+          { (layout === 'grid') &&
             <Grid
               container
               spacing={3}
