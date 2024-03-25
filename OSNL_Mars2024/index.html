@@ -1,0 +1,115 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>OpenSpace Night Live - Mars</title>
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <script type="text/javascript" src="openspace-api.js"></script>
+    <script type="text/javascript" src="init.js"></script>
+    <script type="text/javascript" src="actions.js"></script>
+    <script type="text/javascript" src="data.js"></script>
+  </head>
+  <body>
+    <div id="container" class="disconnected">
+      <div id="connection-status" class="connection-status">
+        Connect to OpenSpace:
+        <input id='ipaddress' type=text placeholder="Enter ip address"/>
+        <button onClick="connectToOpenSpace();">Connect</button>
+      </div>
+      <div id="main" style="display:flex; width:100%">
+        <div id="blocker" class="blockit">
+        </div>
+        <div id="left" style="width: 60%">
+          <div class="card">
+            <h2>Information</h3>
+            <ul>
+              <li>Start by logging in to Blackout if needed.</li>
+              <li>"Set History view" will set correct parameters and camera view for rocket launch history.</li>
+              <li>"Set 39A view" will go to Pad 39A and enable PAD vehicles.</li>
+              <li>"Reset" will reset parameters but keep camera view.</li>
+            </ul>
+          </div>
+          <div class='card'>
+            <h2>Master</h2>
+            <button type="button" class="green" onclick="prepareLaunches(1)">Set History view</button>
+            <button type="button" class="green" onclick="prepare39A()">Set 39A view</button>
+            <button type="button" onclick="reset()">Reset</button>
+            <br>
+            <button type="button" class="grey" onclick="test()">History Test (3 times before show)</button>
+          </div>
+          <div class="card">
+            <h2>Controls</h2>
+            <!--
+            <label>Sub Header</label>
+            <br>
+            <button type="button" class="blue" onclick="test()">Test - Blink All Destinations</button>
+            <br>
+            <button type="button" class="green" onclick="playAllAudio()">Audio Test</button>
+            <br>
+            <button type="button" class="orange" onclick="setDeltaTime(0.001)">Set 0.001s per second</button>
+            <hr>
+            <label>Sub Header</label>
+            <br>
+            -->
+            <label>Launch History</label>
+            <button type="button" class="green" onclick="playYears()">Play All</button>
+            <button type="button" class="orange" onclick="pauseYears()">Pause</button>
+            <button type="button" class="red" onclick="stopYears()">Restart</button>
+            <br>
+            <button type="button" class="purple" onclick="jumpPrevYears(10)"><<</button>
+            <button type="button" class="purple" onclick="jumpPrevYears(1)"><</button>
+            <button type="button" class="blue" onclick="playPrevYear()">Prev</button>
+            <label id="yearLabel" style="margin-right: 0.5em">0000</label>
+            <button type="button" class="blue" onclick="playNextYear()">Next</button>
+            <button type="button" class="purple" onclick="jumpNextYears(1)">></button>
+            <button type="button" class="purple" onclick="jumpNextYears(10)">>></button>
+            <hr>
+            <label>Pad 39A</label>
+            <br>
+            <button type="button" class="green" onclick="toggleF9Pad()">Toggle Falcon 9 on Pad</button>
+            <button type="button" class="green" onclick="toggleSVPad()">Toggle Saturn V on Pad</button>
+            <button type="button" class="red" onclick="disablePads()">Disable Pad 39A</button>
+            <br>
+            <button type="button" class="green" onclick="toggleSS()">Toggle Star Ship</button>
+            <button type="button" class="green" onclick="toggleSV()">Toggle Saturn V</button>
+            <button type="button" class="green" onclick="toggleF9()">Toggle Falcon 9</button>
+            <button type="button" class="green" onclick="toggleA5()">Toggle Ariane 5</button>
+            <br>
+            <button type="button" class="red" onclick="disableAllRockets()">Disable All</button>
+
+          </div>
+        </div>
+        <div id="right" style="flex-grow: 1;">
+          <div id="blackoutDiv" class="card">
+            <h2>Blackout</h2>
+            <button id="hideBlackout" onclick="toggleBlackout()">Toggle Blackout</button>
+            <p><b>Note: </b>The control points for the blackout area is drawn from: </br> 
+              topleft (TL) -> topright (TR) -> bottomright (BR) -> bottomleft (BL) -> topleft (TL)
+            </p>
+            <ul>
+              <li>
+                <label class="loginlbl">Site: </label>
+                <input id="siteinput" type="text"/>
+              </li>
+              <li>
+                <label class="loginlbl">Passkey: </label>
+                <input id="passinput" type="password"/>
+              </li>
+              <li>
+                <button id="goButton" onclick="enableBlackoutControls()">Enter</button>
+              </li>
+            </ul>
+            <div id="blackoutbox" style="display:none">
+              <div id="blackoutcontrols" style="display: flex;">
+                <div id="blackoutleft" style="width: 50%"></div>
+                <div id="blackoutright" style="flex-grow: 1;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script type="text/javascript">
+        connectToOpenSpace('localhost');
+      </script>
+    </div>
+  <body>
+</html>
