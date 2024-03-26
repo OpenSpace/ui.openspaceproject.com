@@ -24,14 +24,31 @@ async function prepare39A() {
       }
     );
 
-    await openspace.setPropertyValueSingle("Scene.osnl_saturnv_pad.Renderable.Enabled", true);
+    let now_date = await (await openspace.time.currentWallTime())[1];
+    let now_seconds = (await openspace.time.convertTime(now_date))[1]; 
+    let yesterday = (await openspace.time.convertTime(now_seconds-86400))[1];
+    await openspace.time.setTime(yesterday);
+    await openspace.time.interpolateDeltaTime(1);
+
+    await resetHistory();
+    
+    await openspace.setPropertyValueSingle("Scene.osnl_saturnv_pad.Renderable.Enabled", false);
     await openspace.setPropertyValueSingle("Scene.osnl_falcon9_pad.Renderable.Enabled", true);
+    await openspace.setPropertyValueSingle("Scene.osnl_human_39A.Renderable.Enabled", true);
+    await openspace.setPropertyValueSingle("Scene.osnl_human_39B.Renderable.Enabled", false);
     await openspace.setPropertyValueSingle("Scene.osnl_saturnv.Renderable.Enabled", false);
     await openspace.setPropertyValueSingle("Scene.osnl_ariane5.Renderable.Enabled", false);
+    await openspace.setPropertyValueSingle("Scene.osnl_spaceshuttle.Renderable.Enabled", false);
     await openspace.setPropertyValueSingle("Scene.osnl_falcon9.Renderable.Enabled", false);
     await openspace.setPropertyValueSingle("Scene.osnl_starship.Renderable.Enabled", false);
+    await openspace.setPropertyValueSingle("Scene.osnl_human_starship.Renderable.Enabled", false);
+    await openspace.setPropertyValueSingle("Scene.osnl_human_saturnv.Renderable.Enabled", false);
+    await openspace.setPropertyValueSingle("Scene.osnl_human_falcon9.Renderable.Enabled", false);
+    await openspace.setPropertyValueSingle("Scene.osnl_human_spaceshuttle.Renderable.Enabled", false);
+    await openspace.setPropertyValueSingle("Scene.osnl_human_ariane5.Renderable.Enabled", false);
 
-    logMessage("Completed", 3000, "lightgreen");
+
+       logMessage("Completed", 3000, "lightgreen");
   } catch (e) {
     alert(`Something went wrong: ${e}`);
   }
@@ -159,25 +176,8 @@ async function prepareLaunches(view = 1) {
 async function reset() {
   await OSFadeOut(1000);
 
-  await enableAllHistoryObjects(false);
   await disableAllRockets();
-
-  await openspace.setPropertyValueSingle("Scene.SunGlare.Renderable.Opacity", 0.65);
-  await openspace.setPropertyValueSingle("Scene.Moon.Renderable.PerformShading", true);
-
-  await openspace.setPropertyValueSingle("Scene.MarsAtmosphere.Renderable.Enabled", true);
-  await openspace.setPropertyValueSingle("Scene.VenusAtmosphere.Renderable.Enabled", true);
-  await openspace.setPropertyValueSingle("Scene.TitanAtmosphere.Renderable.Enabled", true);
-
-  await openspace.setPropertyValueSingle("Scene.Mercury.Scale.Scale", 1.0);
-  await openspace.setPropertyValueSingle("Scene.Venus.Scale.Scale", 1.0);
-  await openspace.setPropertyValueSingle("Scene.Mars.Scale.Scale", 1.0);
-  await openspace.setPropertyValueSingle("Scene.Jupiter.Scale.Scale", 1.0);
-  await openspace.setPropertyValueSingle("Scene.Saturn.Scale.Scale", 1.0);
-  await openspace.setPropertyValueSingle("Scene.Uranus.Scale.Scale", 1.0);
-  await openspace.setPropertyValueSingle("Scene.Neptune.Scale.Scale", 1.0);
-  await openspace.setPropertyValueSingle("Scene.Moon.Scale.Scale", 1.0);
-  await openspace.setPropertyValueSingle("Scene.Pluto.Scale.Scale", 1.0);
+  await resetHistory();
 
   let now_date = await (await openspace.time.currentWallTime())[1];
   let now_seconds = (await openspace.time.convertTime(now_date))[1]; 
@@ -187,6 +187,24 @@ async function reset() {
   await openspace.time.interpolateDeltaTime(1);
 
   await OSFadeIn(1000);
+}
+
+async function resetHistory() {
+  await enableAllHistoryObjects(false);
+  await openspace.setPropertyValueSingle("Scene.SunGlare.Renderable.Opacity", 0.65);
+  await openspace.setPropertyValueSingle("Scene.Moon.Renderable.PerformShading", true);
+  await openspace.setPropertyValueSingle("Scene.MarsAtmosphere.Renderable.Enabled", true);
+  await openspace.setPropertyValueSingle("Scene.VenusAtmosphere.Renderable.Enabled", true);
+  await openspace.setPropertyValueSingle("Scene.TitanAtmosphere.Renderable.Enabled", true);
+  await openspace.setPropertyValueSingle("Scene.Mercury.Scale.Scale", 1.0);
+  await openspace.setPropertyValueSingle("Scene.Venus.Scale.Scale", 1.0);
+  await openspace.setPropertyValueSingle("Scene.Mars.Scale.Scale", 1.0);
+  await openspace.setPropertyValueSingle("Scene.Jupiter.Scale.Scale", 1.0);
+  await openspace.setPropertyValueSingle("Scene.Saturn.Scale.Scale", 1.0);
+  await openspace.setPropertyValueSingle("Scene.Uranus.Scale.Scale", 1.0);
+  await openspace.setPropertyValueSingle("Scene.Neptune.Scale.Scale", 1.0);
+  await openspace.setPropertyValueSingle("Scene.Moon.Scale.Scale", 1.0);
+  await openspace.setPropertyValueSingle("Scene.Pluto.Scale.Scale", 1.0);
 }
 
 async function enableAllHistoryObjects(show) {
@@ -233,7 +251,7 @@ function constructYearString() {
 }
 
 function constructTotalString() {
-  return `Total Rockets: ${TOTAL_ROCKETS}`;
+  return `Antal Raketer: ${TOTAL_ROCKETS}`;
 }
 
 async function setYearString() {
@@ -256,7 +274,7 @@ async function playNextYear() {
       for(let dest in missions) {
         blink(dest, missions[dest]);
         TOTAL_ROCKETS += missions[dest];
-        await delay(50);
+        await delay(150);
       }
     }
 
@@ -266,11 +284,14 @@ async function playNextYear() {
     
     await setYearString();
     await setTotalString();
+    await nextSlide();
   }
 }
 
 async function playPrevYear() {
   if (YEAR > YEAR_MIN) {
+    --YEAR;
+
     let missions = DATA_MISSIONS_AS_OBJECT_OBJECT[YEAR];
     if(missions !== undefined) {
       for(let dest in missions) {
@@ -282,12 +303,15 @@ async function playPrevYear() {
     
     let numberOfRockets = DATA_YEARLY_MINUS_MISSIONS[YEAR];
     TOTAL_ROCKETS -= numberOfRockets;
-    blink("earth", numberOfRockets);
+    
+    if (YEAR !== YEAR_MIN) {
+      blink("earth", numberOfRockets);
+    }
+    
 
     await setYearString();
     await setTotalString();
-    
-    --YEAR;
+    await prevSlide();
   }
 }
 
@@ -302,13 +326,15 @@ async function jumpNextYears(leap = 1) {
           TOTAL_ROCKETS += missions[dest];
         }
       }
-  
+
       TOTAL_ROCKETS += DATA_YEARLY_MINUS_MISSIONS[YEAR];
-      
       await setYearString();
       await setTotalString();
+      await nextSlide();
     }
   }
+
+
 }
 
 async function jumpPrevYears(leap = 1) {
@@ -320,18 +346,16 @@ async function jumpPrevYears(leap = 1) {
           TOTAL_ROCKETS -= missions[dest];
         }
       }
-      
       TOTAL_ROCKETS -= DATA_YEARLY_MINUS_MISSIONS[YEAR];
-  
+      --YEAR;
       await setYearString();
       await setTotalString();
-      
-      --YEAR;
+      await prevSlide();
     }
   }
 }
 
-async function playYears(msPeryear = 2000) {
+async function playYears(msPeryear = 3000) {
   PLAYER_INTERVAL = setInterval(async () => {
     if (YEAR >= YEAR_MAX) {
       clearInterval(PLAYER_INTERVAL);
@@ -349,8 +373,21 @@ async function stopYears() {
   clearInterval(PLAYER_INTERVAL);
   YEAR = YEAR_MIN;
   TOTAL_ROCKETS = 0;
-  await setYearString();
   await setTotalString();
+  await setYearString();
+  let dty = YEAR_MAX - YEAR_MIN;
+  for (let i = 0; i <= dty; ++i) {
+    prevSlide();
+  }
+  await nextSlide();
+}
+
+async function nextSlide() {
+  await openspace.action.triggerAction("slide_deck.nextslide");
+}
+
+async function prevSlide() {
+  await openspace.action.triggerAction("slide_deck.prevslide");
 }
 
 async function fireIndicator(name, speed, duration) {
@@ -409,28 +446,28 @@ async function blink(name, num, mute = false) {
 }
 
 async function blinkEarth(numberOfRockets, mute = false) {
-  fireIndicator("earth", 40000000, 1500);
+  fireIndicator("earth", 50000000, 1500);
   await delay(1500);
 
   if (!mute) {
     AUDIO_EARTH.play();
   }
 
-  flashText("earth", numberOfRockets, 750);
+  flashText("earth", numberOfRockets, 2000);
   await openspace.setPropertyValueSingle("Scene.EarthAtmosphere.Renderable.Fade", 1.0)
   await openspace.setPropertyValueSingle("Scene.EarthAtmosphere.Renderable.Fade", 1.15, 0.25, "Linear", "openspace.setPropertyValueSingle('Scene.EarthAtmosphere.Renderable.Fade', 1, 0.25)");
 }
 
 
 async function blinkISS(numberOfRockets, mute = false) {
-  fireIndicator("iss", 10000000000, 1000);
-  await delay(650);
+  fireIndicator("iss", 5000000000, 1500);
+  await delay(1500);
 
   if (!mute) {
     AUDIO_ISS.play();
   }
 
-  flashText("iss", numberOfRockets, 750);
+  flashText("iss", numberOfRockets, 2000);
   await openspace.setPropertyValueSingle("Scene.ISSPropCopy.Renderable.PerformShading", false);
   await openspace.setPropertyValueSingle("Scene.ISSPropCopy.Renderable.Opacity", 1.0);
   await openspace.setPropertyValueSingle("Scene.ISSPropCopy.Scale.Scale", 1.25, 0.5, "Linear", "openspace.setPropertyValueSingle('Scene.ISSPropCopy.Scale.Scale', 1)");
@@ -439,30 +476,30 @@ async function blinkISS(numberOfRockets, mute = false) {
 }
 
 async function blinkJupiter(numberOfRockets, mute = false) {
-  fireIndicator("jupiter", 299792458000, 1000);
-  await delay(1000);
+  fireIndicator("jupiter", 80000000000, 1500); 
+  await delay(1500);
 
   if (!mute) {
     AUDIO_JUPITER.play();
   }
 
-  flashText("jupiter", numberOfRockets, 750);
+  flashText("jupiter", numberOfRockets, 2000);
   await openspace.setPropertyValueSingle("Scene.JupiterCopy.Renderable.PerformShading", false);
   await openspace.setPropertyValueSingle("Scene.JupiterCopy.Renderable.Opacity", 1.0);
-  await openspace.setPropertyValueSingle("Scene.JupiterCopy.Scale.Scale", 1100.0, 0.5, "Linear", "openspace.setPropertyValueSingle('Scene.JupiterCopy.Scale.Scale', 1000)");
+  await openspace.setPropertyValueSingle("Scene.JupiterCopy.Scale.Scale", 1100.0, 0.5, "Linear", "openspace.setPropertyValueSingle('Scene.JupiterCopy.Scale.Scale', 1500)");
   await delay(250);
   await openspace.setPropertyValueSingle("Scene.JupiterCopy.Renderable.Opacity", 0.000000, 0.25);
 }
 
 async function blinkMars(numberOfRockets, mute = false) {
-  fireIndicator("mars", 299792458000, 1000);
-  await delay(1000);
+  fireIndicator("mars", 150000000000, 1500);
+  await delay(1500);
 
   if (!mute) {
     AUDIO_MARS.play();
   }
 
-  flashText("mars", numberOfRockets, 750);
+  flashText("mars", numberOfRockets, 2000);
   await openspace.setPropertyValueSingle("Scene.MarsCopy.Renderable.PerformShading", false);
   await openspace.setPropertyValueSingle("Scene.MarsCopy.Renderable.Opacity", 1.0);
   await openspace.setPropertyValueSingle("Scene.MarsCopy.Scale.Scale", 3300.0, 0.5, "Linear", "openspace.setPropertyValueSingle('Scene.MarsCopy.Scale.Scale', 3000)");
@@ -471,14 +508,14 @@ async function blinkMars(numberOfRockets, mute = false) {
 }
 
 async function blinkMercury(numberOfRockets, mute = false) {
-  fireIndicator("mercury", 299792458000, 1000);
-  await delay(1000);
+  fireIndicator("mercury", 120000000000, 1500);
+  await delay(1500);
 
   if (!mute) {
     AUDIO_MERCURY.play();
   }
 
-  flashText("mercury", numberOfRockets, 750);
+  flashText("mercury", numberOfRockets, 2000);
   await openspace.setPropertyValueSingle("Scene.MercuryCopy.Renderable.PerformShading", false);
   await openspace.setPropertyValueSingle("Scene.MercuryCopy.Renderable.Opacity", 1.0);
   await openspace.setPropertyValueSingle("Scene.MercuryCopy.Scale.Scale", 2200.0, 0.5, "Linear", "openspace.setPropertyValueSingle('Scene.MercuryCopy.Scale.Scale', 2000)");
@@ -487,14 +524,14 @@ async function blinkMercury(numberOfRockets, mute = false) {
 }
 
 async function blinkNeptune(numberOfRockets, mute = false) {
-  fireIndicator("neptune", 299792458000, 1000);
-  await delay(1000);
+  fireIndicator("neptune", 80000000000, 1500);
+  await delay(1500);
 
   if (!mute) {
     AUDIO_NEPTUNE.play();
   }
 
-  flashText("neptune", numberOfRockets, 750);
+  flashText("neptune", numberOfRockets, 2000);
   await openspace.setPropertyValueSingle("Scene.NeptuneCopy.Renderable.PerformShading", false);
   await openspace.setPropertyValueSingle("Scene.NeptuneCopy.Renderable.Opacity", 1.0);
   await openspace.setPropertyValueSingle("Scene.NeptuneCopy.Scale.Scale", 8800.0, 0.5, "Linear", "openspace.setPropertyValueSingle('Scene.NeptuneCopy.Scale.Scale', 8000)");
@@ -503,14 +540,14 @@ async function blinkNeptune(numberOfRockets, mute = false) {
 }
 
 async function blinkSaturn(numberOfRockets, mute = false) {
-  fireIndicator("saturn", 299792458000, 1000);
-  await delay(1000);
+  fireIndicator("saturn", 80000000000, 1500);
+  await delay(1500);
 
   if (!mute) {
     AUDIO_SATURN.play();
   }
 
-  flashText("saturn", numberOfRockets, 750);
+  flashText("saturn", numberOfRockets, 2000);
   await openspace.setPropertyValueSingle("Scene.SaturnCopy.Renderable.PerformShading", false);
   await openspace.setPropertyValueSingle("Scene.SaturnCopy.Renderable.Opacity", 1.0);
   await openspace.setPropertyValueSingle("Scene.SaturnCopy.Scale.Scale", 2200.0, 0.5, "Linear", "openspace.setPropertyValueSingle('Scene.SaturnCopy.Scale.Scale', 2000)");
@@ -519,14 +556,14 @@ async function blinkSaturn(numberOfRockets, mute = false) {
 }
 
 async function blinkUranus(numberOfRockets, mute = false) {
-  fireIndicator("uranus", 299792458000, 1000);
-  await delay(1000);
+  fireIndicator("uranus", 150000000000, 1500);
+  await delay(1500);
 
   if (!mute) {
    AUDIO_URANUS.play();
   }
 
-  flashText("uranus", numberOfRockets, 750);
+  flashText("uranus", numberOfRockets, 2000);
   await openspace.setPropertyValueSingle("Scene.UranusCopy.Renderable.PerformShading", false);
   await openspace.setPropertyValueSingle("Scene.UranusCopy.Renderable.Opacity", 1.0);
   await openspace.setPropertyValueSingle("Scene.UranusCopy.Scale.Scale", 3300.0, 0.5, "Linear", "openspace.setPropertyValueSingle('Scene.UranusCopy.Scale.Scale', 3000)");
@@ -535,30 +572,30 @@ async function blinkUranus(numberOfRockets, mute = false) {
 }
 
 async function blinkVenus(numberOfRockets, mute = false) {
-  fireIndicator("venus", 299792458000, 1000);
-  await delay(1000);
+  fireIndicator("venus", 150000000000, 1500);
+  await delay(1500);
 
   if (!mute) {
     AUDIO_VENUS.play();
   }
 
-  flashText("venus", numberOfRockets, 750);
+  flashText("venus", numberOfRockets, 2000);
   await openspace.setPropertyValueSingle("Scene.VenusCopy.Renderable.PerformShading", false);
   await openspace.setPropertyValueSingle("Scene.VenusCopy.Renderable.Opacity", 1.0);
-  await openspace.setPropertyValueSingle("Scene.VenusCopy.Scale.Scale", 1100.0, 0.5, "Linear", "openspace.setPropertyValueSingle('Scene.VenusCopy.Scale.Scale', 1000)");
+  await openspace.setPropertyValueSingle("Scene.VenusCopy.Scale.Scale", 1100.0, 0.5, "Linear", "openspace.setPropertyValueSingle('Scene.VenusCopy.Scale.Scale', 1500)");
   await delay(250);
   await openspace.setPropertyValueSingle("Scene.VenusCopy.Renderable.Opacity", 0.000000, 0.25);
 }
 
 async function blinkMoon(numberOfRockets, mute = false) {
-  fireIndicator("moon", 299792458000, 1000);
-  await delay(1000);
+  fireIndicator("moon", 80000000000, 1500);
+  await delay(1500);
 
   if (!mute) {
     AUDIO_MOON.play();
   }
 
-  flashText("moon", numberOfRockets, 750);
+  flashText("moon", numberOfRockets, 2000);
   await openspace.setPropertyValueSingle("Scene.MoonCopy.Renderable.PerformShading", false);
   await openspace.setPropertyValueSingle("Scene.MoonCopy.Renderable.Opacity", 1.0);
   await openspace.setPropertyValueSingle("Scene.MoonCopy.Scale.Scale", 6.0, 0.5, "Linear", "openspace.setPropertyValueSingle('Scene.MoonCopy.Scale.Scale', 4)");
@@ -567,14 +604,14 @@ async function blinkMoon(numberOfRockets, mute = false) {
 }
 
 async function blinkPluto(numberOfRockets, mute = false) {
-  fireIndicator("pluto", 299792458000, 1000);
-  await delay(1000);
+  fireIndicator("pluto", 300000000000, 1500);
+  await delay(1500);
 
   if (!mute) {
     AUDIO_PLUTO.play();
   }
 
-  flashText("pluto", numberOfRockets, 750);
+  flashText("pluto", numberOfRockets, 2000);
   await openspace.setPropertyValueSingle("Scene.PlutoCopy.Renderable.PerformShading", false);
   await openspace.setPropertyValueSingle("Scene.PlutoCopy.Renderable.Opacity", 1.0);
   await openspace.setPropertyValueSingle("Scene.PlutoCopy.Scale.Scale", 65000.0, 0.5, "Linear", "openspace.setPropertyValueSingle('Scene.PlutoCopy.Scale.Scale', 50000)");
@@ -605,7 +642,12 @@ async function toggleBlackout() {
 }
 
 
-async function toggleF9Pad() {
+async function toggleGraph() {
+  await openspace.action.triggerAction("slide_deck.toggleslides")
+}
+
+
+async function togglePad39A() {
   let fade = (await openspace.getPropertyValue("Scene.osnl_falcon9_pad.Renderable.Fade"))[1];
   let enabled = (await openspace.getPropertyValue("Scene.osnl_falcon9_pad.Renderable.Enabled"))[1];
   if (enabled) {
@@ -617,17 +659,30 @@ async function toggleF9Pad() {
         "Linear",
         'openspace.setPropertyValueSingle("Scene.osnl_falcon9_pad.Renderable.Enabled", false)'
       );
+
+      await openspace.setPropertyValueSingle(
+        "Scene.osnl_human_39A.Renderable.Fade",
+        0,
+        2,
+        "Linear",
+        'openspace.setPropertyValueSingle("Scene.osnl_human_39A.Renderable.Enabled", false)'
+      );
     } else {
       await openspace.setPropertyValueSingle("Scene.osnl_falcon9_pad.Renderable.Fade", 1, 2);
+      await openspace.setPropertyValueSingle("Scene.osnl_human_39A.Renderable.Fade", 1, 2);
     }
   } else {
     await openspace.setPropertyValueSingle("Scene.osnl_falcon9_pad.Renderable.Fade", 0);
     await openspace.setPropertyValueSingle("Scene.osnl_falcon9_pad.Renderable.Enabled", true);
     await openspace.setPropertyValueSingle("Scene.osnl_falcon9_pad.Renderable.Fade", 1, 2);
+
+    await openspace.setPropertyValueSingle("Scene.osnl_human_39A.Renderable.Fade", 0);
+    await openspace.setPropertyValueSingle("Scene.osnl_human_39A.Renderable.Enabled", true);
+    await openspace.setPropertyValueSingle("Scene.osnl_human_39A.Renderable.Fade", 1, 2);
   }
 }
 
-async function toggleSVPad() {
+async function togglePad39b() {
   let fade = (await openspace.getPropertyValue("Scene.osnl_saturnv_pad.Renderable.Fade"))[1];
   let enabled = (await openspace.getPropertyValue("Scene.osnl_saturnv_pad.Renderable.Enabled"))[1];
   if (enabled) {
@@ -639,17 +694,30 @@ async function toggleSVPad() {
         "Linear",
         'openspace.setPropertyValueSingle("Scene.osnl_saturnv_pad.Renderable.Enabled", false)'
       );
+
+      await openspace.setPropertyValueSingle(
+        "Scene.osnl_saturnv_pad.Renderable.Fade",
+        0,
+        2,
+        "Linear",
+        'openspace.setPropertyValueSingle("Scene.osnl_human_39B.Renderable.Enabled", false)'
+      );
     } else {
       await openspace.setPropertyValueSingle("Scene.osnl_saturnv_pad.Renderable.Fade", 1, 2);
+      await openspace.setPropertyValueSingle("Scene.osnl_human_39B.Renderable.Fade", 1, 2);
     }
   } else {
     await openspace.setPropertyValueSingle("Scene.osnl_saturnv_pad.Renderable.Fade", 0);
     await openspace.setPropertyValueSingle("Scene.osnl_saturnv_pad.Renderable.Enabled", true);
     await openspace.setPropertyValueSingle("Scene.osnl_saturnv_pad.Renderable.Fade", 1, 2);
+
+    await openspace.setPropertyValueSingle("Scene.osnl_human_39B.Renderable.Fade", 0);
+    await openspace.setPropertyValueSingle("Scene.osnl_human_39B.Renderable.Enabled", true);
+    await openspace.setPropertyValueSingle("Scene.osnl_human_39B.Renderable.Fade", 1, 2);
   }
 }
 
-async function toggleSS() {
+async function toggleS() {
   let fade = (await openspace.getPropertyValue("Scene.osnl_starship.Renderable.Fade"))[1];
   let enabled = (await openspace.getPropertyValue("Scene.osnl_starship.Renderable.Enabled"))[1];
   if (enabled) {
@@ -661,13 +729,61 @@ async function toggleSS() {
         "Linear",
         'openspace.setPropertyValueSingle("Scene.osnl_starship.Renderable.Enabled", false)'
       );
+
+      await openspace.setPropertyValueSingle(
+        "Scene.osnl_human_starship.Renderable.Fade",
+        0,
+        2,
+        "Linear",
+        'openspace.setPropertyValueSingle("Scene.osnl_human_starship.Renderable.Enabled", false)'
+      );
     } else {
       await openspace.setPropertyValueSingle("Scene.osnl_starship.Renderable.Fade", 1, 2);
+      await openspace.setPropertyValueSingle("Scene.osnl_human_starship.Renderable.Fade", 1, 2);
     }
   } else {
     await openspace.setPropertyValueSingle("Scene.osnl_starship.Renderable.Fade", 0);
     await openspace.setPropertyValueSingle("Scene.osnl_starship.Renderable.Enabled", true);
     await openspace.setPropertyValueSingle("Scene.osnl_starship.Renderable.Fade", 1, 2);
+
+    await openspace.setPropertyValueSingle("Scene.osnl_human_starship.Renderable.Fade", 0);
+    await openspace.setPropertyValueSingle("Scene.osnl_human_starship.Renderable.Enabled", true);
+    await openspace.setPropertyValueSingle("Scene.osnl_human_starship.Renderable.Fade", 1, 2);
+  }
+}
+
+async function toggleSS() {
+  let fade = (await openspace.getPropertyValue("Scene.osnl_spaceshuttle.Renderable.Fade"))[1];
+  let enabled = (await openspace.getPropertyValue("Scene.osnl_spaceshuttle.Renderable.Enabled"))[1];
+  if (enabled) {
+    if (fade > 0.5) {
+      await openspace.setPropertyValueSingle(
+        "Scene.osnl_spaceshuttle.Renderable.Fade",
+        0,
+        2,
+        "Linear",
+        'openspace.setPropertyValueSingle("Scene.osnl_spaceshuttle.Renderable.Enabled", false)'
+      );
+
+      await openspace.setPropertyValueSingle(
+        "Scene.osnl_human_spaceshuttle.Renderable.Fade",
+        0,
+        2,
+        "Linear",
+        'openspace.setPropertyValueSingle("Scene.osnl_human_spaceshuttle.Renderable.Enabled", false)'
+      );
+    } else {
+      await openspace.setPropertyValueSingle("Scene.osnl_spaceshuttle.Renderable.Fade", 1, 2);
+      await openspace.setPropertyValueSingle("Scene.osnl_human_spaceshuttle.Renderable.Fade", 1, 2);
+    }
+  } else {
+    await openspace.setPropertyValueSingle("Scene.osnl_spaceshuttle.Renderable.Fade", 0);
+    await openspace.setPropertyValueSingle("Scene.osnl_spaceshuttle.Renderable.Enabled", true);
+    await openspace.setPropertyValueSingle("Scene.osnl_spaceshuttle.Renderable.Fade", 1, 2);
+
+    await openspace.setPropertyValueSingle("Scene.osnl_human_spaceshuttle.Renderable.Fade", 0);
+    await openspace.setPropertyValueSingle("Scene.osnl_human_spaceshuttle.Renderable.Enabled", true);
+    await openspace.setPropertyValueSingle("Scene.osnl_human_spaceshuttle.Renderable.Fade", 1, 2);
   }
 }
 
@@ -683,13 +799,26 @@ async function toggleSV() {
         "Linear",
         'openspace.setPropertyValueSingle("Scene.osnl_saturnv.Renderable.Enabled", false)'
       );
+
+      await openspace.setPropertyValueSingle(
+        "Scene.osnl_human_saturnv.Renderable.Fade",
+        0,
+        2,
+        "Linear",
+        'openspace.setPropertyValueSingle("Scene.osnl_human_saturnv.Renderable.Enabled", false)'
+      );
     } else {
       await openspace.setPropertyValueSingle("Scene.osnl_saturnv.Renderable.Fade", 1, 2);
+      await openspace.setPropertyValueSingle("Scene.osnl_human_saturnv.Renderable.Fade", 1, 2);
     }
   } else {
     await openspace.setPropertyValueSingle("Scene.osnl_saturnv.Renderable.Fade", 0);
     await openspace.setPropertyValueSingle("Scene.osnl_saturnv.Renderable.Enabled", true);
     await openspace.setPropertyValueSingle("Scene.osnl_saturnv.Renderable.Fade", 1, 2);
+
+    await openspace.setPropertyValueSingle("Scene.osnl_human_saturnv.Renderable.Fade", 0);
+    await openspace.setPropertyValueSingle("Scene.osnl_human_saturnv.Renderable.Enabled", true);
+    await openspace.setPropertyValueSingle("Scene.osnl_human_saturnv.Renderable.Fade", 1, 2);
   }
 }
 
@@ -705,13 +834,26 @@ async function toggleF9() {
         "Linear",
         'openspace.setPropertyValueSingle("Scene.osnl_falcon9.Renderable.Enabled", false)'
       );
+
+      await openspace.setPropertyValueSingle(
+        "Scene.osnl_human_falcon9.Renderable.Fade",
+        0,
+        2,
+        "Linear",
+        'openspace.setPropertyValueSingle("Scene.osnl_human_falcon9.Renderable.Enabled", false)'
+      );
     } else {
       await openspace.setPropertyValueSingle("Scene.osnl_falcon9.Renderable.Fade", 1, 2);
+      await openspace.setPropertyValueSingle("Scene.osnl_human_falcon9.Renderable.Fade", 1, 2);
     }
   } else {
     await openspace.setPropertyValueSingle("Scene.osnl_falcon9.Renderable.Fade", 0);
     await openspace.setPropertyValueSingle("Scene.osnl_falcon9.Renderable.Enabled", true);
     await openspace.setPropertyValueSingle("Scene.osnl_falcon9.Renderable.Fade", 1, 2);
+
+    await openspace.setPropertyValueSingle("Scene.osnl_human_falcon9.Renderable.Fade", 0);
+    await openspace.setPropertyValueSingle("Scene.osnl_human_falcon9.Renderable.Enabled", true);
+    await openspace.setPropertyValueSingle("Scene.osnl_human_falcon9.Renderable.Fade", 1, 2);
   }
 }
 
@@ -727,28 +869,51 @@ async function toggleA5() {
         "Linear",
         'openspace.setPropertyValueSingle("Scene.osnl_ariane5.Renderable.Enabled", false)'
       );
+
+      await openspace.setPropertyValueSingle(
+        "Scene.osnl_human_ariane5.Renderable.Fade",
+        0,
+        2,
+        "Linear",
+        'openspace.setPropertyValueSingle("Scene.osnl_human_ariane5.Renderable.Enabled", false)'
+      );
     } else {
       await openspace.setPropertyValueSingle("Scene.osnl_ariane5.Renderable.Fade", 1, 2);
+      await openspace.setPropertyValueSingle("Scene.osnl_human_ariane5.Renderable.Fade", 1, 2);
     }
   } else {
     await openspace.setPropertyValueSingle("Scene.osnl_ariane5.Renderable.Fade", 0);
     await openspace.setPropertyValueSingle("Scene.osnl_ariane5.Renderable.Enabled", true);
     await openspace.setPropertyValueSingle("Scene.osnl_ariane5.Renderable.Fade", 1, 2);
+
+    await openspace.setPropertyValueSingle("Scene.osnl_human_ariane5.Renderable.Fade", 0);
+    await openspace.setPropertyValueSingle("Scene.osnl_human_ariane5.Renderable.Enabled", true);
+    await openspace.setPropertyValueSingle("Scene.osnl_human_ariane5.Renderable.Fade", 1, 2);
   }
 }
 
 async function disablePads() {
   await openspace.setPropertyValueSingle("Scene.osnl_saturnv_pad.Renderable.Enabled", false);
   await openspace.setPropertyValueSingle("Scene.osnl_falcon9_pad.Renderable.Enabled", false);
+  await openspace.setPropertyValueSingle("Scene.osnl_human_39A.Renderable.Enabled", false);
+  await openspace.setPropertyValueSingle("Scene.osnl_human_39B.Renderable.Enabled", false);
 }
 
 async function disableAllRockets() {
   await openspace.setPropertyValueSingle("Scene.osnl_saturnv_pad.Renderable.Enabled", false);
   await openspace.setPropertyValueSingle("Scene.osnl_falcon9_pad.Renderable.Enabled", false);
+  await openspace.setPropertyValueSingle("Scene.osnl_human_39A.Renderable.Enabled", false);
+  await openspace.setPropertyValueSingle("Scene.osnl_human_39B.Renderable.Enabled", false);
   await openspace.setPropertyValueSingle("Scene.osnl_saturnv.Renderable.Enabled", false);
   await openspace.setPropertyValueSingle("Scene.osnl_ariane5.Renderable.Enabled", false);
+  await openspace.setPropertyValueSingle("Scene.osnl_spaceshuttle.Renderable.Enabled", false);
   await openspace.setPropertyValueSingle("Scene.osnl_falcon9.Renderable.Enabled", false);
   await openspace.setPropertyValueSingle("Scene.osnl_starship.Renderable.Enabled", false);
+  await openspace.setPropertyValueSingle("Scene.osnl_human_starship.Renderable.Enabled", false);
+  await openspace.setPropertyValueSingle("Scene.osnl_human_saturnv.Renderable.Enabled", false);
+  await openspace.setPropertyValueSingle("Scene.osnl_human_falcon9.Renderable.Enabled", false);
+  await openspace.setPropertyValueSingle("Scene.osnl_human_spaceshuttle.Renderable.Enabled", false);
+  await openspace.setPropertyValueSingle("Scene.osnl_human_ariane5.Renderable.Enabled", false);
 }
 
 

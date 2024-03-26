@@ -26,13 +26,14 @@
               <li>"Set History view" will set correct parameters and camera view for rocket launch history.</li>
               <li>"Set 39A view" will go to Pad 39A and enable PAD vehicles.</li>
               <li>"Reset" will reset parameters but keep camera view.</li>
+              <li><b>NOTE:</b> Will <u>NOT</u> hide graph - needs to be done manually.</li>
             </ul>
           </div>
           <div class='card'>
             <h2>Master</h2>
             <button type="button" class="green" onclick="prepareLaunches(1)">Set History view</button>
             <button type="button" class="green" onclick="prepare39A()">Set 39A view</button>
-            <button type="button" onclick="reset()">Reset</button>
+            <button type="button" onclick="reset()">Reset Everything</button>
             <br>
             <button type="button" class="grey" onclick="test()">History Test (3 times before show)</button>
           </div>
@@ -50,8 +51,11 @@
             <label>Sub Header</label>
             <br>
             -->
+            <label>Graph</label>
+            <button type="button" class="green" onclick="toggleGraph()">Toggle Graph</button>
+            <br>
             <label>Launch History</label>
-            <button type="button" class="green" onclick="playYears()">Play All</button>
+            <button type="button" class="green" onclick="playYears()">Play</button>
             <button type="button" class="orange" onclick="pauseYears()">Pause</button>
             <button type="button" class="red" onclick="stopYears()">Restart</button>
             <br>
@@ -65,16 +69,17 @@
             <hr>
             <label>Pad 39A</label>
             <br>
-            <button type="button" class="green" onclick="toggleF9Pad()">Toggle Falcon 9 on Pad</button>
-            <button type="button" class="green" onclick="toggleSVPad()">Toggle Saturn V on Pad</button>
-            <button type="button" class="red" onclick="disablePads()">Disable Pad 39A</button>
+            <button type="button" class="green" onclick="togglePad39A()">Toggle Falcon 9 on Pad</button>
+            <button type="button" class="green" onclick="togglePad39b()">Toggle Saturn V on Pad</button>
+            <button type="button" class="red" onclick="disablePads()">Quick Disable Pads</button>
             <br>
-            <button type="button" class="green" onclick="toggleSS()">Toggle Star Ship</button>
+            <button type="button" class="green" onclick="toggleS()">Toggle Star Ship</button>
             <button type="button" class="green" onclick="toggleSV()">Toggle Saturn V</button>
             <button type="button" class="green" onclick="toggleF9()">Toggle Falcon 9</button>
+            <button type="button" class="green" onclick="toggleSS()">Toggle Space Shuttle</button>
             <button type="button" class="green" onclick="toggleA5()">Toggle Ariane 5</button>
             <br>
-            <button type="button" class="red" onclick="disableAllRockets()">Disable All</button>
+            <button type="button" class="red" onclick="disableAllRockets()">Quick Disable All Rockets</button>
 
           </div>
         </div>
