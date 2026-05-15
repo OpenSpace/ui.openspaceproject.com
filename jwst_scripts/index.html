@@ -1,92 +1,100 @@
 <html>
   <head>
     <title>JWST Controls</title>
-    <link rel="stylesheet" type="text/css" href="main.css">
+    <link rel="stylesheet" type="text/css" href="main.css" />
     <script type="text/javascript" src="openspace-api.js"></script>
     <script type="text/javascript" src="openspace-default-buttons.js"></script>
     <script type="text/javascript">
-      //variable for js libarary
-      var openspace = null;
+      // Variable for js libarary
+      let openspace = null;
 
-      var htmlFunction = (action, id) => {
-          var cardHTML = "<div id=\"" + action.title + "\" class='card'><h2>" + action.title + "</h2>";
-          if (action.description) {
-            action.description.split('\n').map(item => {
-              cardHTML += "<p>" + item + "</p>";
-            });
-          }
-          if (action.buttons) {
-            Object.keys(action.buttons).map(button => {
-              const fn = action.buttons[button];
-              cardHTML += "<button id=\"" + action.title+button + "\">"+ button +"</button>";
-            });
-          }
-          cardHTML += "</div>";
-          document.getElementById('main').innerHTML += cardHTML;
-      };
-
-      var clickFunction = (action, id) => {
-        if (action.buttons) {
-          Object.keys(action.buttons).map(button => {
-              const fn = action.buttons[button];
-              document.getElementById(action.title+button).addEventListener("click", fn);
+      let htmlFunction = (action, id) => {
+        let cardHTML =
+          '<div id="' + action.title + "\" class='card'><h2>" + action.title + "</h2>";
+        if (action.description) {
+          action.description.split("\n").map((item) => {
+            cardHTML += "<p>" + item + "</p>";
           });
         }
-      }
+        if (action.buttons) {
+          Object.keys(action.buttons).map((button) => {
+            const fn = action.buttons[button];
+            cardHTML +=
+              '<button id="' + action.title + button + '">' + button + "</button>";
+          });
+        }
+        cardHTML += "</div>";
+        document.getElementById("main").innerHTML += cardHTML;
+      };
 
-      //helper function to map the buttons to html
+      let clickFunction = (action, id) => {
+        if (action.buttons) {
+          Object.keys(action.buttons).map((button) => {
+            const fn = action.buttons[button];
+            document.getElementById(action.title + button).addEventListener("click", fn);
+          });
+        }
+      };
+
+      // Helper function to map the buttons to html
       function mapButtons(openspace) {
-        document.getElementById('main').innerHTML += "<div class='card'>Default Buttons</div>"
+        document.getElementById("main").innerHTML +=
+          "<div class='card'>Default Buttons</div>";
         defaultButtonGroups.map(htmlFunction);
         defaultButtonGroups.map(clickFunction);
       }
 
-      //helper function to connect to opensapce
-      var connectToOpenSpace = () => {
-        //setup the api params
-        var host = document.getElementById('ipaddress').value;
-        var api = window.openspaceApi(host, 4682);
-        //notify users on disconnect
+      // Helper function to connect to opensapce
+      let connectToOpenSpace = () => {
+        // Setup the api params
+        let host = document.getElementById("ipaddress").value;
+        if (!host) {
+          return;
+        }
+        let api = window.openspaceApi(host, 4682);
+        // Notify users on disconnect
         api.onDisconnect(() => {
           console.log("disconnected");
-          document.getElementById('container').className = "disconnected";
-          document.getElementById('connection-status').style.opacity = 1;
-          var disconnectedString = "Connect to OpenSpace: ";
-          disconnectedString += '<input id="ipaddress" type=text placeholder="Enter ip address" /> ';
-          disconnectedString += '<button onClick="connectToOpenSpace();">Connect</button>';
-          document.getElementById('connection-status').innerHTML = disconnectedString;
+          document.getElementById("container").className = "disconnected";
+          document.getElementById("connection-status").style.opacity = 1;
+          let disconnectedString = "Connect to OpenSpace: ";
+          disconnectedString +=
+            '<input id="ipaddress" type=text placeholder="Enter ip address" /> ';
+          disconnectedString +=
+            '<button onClick="connectToOpenSpace();">Connect</button>';
+          document.getElementById("connection-status").innerHTML = disconnectedString;
           openspace = null;
         });
-        //notify users and map buttons when connected
+        // Notify users and map buttons when connected
         api.onConnect(async () => {
           try {
-            document.getElementById('container').className = "connected";
-            document.getElementById('connection-status').innerHTML = "";
+            document.getElementById("container").className = "connected";
+            document.getElementById("connection-status").innerHTML = "";
             openspace = await api.library();
-            console.log('connected');
+            console.log("connected");
             mapButtons(openspace);
           } catch (e) {
-            console.log('OpenSpace library could not be loaded: Error: \n', e);
+            console.log("OpenSpace library could not be loaded: Error: \n", e);
             return;
           }
-        })
-        //connect
+        });
+        // Connect
         api.connect();
       };
 
       function logMessage(message) {
         console.log(message);
-        document.getElementById('connection-status').innerHTML = message;
+        document.getElementById("connection-status").innerHTML = message;
         document.getElementById("connection-status").style.opacity = 1;
         fadeOut();
       }
 
-      // function that fades out the log div after 5 seconds
+      // Function that fades out the log div after 5 seconds
       function fadeOut() {
-        setTimeout(function() {
-          var fade = document.getElementById("connection-status");
-          var timerId = setInterval(function() {
-            var opacity = fade.style.opacity;
+        setTimeout(function () {
+          let fade = document.getElementById("connection-status");
+          let timerId = setInterval(function () {
+            let opacity = fade.style.opacity;
             if (opacity == 0.0) {
               clearInterval(timerId);
             } else {
@@ -96,71 +104,87 @@
         }, 5000);
       }
 
-      // function that takes in a ra dec coordinate and converts it into a cartesian coordinate in galactic reference frame
-      function convertRaDec(RA_hours, RA_minutes, RA_seconds, Dec_degrees, Dec_minutes, Dec_seconds) {
-        var distance = 9.2E15;
+      // Function that takes in a ra dec coordinate and converts it into a cartesian coordinate in galactic reference frame
+      function convertRaDec(
+        RA_hours,
+        RA_minutes,
+        RA_seconds,
+        Dec_degrees,
+        Dec_minutes,
+        Dec_seconds,
+      ) {
+        let distance = 9.2e15;
 
-        var a = (RA_hours * 15.0) + (RA_minutes * 15/60.0) + (RA_seconds * 15/3600.0);
-        var d = ( Math.abs(Dec_degrees) + (Dec_minutes / 60.0) + (Dec_seconds / 3600.0)) * Math.sign(Dec_degrees);
+        let a = RA_hours * 15.0 + (RA_minutes * 15) / 60.0 + (RA_seconds * 15) / 3600.0;
+        let d =
+          (Math.abs(Dec_degrees) + Dec_minutes / 60.0 + Dec_seconds / 3600.0) *
+          Math.sign(Dec_degrees);
 
-        a = a * (Math.PI/180.0);
-        d = d * (Math.PI/180.0);
+        a = a * (Math.PI / 180.0);
+        d = d * (Math.PI / 180.0);
 
         // J2000
-        const A0 = 192.8595 * (Math.PI/180.0);
-        const D0 = 27.1284 * (Math.PI/180.0);
-        const L0 = 122.9320 * (Math.PI/180.0);
+        const A0 = 192.8595 * (Math.PI / 180.0);
+        const D0 = 27.1284 * (Math.PI / 180.0);
+        const L0 = 122.932 * (Math.PI / 180.0);
 
-        // convert to galactic reference frame
-        var l = L0 - Math.atan2(Math.cos(d)*Math.sin(a - A0), Math.sin(d)*Math.cos(D0) - Math.cos(d)*Math.sin(D0)*Math.cos(a - A0));
-        var b = Math.asin(Math.sin(d)*Math.sin(D0) + Math.cos(d)*Math.cos(D0)*Math.cos(a - A0));
+        // Convert to galactic reference frame
+        let l =
+          L0 -
+          Math.atan2(
+            Math.cos(d) * Math.sin(a - A0),
+            Math.sin(d) * Math.cos(D0) - Math.cos(d) * Math.sin(D0) * Math.cos(a - A0),
+          );
+        let b = Math.asin(
+          Math.sin(d) * Math.sin(D0) + Math.cos(d) * Math.cos(D0) * Math.cos(a - A0),
+        );
 
-        var X = (distance * Math.cos(b)) * Math.cos(l);
-        var Y = (distance * Math.cos(b)) * Math.sin(l);
-        var Z = distance * Math.sin(b);
+        let X = distance * Math.cos(b) * Math.cos(l);
+        let Y = distance * Math.cos(b) * Math.sin(l);
+        let Z = distance * Math.sin(b);
 
         return [X, Y, Z];
       }
 
       function normalize(v) {
-        var l = length(v);
+        let l = length(v);
         v[0] = v[0] / l;
         v[1] = v[1] / l;
         v[2] = v[2] / l;
       }
 
       function length(v) {
-        return Math.sqrt(v[0]*v[0] + v[1]*v[1]+ v[2]*v[2]);
+        return Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
       }
 
       function applyMatrix(m, v) {
-        var res = [0.0, 0.0, 0.0];
-        res[0] = m[1]*v[0] + m[2]*v[1] + m[3]*v[2]; //ax + by + cz
-        res[1] = m[4]*v[0] + m[5]*v[1] + m[6]*v[2]; //dx + ey + fz
-        res[2] = m[7]*v[0] + m[8]*v[1] + m[9]*v[2]; //gx + hy + iz
+        let res = [0.0, 0.0, 0.0];
+        res[0] = m[1] * v[0] + m[2] * v[1] + m[3] * v[2]; //ax + by + cz
+        res[1] = m[4] * v[0] + m[5] * v[1] + m[6] * v[2]; //dx + ey + fz
+        res[2] = m[7] * v[0] + m[8] * v[1] + m[9] * v[2]; //gx + hy + iz
         return res;
       }
 
-      // function that calculates the new x and y local angles of JWST to point towards the input coordinate
+      // Function that calculates the new x and y local angles of JWST to point towards the input coordinate
       function calculateJWSTAngles(cx, cy, cz) {
         // Normalize
         c = [cx, cy, cz];
         normalize(c);
 
         // Then Calculate the angle for X and Y seperatly
-        var newXAngle = Math.asin(-c[1]); // asin(-cy)
-        var newYAngle = 0.0;
+        let newXAngle = Math.asin(-c[1]); // asin(-cy)
+        let newYAngle = 0.0;
 
-        var op1 = Math.asin(c[0] / (Math.cos(newXAngle))); // asin(cx/(cos(asin(-cy))))
-        var op2 = Math.acos(c[2] / (Math.cos(newXAngle))); // acos(cz/(cos(asin(-cy))))
+        let op1 = Math.asin(c[0] / Math.cos(newXAngle)); // asin(cx/(cos(asin(-cy))))
+        let op2 = Math.acos(c[2] / Math.cos(newXAngle)); // acos(cz/(cos(asin(-cy))))
 
         // Choose option 1 or 2
         // Same
-        if(Math.abs(op1 - op2) < 0.00001) {
+        if (Math.abs(op1 - op2) < 0.00001) {
           newYAngle = op1;
         }
         // Same but different signs
-        else if(Math.abs(Math.abs(op1) - Math.abs(op2)) < 0.00001) {
+        else if (Math.abs(Math.abs(op1) - Math.abs(op2)) < 0.00001) {
           newYAngle = op1;
         }
         // Different and same signs
@@ -175,19 +199,19 @@
         return [newXAngle, newYAngle];
       }
 
-      // function that uses the given Ra Dec coordinates and rotates the JWST towards it, if possible
+      // Function that uses the given Ra Dec coordinates and rotates the JWST towards it, if possible
       function pointToRaDec() {
         directJWST(openspace);
       }
 
       function pointToHUDF() {
-        document.getElementById('rah').value = "3";
-        document.getElementById('ram').value = "32";
-        document.getElementById('ras').value = "38.92"
+        document.getElementById("rah").value = "3";
+        document.getElementById("ram").value = "32";
+        document.getElementById("ras").value = "38.92";
 
-        document.getElementById('decd').value = "-27";
-        document.getElementById('decm').value = "47";
-        document.getElementById('decs').value = "29.37";
+        document.getElementById("decd").value = "-27";
+        document.getElementById("decm").value = "47";
+        document.getElementById("decs").value = "29.37";
         directJWST(openspace);
 
         if (document.getElementById("showImagesCheck").checked) {
@@ -197,13 +221,13 @@
       }
 
       function pointToOrion() {
-        document.getElementById('rah').value = "5";
-        document.getElementById('ram').value = "35";
-        document.getElementById('ras').value = "17"
+        document.getElementById("rah").value = "5";
+        document.getElementById("ram").value = "35";
+        document.getElementById("ras").value = "17";
 
-        document.getElementById('decd').value = "-5";
-        document.getElementById('decm').value = "23";
-        document.getElementById('decs').value = "28";
+        document.getElementById("decd").value = "-5";
+        document.getElementById("decm").value = "23";
+        document.getElementById("decs").value = "28";
         directJWST(openspace);
 
         if (document.getElementById("showImagesCheck").checked) {
@@ -213,13 +237,13 @@
       }
 
       function pointToM51() {
-        document.getElementById('rah').value = "13";
-        document.getElementById('ram').value = "29";
-        document.getElementById('ras').value = "53"
+        document.getElementById("rah").value = "13";
+        document.getElementById("ram").value = "29";
+        document.getElementById("ras").value = "53";
 
-        document.getElementById('decd').value = "47";
-        document.getElementById('decm').value = "11";
-        document.getElementById('decs').value = "43";
+        document.getElementById("decd").value = "47";
+        document.getElementById("decm").value = "11";
+        document.getElementById("decs").value = "43";
         directJWST(openspace);
 
         if (document.getElementById("showImagesCheck").checked) {
@@ -229,13 +253,13 @@
       }
 
       function pointToTrifid() {
-        document.getElementById('rah').value = "18";
-        document.getElementById('ram').value = "2";
-        document.getElementById('ras').value = "23"
+        document.getElementById("rah").value = "18";
+        document.getElementById("ram").value = "2";
+        document.getElementById("ras").value = "23";
 
-        document.getElementById('decd').value = "-23";
-        document.getElementById('decm').value = "1";
-        document.getElementById('decs').value = "48";
+        document.getElementById("decd").value = "-23";
+        document.getElementById("decm").value = "1";
+        document.getElementById("decs").value = "48";
         directJWST(openspace);
 
         if (document.getElementById("showImagesCheck").checked) {
@@ -245,13 +269,13 @@
       }
 
       function pointToM82() {
-        document.getElementById('rah').value = "9";
-        document.getElementById('ram').value = "55";
-        document.getElementById('ras').value = "52"
+        document.getElementById("rah").value = "9";
+        document.getElementById("ram").value = "55";
+        document.getElementById("ras").value = "52";
 
-        document.getElementById('decd').value = "69";
-        document.getElementById('decm').value = "40";
-        document.getElementById('decs').value = "47";
+        document.getElementById("decd").value = "69";
+        document.getElementById("decm").value = "40";
+        document.getElementById("decs").value = "47";
         directJWST(openspace);
 
         if (document.getElementById("showImagesCheck").checked) {
@@ -261,13 +285,13 @@
       }
 
       function pointToHH212() {
-        document.getElementById('rah').value = "5";
-        document.getElementById('ram').value = "43";
-        document.getElementById('ras').value = "51.41"
+        document.getElementById("rah").value = "5";
+        document.getElementById("ram").value = "43";
+        document.getElementById("ras").value = "51.41";
 
-        document.getElementById('decd').value = "-1";
-        document.getElementById('decm').value = "2";
-        document.getElementById('decs').value = "53.1";
+        document.getElementById("decd").value = "-1";
+        document.getElementById("decm").value = "2";
+        document.getElementById("decs").value = "53.1";
         directJWST(openspace);
 
         if (document.getElementById("showImagesCheck").checked) {
@@ -277,13 +301,13 @@
       }
 
       function pointToRing() {
-        document.getElementById('rah').value = "18";
-        document.getElementById('ram').value = "53";
-        document.getElementById('ras').value = "35"
+        document.getElementById("rah").value = "18";
+        document.getElementById("ram").value = "53";
+        document.getElementById("ras").value = "35";
 
-        document.getElementById('decd').value = "33";
-        document.getElementById('decm').value = "1";
-        document.getElementById('decs').value = "45";
+        document.getElementById("decd").value = "33";
+        document.getElementById("decm").value = "1";
+        document.getElementById("decs").value = "45";
         directJWST(openspace);
 
         if (document.getElementById("showImagesCheck").checked) {
@@ -293,13 +317,13 @@
       }
 
       function pointToCrab() {
-        document.getElementById('rah').value = "5";
-        document.getElementById('ram').value = "34";
-        document.getElementById('ras').value = "32"
+        document.getElementById("rah").value = "5";
+        document.getElementById("ram").value = "34";
+        document.getElementById("ras").value = "32";
 
-        document.getElementById('decd').value = "22";
-        document.getElementById('decm').value = "0";
-        document.getElementById('decs').value = "52";
+        document.getElementById("decd").value = "22";
+        document.getElementById("decm").value = "0";
+        document.getElementById("decs").value = "52";
         directJWST(openspace);
 
         if (document.getElementById("showImagesCheck").checked) {
@@ -309,13 +333,13 @@
       }
 
       function pointToSN1987a() {
-        document.getElementById('rah').value = "5";
-        document.getElementById('ram').value = "35";
-        document.getElementById('ras').value = "28"
+        document.getElementById("rah").value = "5";
+        document.getElementById("ram").value = "35";
+        document.getElementById("ras").value = "28";
 
-        document.getElementById('decd').value = "-69";
-        document.getElementById('decm').value = "16";
-        document.getElementById('decs').value = "11";
+        document.getElementById("decd").value = "-69";
+        document.getElementById("decm").value = "16";
+        document.getElementById("decs").value = "11";
         directJWST(openspace);
 
         if (document.getElementById("showImagesCheck").checked) {
@@ -325,13 +349,13 @@
       }
 
       function pointToHD84406() {
-        document.getElementById('rah').value = "9";
-        document.getElementById('ram').value = "47";
-        document.getElementById('ras').value = "30.55"
+        document.getElementById("rah").value = "9";
+        document.getElementById("ram").value = "47";
+        document.getElementById("ras").value = "30.55";
 
-        document.getElementById('decd').value = "63";
-        document.getElementById('decm').value = "14";
-        document.getElementById('decs').value = "52.09";
+        document.getElementById("decd").value = "63";
+        document.getElementById("decm").value = "14";
+        document.getElementById("decs").value = "52.09";
         directJWST(openspace);
 
         if (document.getElementById("showImagesCheck").checked) {
@@ -341,15 +365,15 @@
       }
 
       function reset() {
-        document.getElementById('ra-deg').value = "";
-        document.getElementById('rah').value = "";
-        document.getElementById('ram').value = "";
-        document.getElementById('ras').value = ""
+        document.getElementById("ra-deg").value = "";
+        document.getElementById("rah").value = "";
+        document.getElementById("ram").value = "";
+        document.getElementById("ras").value = "";
 
-        document.getElementById('dec-deg').value = "";
-        document.getElementById('decd').value = "";
-        document.getElementById('decm').value = "";
-        document.getElementById('decs').value = "";
+        document.getElementById("dec-deg").value = "";
+        document.getElementById("decd").value = "";
+        document.getElementById("decm").value = "";
+        document.getElementById("decs").value = "";
 
         document.getElementById("rotation-time").value = 3;
         document.getElementById("rotation-time-value").innerHTML = 3;
@@ -365,69 +389,94 @@
       }
 
       function showImagesCheckOnChange() {
-        if (!document.getElementById("showImagesCheck").checked){
+        if (!document.getElementById("showImagesCheck").checked) {
           resetImages();
         }
       }
 
       function resetJWST(openspace) {
-        if(openspace == null) {
+        if (openspace == null) {
           console.log("Error: No connection to an OpenSpace application");
           return;
         }
-        openspace.setPropertyValueSingle('Scene.JWSTModel.Rotation.Rotation', [0.0, 0.0,  0.0], 3.0);
+        openspace.setPropertyValueSingle(
+          "Scene.JWSTModel.Rotation.Rotation",
+          [0.0, 0.0, 0.0],
+          3.0,
+        );
       }
 
       function isInputValid(ra_h, ra_m, ra_s, dec_d, dec_m, dec_s) {
         // Empty
-        if(ra_h == "" || ra_m == "" || ra_s == "" || dec_d == "" || dec_m == "" || dec_s == "") {
-          var messageString = "Warning: At least one of the coordinate input fields were empty";
+        if (
+          ra_h == "" ||
+          ra_m == "" ||
+          ra_s == "" ||
+          dec_d == "" ||
+          dec_m == "" ||
+          dec_s == ""
+        ) {
+          let messageString =
+            "Warning: At least one of the coordinate input fields were empty";
           logMessage(messageString);
           return false;
         }
 
         // Numbers
-        if(isNaN(ra_h) || isNaN(ra_m) || isNaN(ra_s) || isNaN(dec_d) || isNaN(dec_m) || isNaN(dec_s) ) {
-          var messageString = "Warning: All coordinate input fields must be numbers";
+        if (
+          isNaN(ra_h) ||
+          isNaN(ra_m) ||
+          isNaN(ra_s) ||
+          isNaN(dec_d) ||
+          isNaN(dec_m) ||
+          isNaN(dec_s)
+        ) {
+          let messageString = "Warning: All coordinate input fields must be numbers";
           logMessage(messageString);
           return false;
         }
 
         // Ra
-        if(ra_h < 0.0 || ra_h >= 24.0) {
-          var messageString = "Warning: Right ascension hours is outside the allowed range of 0 to 24 hours (exclusive)";
+        if (ra_h < 0.0 || ra_h >= 24.0) {
+          let messageString =
+            "Warning: Right ascension hours is outside the allowed range of 0 to 24 hours (exclusive)";
           logMessage(messageString);
           return false;
         }
-        if(ra_m < 0.0 || ra_m >= 60.0) {
-          var messageString = "Warning: Right ascension minutes is outside the allowed range of 0 to 60 minutes (exclusive)";
+        if (ra_m < 0.0 || ra_m >= 60.0) {
+          let messageString =
+            "Warning: Right ascension minutes is outside the allowed range of 0 to 60 minutes (exclusive)";
           logMessage(messageString);
           return false;
         }
-        if(ra_s < 0.0 || ra_s >= 60.0) {
-          var messageString = "Warning: Right ascension seconds is outside the allowed range of 0 to 60 seconds (exclusive)";
+        if (ra_s < 0.0 || ra_s >= 60.0) {
+          let messageString =
+            "Warning: Right ascension seconds is outside the allowed range of 0 to 60 seconds (exclusive)";
           logMessage(messageString);
           return false;
         }
 
         // Dec
-        if(dec_d < -90.0 || dec_d > 90.0) {
-          var messageString = "Warning: Declination degrees is outside the allowed range of -90 to 90 degrees (inclusive)";
+        if (dec_d < -90.0 || dec_d > 90.0) {
+          let messageString =
+            "Warning: Declination degrees is outside the allowed range of -90 to 90 degrees (inclusive)";
+          logMessage(messageString);
+          return false;
+        } else if ((dec_d == -90.0 || dec_d == 90.0) && (dec_m != 0 || dec_s != 0)) {
+          let messageString =
+            "Warning: Total declination is outside the allowed range of -90 to 90 degrees (inclusive)";
           logMessage(messageString);
           return false;
         }
-        else if((dec_d == -90.0 || dec_d == 90.0) && (dec_m != 0 || dec_s != 0)) {
-          var messageString = "Warning: Total declination is outside the allowed range of -90 to 90 degrees (inclusive)";
+        if (dec_m < 0.0 || dec_m >= 60.0) {
+          let messageString =
+            "Warning: Declination minutes is outside the allowed range of 0 to 60 minutes (exclusive)";
           logMessage(messageString);
           return false;
         }
-        if(dec_m < 0.0 || dec_m >= 60.0) {
-          var messageString = "Warning: Declination minutes is outside the allowed range of 0 to 60 minutes (exclusive)";
-          logMessage(messageString);
-          return false;
-        }
-        if(dec_s < 0.0 || dec_s >= 60.0) {
-          var messageString = "Warning: Declination seconds is outside the allowed range of 0 to 60 seconds (exclusive)";
+        if (dec_s < 0.0 || dec_s >= 60.0) {
+          let messageString =
+            "Warning: Declination seconds is outside the allowed range of 0 to 60 seconds (exclusive)";
           logMessage(messageString);
           return false;
         }
@@ -436,219 +485,235 @@
       }
 
       async function directJWST(openspace) {
-        if(openspace == null) {
+        if (openspace == null) {
           console.log("Error: No connection to an OpenSpace application");
           return;
         }
 
         // Get input
-        var ra_h = document.getElementById('rah').value;
-        var ra_m = document.getElementById('ram').value;
-        var ra_s = document.getElementById('ras').value;
+        let ra_h = document.getElementById("rah").value;
+        let ra_m = document.getElementById("ram").value;
+        let ra_s = document.getElementById("ras").value;
 
-        var dec_d = document.getElementById('decd').value;
-        var dec_m = document.getElementById('decm').value;
-        var dec_s = document.getElementById('decs').value;
+        let dec_d = document.getElementById("decd").value;
+        let dec_m = document.getElementById("decm").value;
+        let dec_s = document.getElementById("decs").value;
 
-        var RA = ra_h.toString() + 'h' + ra_m.toString() + 'm' + ra_s.toString() + 's';
-        var DEC = dec_d.toString() + 'd' + dec_m.toString() + 'm' + dec_s.toString() + 's';
-        var distJS = 9.2E15
-        //console.log("Ra " + RA +" Dec " + DEC);
+        let RA = ra_h.toString() + "h" + ra_m.toString() + "m" + ra_s.toString() + "s";
+        let DEC =
+          dec_d.toString() + "d" + dec_m.toString() + "m" + dec_s.toString() + "s";
+        let distJS = 9.2e15;
 
         // Check input
-        if(!isInputValid(ra_h, ra_m, ra_s, dec_d, dec_m, dec_s)) {
+        if (!isInputValid(ra_h, ra_m, ra_s, dec_d, dec_m, dec_s)) {
           return;
         }
 
         // Convert ra dec coordinate to cartesian coordinate in solar system reference frame
-        var coordinates = convertRaDec(ra_h, ra_m, ra_s, dec_d, dec_m, dec_s);
+        let coordinates = convertRaDec(ra_h, ra_m, ra_s, dec_d, dec_m, dec_s);
 
         // Get JWST position
         const JWSTPosition = await openspace.worldPosition("JWSTModel");
-        if(JWSTPosition == null) {
-          var errorString = "Error: Could not find the JWST model inside the connected OpenSpace instance";
+        if (JWSTPosition == null) {
+          let errorString =
+            "Error: Could not find the JWST model inside the connected OpenSpace instance";
           console.log(errorString);
           document.getElementById("connection-status").style.opacity = 1;
-          document.getElementById('connection-status').innerHTML = errorString;
+          document.getElementById("connection-status").innerHTML = errorString;
           return;
         }
 
         // Calculate the vector from JWST towards the coordinate
-        var JWSTtoCoord = [
-          coordinates[0] - JWSTPosition[1][0],
-          coordinates[1] - JWSTPosition[1][1],
-          coordinates[2] - JWSTPosition[1][2]
+        let JWSTtoCoord = [
+          coordinates[0] - JWSTPosition[0],
+          coordinates[1] - JWSTPosition[1],
+          coordinates[2] - JWSTPosition[2],
         ];
 
         // Apply the worldRotation before calculating the angles
         const JWSTRotation = await openspace.worldRotation("JWSTRotation");
-        if(JWSTRotation == null) {
-          var errorString = "Error: Could not find the JWST rotation inside the connected OpenSpace instance";
+        if (JWSTRotation == null) {
+          let errorString =
+            "Error: Could not find the JWST rotation inside the connected OpenSpace instance";
           console.log(errorString);
           document.getElementById("connection-status").style.opacity = 1;
-          document.getElementById('connection-status').innerHTML = errorString;
+          document.getElementById("connection-status").innerHTML = errorString;
           return;
         }
-        var JWSTtoCoordRotated = applyMatrix(JWSTRotation[1], JWSTtoCoord);
+        let JWSTtoCoordRotated = applyMatrix(JWSTRotation, JWSTtoCoord);
 
         // Calculate the JWST new angles to be pointing towards the coordinate
-        var JWSTAngles = calculateJWSTAngles(JWSTtoCoordRotated[0], JWSTtoCoordRotated[1], JWSTtoCoordRotated[2]);
+        let JWSTAngles = calculateJWSTAngles(
+          JWSTtoCoordRotated[0],
+          JWSTtoCoordRotated[1],
+          JWSTtoCoordRotated[2],
+        );
 
         // Check if the new angle violate the sunshield
         // -45 deg to 5 deg is valid in x rotation
-        if(JWSTAngles[0] < -0.785398163 || JWSTAngles[0] > 0.0872664626) {
+        if (JWSTAngles[0] < -0.785398163 || JWSTAngles[0] > 0.0872664626) {
           logMessage("Warning: Coordinate violates the sunshield");
-        }
-        else {
+        } else {
           console.log("Coordinate is valid for sunshield");
         }
 
         let timing = parseInt(document.getElementById("rotation-time").value);
         console.log(timing);
-        openspace.setPropertyValueSingle('Scene.JWSTModel.Rotation.Rotation', [ JWSTAngles[0], JWSTAngles[1],  0.0], timing);
+        openspace.setPropertyValueSingle(
+          "Scene.JWSTModel.Rotation.Rotation",
+          [JWSTAngles[0], JWSTAngles[1], 0.0],
+          timing,
+        );
       }
 
       function convertHMStoDeg() {
-        var RA_hours = document.getElementById('rah').value;
-        var RA_minutes = document.getElementById('ram').value;
-        var RA_seconds = document.getElementById('ras').value;
+        let RA_hours = document.getElementById("rah").value;
+        let RA_minutes = document.getElementById("ram").value;
+        let RA_seconds = document.getElementById("ras").value;
 
-        var Dec_d = document.getElementById('decd').value;
-        var Dec_minutes = document.getElementById('decm').value;
-        var Dec_seconds = document.getElementById('decs').value;
+        let Dec_d = document.getElementById("decd").value;
+        let Dec_minutes = document.getElementById("decm").value;
+        let Dec_seconds = document.getElementById("decs").value;
 
-        var RA_degrees = (RA_hours * 15.0) + (RA_minutes * 15/60.0) + (RA_seconds * 15/3600.0);
-        var DEC_degrees = ( Math.abs(Dec_d) + (Dec_minutes / 60.0) + (Dec_seconds / 3600.0)) * Math.sign(Dec_d);
+        let RA_degrees =
+          RA_hours * 15.0 + (RA_minutes * 15) / 60.0 + (RA_seconds * 15) / 3600.0;
+        let DEC_degrees =
+          (Math.abs(Dec_d) + Dec_minutes / 60.0 + Dec_seconds / 3600.0) *
+          Math.sign(Dec_d);
 
         return [RA_degrees, DEC_degrees];
       }
 
       function convertDegtoHMS() {
-        var RA_degrees = document.getElementById('ra-deg').value;
-        var DEC_degrees = document.getElementById('dec-deg').value;
+        let RA_degrees = document.getElementById("ra-deg").value;
+        let DEC_degrees = document.getElementById("dec-deg").value;
 
-        var RA_hours = Math.trunc(RA_degrees/15.0);
-        var rest = RA_degrees/15.0 - RA_hours;
-        var RA_minutes = Math.trunc(rest * 60)
+        let RA_hours = Math.trunc(RA_degrees / 15.0);
+        let rest = RA_degrees / 15.0 - RA_hours;
+        let RA_minutes = Math.trunc(rest * 60);
         rest = rest * 60 - RA_minutes;
-        var RA_seconds = rest * 60;
+        let RA_seconds = rest * 60;
 
-        var Dec_d = Math.trunc(DEC_degrees);
+        let Dec_d = Math.trunc(DEC_degrees);
         rest = Math.abs(DEC_degrees) - Math.abs(Dec_d);
-        var Dec_minutes = Math.trunc(rest * 60);
+        let Dec_minutes = Math.trunc(rest * 60);
         rest = rest * 60 - Dec_minutes;
-        var Dec_seconds = rest * 60;
+        let Dec_seconds = rest * 60;
 
         return [RA_hours, RA_minutes, RA_seconds, Dec_d, Dec_minutes, Dec_seconds];
       }
 
       function raDegHandler() {
-        if (document.getElementById('ra-deg').value == "") {
-          document.getElementById('rah').value = "";
-          document.getElementById('ram').value = "";
-          document.getElementById('ras').value = "";
+        if (document.getElementById("ra-deg").value == "") {
+          document.getElementById("rah").value = "";
+          document.getElementById("ram").value = "";
+          document.getElementById("ras").value = "";
           return;
         }
 
-        var hms = convertDegtoHMS();
-        document.getElementById('rah').value = hms[0];
-        document.getElementById('ram').value = hms[1];
-        document.getElementById('ras').value = hms[2];
+        let hms = convertDegtoHMS();
+        document.getElementById("rah").value = hms[0];
+        document.getElementById("ram").value = hms[1];
+        document.getElementById("ras").value = hms[2];
       }
 
       function raHourHandler() {
-        if (document.getElementById('rah').value == "" &&
-            document.getElementById('ram').value == "" &&
-            document.getElementById('ras').value == "")
-        {
-          document.getElementById('ra-deg').value = "";
+        if (
+          document.getElementById("rah").value == "" &&
+          document.getElementById("ram").value == "" &&
+          document.getElementById("ras").value == ""
+        ) {
+          document.getElementById("ra-deg").value = "";
           return;
         }
 
-        var degrees = convertHMStoDeg();
-        document.getElementById('ra-deg').value = degrees[0];
+        let degrees = convertHMStoDeg();
+        document.getElementById("ra-deg").value = degrees[0];
       }
 
       function raMinHandler() {
-        if (document.getElementById('rah').value == "" &&
-            document.getElementById('ram').value == "" &&
-            document.getElementById('ras').value == "")
-        {
-          document.getElementById('ra-deg').value = "";
+        if (
+          document.getElementById("rah").value == "" &&
+          document.getElementById("ram").value == "" &&
+          document.getElementById("ras").value == ""
+        ) {
+          document.getElementById("ra-deg").value = "";
           return;
         }
 
-        var degrees = convertHMStoDeg();
-        document.getElementById('ra-deg').value = degrees[0];
+        let degrees = convertHMStoDeg();
+        document.getElementById("ra-deg").value = degrees[0];
       }
 
       function raSecHandler() {
-        if (document.getElementById('rah').value == "" &&
-            document.getElementById('ram').value == "" &&
-            document.getElementById('ras').value == "")
-        {
-          document.getElementById('ra-deg').value = "";
+        if (
+          document.getElementById("rah").value == "" &&
+          document.getElementById("ram").value == "" &&
+          document.getElementById("ras").value == ""
+        ) {
+          document.getElementById("ra-deg").value = "";
           return;
         }
 
-        var degrees = convertHMStoDeg();
-        document.getElementById('ra-deg').value = degrees[0];
+        let degrees = convertHMStoDeg();
+        document.getElementById("ra-deg").value = degrees[0];
       }
 
       function decDegHandler() {
-        if (document.getElementById('dec-deg').value == "") {
-          document.getElementById('decd').value = "";
-          document.getElementById('decm').value = "";
-          document.getElementById('decs').value = "";
+        if (document.getElementById("dec-deg").value == "") {
+          document.getElementById("decd").value = "";
+          document.getElementById("decm").value = "";
+          document.getElementById("decs").value = "";
           return;
         }
 
-        var hms = convertDegtoHMS();
-        document.getElementById('decd').value = hms[3];
-        document.getElementById('decm').value = hms[4];
-        document.getElementById('decs').value = hms[5];
-
+        let hms = convertDegtoHMS();
+        document.getElementById("decd").value = hms[3];
+        document.getElementById("decm").value = hms[4];
+        document.getElementById("decs").value = hms[5];
       }
 
       function decDHandler() {
-        if (document.getElementById('decd').value == "" &&
-            document.getElementById('decm').value == "" &&
-            document.getElementById('decs').value == "")
-        {
-          document.getElementById('dec-deg').value = "";
+        if (
+          document.getElementById("decd").value == "" &&
+          document.getElementById("decm").value == "" &&
+          document.getElementById("decs").value == ""
+        ) {
+          document.getElementById("dec-deg").value = "";
           return;
         }
 
-        var degrees = convertHMStoDeg();
-        document.getElementById('dec-deg').value = degrees[1];
+        let degrees = convertHMStoDeg();
+        document.getElementById("dec-deg").value = degrees[1];
       }
 
       function decMinHandler() {
-        if (document.getElementById('decd').value == "" &&
-            document.getElementById('decm').value == "" &&
-            document.getElementById('decs').value == "")
-        {
-          document.getElementById('dec-deg').value = "";
+        if (
+          document.getElementById("decd").value == "" &&
+          document.getElementById("decm").value == "" &&
+          document.getElementById("decs").value == ""
+        ) {
+          document.getElementById("dec-deg").value = "";
           return;
         }
 
-        var degrees = convertHMStoDeg();
-        document.getElementById('dec-deg').value = degrees[1];
+        let degrees = convertHMStoDeg();
+        document.getElementById("dec-deg").value = degrees[1];
       }
 
       function decSecHandler() {
-        if (document.getElementById('decd').value == "" &&
-            document.getElementById('decm').value == "" &&
-            document.getElementById('decs').value == "")
-        {
-          document.getElementById('dec-deg').value = "";
+        if (
+          document.getElementById("decd").value == "" &&
+          document.getElementById("decm").value == "" &&
+          document.getElementById("decs").value == ""
+        ) {
+          document.getElementById("dec-deg").value = "";
           return;
         }
 
-        var degrees = convertHMStoDeg();
-        document.getElementById('dec-deg').value = degrees[1];
+        let degrees = convertHMStoDeg();
+        document.getElementById("dec-deg").value = degrees[1];
       }
-
     </script>
   </head>
   <body>
@@ -656,89 +721,149 @@
     <div id="container" class="disconnected">
       <div id="connection-status" class="connection-status">
         Connect to OpenSpace:
-        <input id='ipaddress' type=text placeholder="Enter ip address"/>
+        <input id="ipaddress" type="text" placeholder="Enter ip address" />
         <button onClick="connectToOpenSpace();">Connect</button>
       </div>
-      <div class='header'>
+      <div class="header">
         <h1>Point the JWST towards a Ra Dec coordinate</h1>
       </div>
       <div id="radecinput" class="row">
         <div id="left-col" class="card two-text-column">
-          Ra: <input id="rah" type=text class="coord" placeholder="Hours"
-                onchange="raHourHandler();" onkeypress="this.onchange();"
-                onpaste="this.onchange();" oninput="this.onchange();"
-              />
-          <input id="ram" type=text class="coord" placeholder="Minutes"
-            onchange="raMinHandler();" onkeypress="this.onchange();"
-            onpaste="this.onchange();" oninput="this.onchange();"
+          Ra:
+          <input
+            id="rah"
+            type="text"
+            class="coord"
+            placeholder="Hours"
+            onchange="raHourHandler()"
+            onkeypress="this.onchange()"
+            onpaste="this.onchange()"
+            oninput="this.onchange()"
           />
-          <input id="ras" type=text class="coord"placeholder="Seconds"
-            onchange="raSecHandler();" onkeypress="this.onchange();"
-            onpaste="this.onchange();" oninput="this.onchange();"
+          <input
+            id="ram"
+            type="text"
+            class="coord"
+            placeholder="Minutes"
+            onchange="raMinHandler()"
+            onkeypress="this.onchange()"
+            onpaste="this.onchange()"
+            oninput="this.onchange()"
           />
-          <br/>
-          Dec: <input id="decd" type=text class="coord" placeholder="Degrees"
-                 onchange="decDHandler();" onkeypress="this.onchange();"
-                 onpaste="this.onchange();" oninput="this.onchange();"
-               />
-          <input id="decm" type=text class="coord" placeholder="Minutes"
-            onchange="decMinHandler();" onkeypress="this.onchange();"
-            onpaste="this.onchange();" oninput="this.onchange();"
+          <input
+            id="ras"
+            type="text"
+            class="coord"
+            placeholder="Seconds"
+            onchange="raSecHandler()"
+            onkeypress="this.onchange()"
+            onpaste="this.onchange()"
+            oninput="this.onchange()"
           />
-          <input id="decs" type=text class="coord" placeholder="Seconds"
-            onchange="decSecHandler();" onkeypress="this.onchange();"
-            onpaste="this.onchange();" oninput="this.onchange();"
+          <br />
+          Dec:
+          <input
+            id="decd"
+            type="text"
+            class="coord"
+            placeholder="Degrees"
+            onchange="decDHandler()"
+            onkeypress="this.onchange()"
+            onpaste="this.onchange()"
+            oninput="this.onchange()"
+          />
+          <input
+            id="decm"
+            type="text"
+            class="coord"
+            placeholder="Minutes"
+            onchange="decMinHandler()"
+            onkeypress="this.onchange()"
+            onpaste="this.onchange()"
+            oninput="this.onchange()"
+          />
+          <input
+            id="decs"
+            type="text"
+            class="coord"
+            placeholder="Seconds"
+            onchange="decSecHandler()"
+            onkeypress="this.onchange()"
+            onpaste="this.onchange()"
+            oninput="this.onchange()"
           />
         </div>
         <div id="right-col" class="card two-text-column">
-          Ra: <input id="ra-deg" type=text class="coord degree" placeholder="Degrees"
-                onchange="raDegHandler();" onkeypress="this.onchange();"
-                onpaste="this.onchange();" oninput="this.onchange();"
-              />
-          <br/>
-          Dec: <input id="dec-deg" type=text class="coord degree" placeholder="Degrees"
-                 onchange="decDegHandler();" onkeypress="this.onchange();"
-                 onpaste="this.onchange();" oninput="this.onchange();"
-               />
+          Ra:
+          <input
+            id="ra-deg"
+            type="text"
+            class="coord degree"
+            placeholder="Degrees"
+            onchange="raDegHandler()"
+            onkeypress="this.onchange()"
+            onpaste="this.onchange()"
+            oninput="this.onchange()"
+          />
+          <br />
+          Dec:
+          <input
+            id="dec-deg"
+            type="text"
+            class="coord degree"
+            placeholder="Degrees"
+            onchange="decDegHandler()"
+            onkeypress="this.onchange()"
+            onpaste="this.onchange()"
+            oninput="this.onchange()"
+          />
         </div>
       </div>
       <div class="card">
         <button onClick="pointToRaDec();">Enter</button>
         <button onClick="reset();">Reset</button>
-        Show images: <input type="checkbox" id="showImagesCheck" onclick="showImagesCheckOnChange()">
-        <br/>
+        Show images:
+        <input type="checkbox" id="showImagesCheck" onclick="showImagesCheckOnChange()" />
+        <br />
         <button onClick="pointToHUDF();">Point To HUDF</button>
         <button onClick="pointToOrion();">Point To Orion Nebula</button>
         <button onClick="pointToM51();">Point To M51</button>
-        <br/>
+        <br />
         <button onClick="pointToTrifid();">Point To Trifid Nebula</button>
         <button onClick="pointToM82();">Point To M82</button>
         <button onClick="pointToHH212();">Point To HH 212</button>
-        <br/>
+        <br />
         <button onClick="pointToRing();">Point To the Ring Nebula</button>
         <button onClick="pointToCrab();">Point To the Crab Nebula</button>
-        <br/>
+        <br />
         <button onClick="pointToSN1987a();">Point To Supernova SN 1987a</button>
         <button onClick="pointToHD84406();">Point To HD 84406</button>
-        <br/>
-        <br/>
+        <br />
+        <br />
         Rotation time (seconds): <br />
-        <input type="range" min="0" max="120" value="3" class="slider" id="rotation-time">
-        <div style="display: inline" id="rotation-time-value"></div>s
+        <input
+          type="range"
+          min="0"
+          max="120"
+          value="3"
+          class="slider"
+          id="rotation-time"
+        />
+        <div style="display: inline" id="rotation-time-value"></div>
+        s
       </div>
-      <div id="main">
-      </div>
+      <div id="main"></div>
       <script type="text/javascript">
-        connectToOpenSpace('localhost');
+        connectToOpenSpace("localhost");
 
         let slider = document.getElementById("rotation-time");
         let output = document.getElementById("rotation-time-value");
         slider.value = 3;
         output.innerHTML = slider.value;
-        slider.oninput = function() {
+        slider.oninput = function () {
           output.innerHTML = this.value;
-        }
+        };
       </script>
     </div>
-  <body>
+  </body>
 </html>
