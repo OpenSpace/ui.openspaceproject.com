@@ -9,72 +9,70 @@
       let openspace = null;
 
       let htmlFunction = (action, id) => {
-        let cardHTML =
-          '<div id="' + action.title + "\" class='card'><h2>" + action.title + "</h2>";
+        let cardHTML = `<div id="${action.title}" class='card'><h2>${action.title}</h2>`;
         if (action.description) {
-          action.description.split("\n").map((item) => {
-            cardHTML += "<p>" + item + "</p>";
+          action.description.split('\n').map((item) => {
+            cardHTML += `<p>${item}</p>`;
           });
         }
         if (action.buttons) {
           Object.keys(action.buttons).map((button) => {
             const fn = action.buttons[button];
-            cardHTML +=
-              '<button id="' + action.title + button + '">' + button + "</button>";
+            cardHTML += `<button id="${action.title}${button}">'${button}</button>`;
           });
         }
-        cardHTML += "</div>";
-        document.getElementById("main").innerHTML += cardHTML;
+        cardHTML += '</div>';
+        document.getElementById('main').innerHTML += cardHTML;
       };
 
       let clickFunction = (action, id) => {
         if (action.buttons) {
           Object.keys(action.buttons).map((button) => {
             const fn = action.buttons[button];
-            document.getElementById(action.title + button).addEventListener("click", fn);
+            document.getElementById(action.title + button).addEventListener('click', fn);
           });
         }
       };
 
       // Helper function to map the buttons to html
       function mapButtons(openspace) {
-        document.getElementById("main").innerHTML +=
+        document.getElementById('main').innerHTML +=
           "<div class='card'>Default Buttons</div>";
         defaultButtonGroups.map(htmlFunction);
         defaultButtonGroups.map(clickFunction);
       }
 
-      // Helper function to connect to opensapce
+      // Helper function to connect to OpenSpace
       let connectToOpenSpace = () => {
         // Setup the api params
-        let host = document.getElementById("ipaddress").value;
+        let host = document.getElementById('ipaddress').value;
         if (!host) {
           return;
         }
         let api = window.openspaceApi(host, 4682);
         // Notify users on disconnect
         api.onDisconnect(() => {
-          console.log("disconnected");
-          document.getElementById("container").className = "disconnected";
-          document.getElementById("connection-status").style.opacity = 1;
-          let disconnectedString = "Connect to OpenSpace: ";
+          console.log('disconnected');
+          document.getElementById('container').className = 'disconnected';
+          document.getElementById('connection-status').style.opacity = 1;
+          let disconnectedString = 'Connect to OpenSpace: ';
           disconnectedString +=
-            '<input id="ipaddress" type=text placeholder="Enter ip address" /> ';
+            '<input id="ipaddress" type="text" placeholder="Enter ip address" /> ';
           disconnectedString +=
             '<button onClick="connectToOpenSpace();">Connect</button>';
-          document.getElementById("connection-status").innerHTML = disconnectedString;
+          document.getElementById('connection-status').innerHTML = disconnectedString;
           openspace = null;
         });
         // Notify users and map buttons when connected
         api.onConnect(async () => {
           try {
-            document.getElementById("container").className = "connected";
-            document.getElementById("connection-status").innerHTML = "";
+            document.getElementById('container').className = 'connected';
+            document.getElementById('connection-status').innerHTML = '';
             openspace = await api.library();
-            console.log("connected");
+            console.log('connected');
             mapButtons(openspace);
           } catch (e) {
-            console.log("OpenSpace library could not be loaded: Error: \n", e);
+            console.log('OpenSpace library could not be loaded: Error: \n', e);
             return;
           }
         });
@@ -84,15 +82,15 @@
 
       function logMessage(message) {
         console.log(message);
-        document.getElementById("connection-status").innerHTML = message;
-        document.getElementById("connection-status").style.opacity = 1;
+        document.getElementById('connection-status').innerHTML = message;
+        document.getElementById('connection-status').style.opacity = 1;
         fadeOut();
       }
 
       // Function that fades out the log div after 5 seconds
       function fadeOut() {
         setTimeout(function () {
-          let fade = document.getElementById("connection-status");
+          let fade = document.getElementById('connection-status');
           let timerId = setInterval(function () {
             let opacity = fade.style.opacity;
             if (opacity == 0.0) {
@@ -111,7 +109,7 @@
         RA_seconds,
         Dec_degrees,
         Dec_minutes,
-        Dec_seconds,
+        Dec_seconds
       ) {
         let distance = 9.2e15;
 
@@ -133,10 +131,10 @@
           L0 -
           Math.atan2(
             Math.cos(d) * Math.sin(a - A0),
-            Math.sin(d) * Math.cos(D0) - Math.cos(d) * Math.sin(D0) * Math.cos(a - A0),
+            Math.sin(d) * Math.cos(D0) - Math.cos(d) * Math.sin(D0) * Math.cos(a - A0)
           );
         let b = Math.asin(
-          Math.sin(d) * Math.sin(D0) + Math.cos(d) * Math.cos(D0) * Math.cos(a - A0),
+          Math.sin(d) * Math.sin(D0) + Math.cos(d) * Math.cos(D0) * Math.cos(a - A0)
         );
 
         let X = distance * Math.cos(b) * Math.cos(l);
@@ -205,219 +203,219 @@
       }
 
       function pointToHUDF() {
-        document.getElementById("rah").value = "3";
-        document.getElementById("ram").value = "32";
-        document.getElementById("ras").value = "38.92";
+        document.getElementById('rah').value = '3';
+        document.getElementById('ram').value = '32';
+        document.getElementById('ras').value = '38.92';
 
-        document.getElementById("decd").value = "-27";
-        document.getElementById("decm").value = "47";
-        document.getElementById("decs").value = "29.37";
+        document.getElementById('decd').value = '-27';
+        document.getElementById('decm').value = '47';
+        document.getElementById('decs').value = '29.37';
         directJWST(openspace);
 
-        if (document.getElementById("showImagesCheck").checked) {
+        if (document.getElementById('showImagesCheck').checked) {
           resetImages();
-          openspace.setPropertyValueSingle("ScreenSpace.HUDFImage.Enabled", true);
+          openspace.setPropertyValueSingle('ScreenSpace.HUDFImage.Enabled', true);
         }
       }
 
       function pointToOrion() {
-        document.getElementById("rah").value = "5";
-        document.getElementById("ram").value = "35";
-        document.getElementById("ras").value = "17";
+        document.getElementById('rah').value = '5';
+        document.getElementById('ram').value = '35';
+        document.getElementById('ras').value = '17';
 
-        document.getElementById("decd").value = "-5";
-        document.getElementById("decm").value = "23";
-        document.getElementById("decs").value = "28";
+        document.getElementById('decd').value = '-5';
+        document.getElementById('decm').value = '23';
+        document.getElementById('decs').value = '28';
         directJWST(openspace);
 
-        if (document.getElementById("showImagesCheck").checked) {
+        if (document.getElementById('showImagesCheck').checked) {
           resetImages();
-          openspace.setPropertyValueSingle("ScreenSpace.OrionImage.Enabled", true);
+          openspace.setPropertyValueSingle('ScreenSpace.OrionImage.Enabled', true);
         }
       }
 
       function pointToM51() {
-        document.getElementById("rah").value = "13";
-        document.getElementById("ram").value = "29";
-        document.getElementById("ras").value = "53";
+        document.getElementById('rah').value = '13';
+        document.getElementById('ram').value = '29';
+        document.getElementById('ras').value = '53';
 
-        document.getElementById("decd").value = "47";
-        document.getElementById("decm").value = "11";
-        document.getElementById("decs").value = "43";
+        document.getElementById('decd').value = '47';
+        document.getElementById('decm').value = '11';
+        document.getElementById('decs').value = '43';
         directJWST(openspace);
 
-        if (document.getElementById("showImagesCheck").checked) {
+        if (document.getElementById('showImagesCheck').checked) {
           resetImages();
-          openspace.setPropertyValueSingle("ScreenSpace.M51Image.Enabled", true);
+          openspace.setPropertyValueSingle('ScreenSpace.M51Image.Enabled', true);
         }
       }
 
       function pointToTrifid() {
-        document.getElementById("rah").value = "18";
-        document.getElementById("ram").value = "2";
-        document.getElementById("ras").value = "23";
+        document.getElementById('rah').value = '18';
+        document.getElementById('ram').value = '2';
+        document.getElementById('ras').value = '23';
 
-        document.getElementById("decd").value = "-23";
-        document.getElementById("decm").value = "1";
-        document.getElementById("decs").value = "48";
+        document.getElementById('decd').value = '-23';
+        document.getElementById('decm').value = '1';
+        document.getElementById('decs').value = '48';
         directJWST(openspace);
 
-        if (document.getElementById("showImagesCheck").checked) {
+        if (document.getElementById('showImagesCheck').checked) {
           resetImages();
-          openspace.setPropertyValueSingle("ScreenSpace.TrifidImage.Enabled", true);
+          openspace.setPropertyValueSingle('ScreenSpace.TrifidImage.Enabled', true);
         }
       }
 
       function pointToM82() {
-        document.getElementById("rah").value = "9";
-        document.getElementById("ram").value = "55";
-        document.getElementById("ras").value = "52";
+        document.getElementById('rah').value = '9';
+        document.getElementById('ram').value = '55';
+        document.getElementById('ras').value = '52';
 
-        document.getElementById("decd").value = "69";
-        document.getElementById("decm").value = "40";
-        document.getElementById("decs").value = "47";
+        document.getElementById('decd').value = '69';
+        document.getElementById('decm').value = '40';
+        document.getElementById('decs').value = '47';
         directJWST(openspace);
 
-        if (document.getElementById("showImagesCheck").checked) {
+        if (document.getElementById('showImagesCheck').checked) {
           resetImages();
-          openspace.setPropertyValueSingle("ScreenSpace.M82Image.Enabled", true);
+          openspace.setPropertyValueSingle('ScreenSpace.M82Image.Enabled', true);
         }
       }
 
       function pointToHH212() {
-        document.getElementById("rah").value = "5";
-        document.getElementById("ram").value = "43";
-        document.getElementById("ras").value = "51.41";
+        document.getElementById('rah').value = '5';
+        document.getElementById('ram').value = '43';
+        document.getElementById('ras').value = '51.41';
 
-        document.getElementById("decd").value = "-1";
-        document.getElementById("decm").value = "2";
-        document.getElementById("decs").value = "53.1";
+        document.getElementById('decd').value = '-1';
+        document.getElementById('decm').value = '2';
+        document.getElementById('decs').value = '53.1';
         directJWST(openspace);
 
-        if (document.getElementById("showImagesCheck").checked) {
+        if (document.getElementById('showImagesCheck').checked) {
           resetImages();
-          openspace.setPropertyValueSingle("ScreenSpace.HH212Image.Enabled", true);
+          openspace.setPropertyValueSingle('ScreenSpace.HH212Image.Enabled', true);
         }
       }
 
       function pointToRing() {
-        document.getElementById("rah").value = "18";
-        document.getElementById("ram").value = "53";
-        document.getElementById("ras").value = "35";
+        document.getElementById('rah').value = '18';
+        document.getElementById('ram').value = '53';
+        document.getElementById('ras').value = '35';
 
-        document.getElementById("decd").value = "33";
-        document.getElementById("decm").value = "1";
-        document.getElementById("decs").value = "45";
+        document.getElementById('decd').value = '33';
+        document.getElementById('decm').value = '1';
+        document.getElementById('decs').value = '45';
         directJWST(openspace);
 
-        if (document.getElementById("showImagesCheck").checked) {
+        if (document.getElementById('showImagesCheck').checked) {
           resetImages();
-          openspace.setPropertyValueSingle("ScreenSpace.RingImage.Enabled", true);
+          openspace.setPropertyValueSingle('ScreenSpace.RingImage.Enabled', true);
         }
       }
 
       function pointToCrab() {
-        document.getElementById("rah").value = "5";
-        document.getElementById("ram").value = "34";
-        document.getElementById("ras").value = "32";
+        document.getElementById('rah').value = '5';
+        document.getElementById('ram').value = '34';
+        document.getElementById('ras').value = '32';
 
-        document.getElementById("decd").value = "22";
-        document.getElementById("decm").value = "0";
-        document.getElementById("decs").value = "52";
+        document.getElementById('decd').value = '22';
+        document.getElementById('decm').value = '0';
+        document.getElementById('decs').value = '52';
         directJWST(openspace);
 
-        if (document.getElementById("showImagesCheck").checked) {
+        if (document.getElementById('showImagesCheck').checked) {
           resetImages();
-          openspace.setPropertyValueSingle("ScreenSpace.CrabImage.Enabled", true);
+          openspace.setPropertyValueSingle('ScreenSpace.CrabImage.Enabled', true);
         }
       }
 
       function pointToSN1987a() {
-        document.getElementById("rah").value = "5";
-        document.getElementById("ram").value = "35";
-        document.getElementById("ras").value = "28";
+        document.getElementById('rah').value = '5';
+        document.getElementById('ram').value = '35';
+        document.getElementById('ras').value = '28';
 
-        document.getElementById("decd").value = "-69";
-        document.getElementById("decm").value = "16";
-        document.getElementById("decs").value = "11";
+        document.getElementById('decd').value = '-69';
+        document.getElementById('decm').value = '16';
+        document.getElementById('decs').value = '11';
         directJWST(openspace);
 
-        if (document.getElementById("showImagesCheck").checked) {
+        if (document.getElementById('showImagesCheck').checked) {
           resetImages();
-          openspace.setPropertyValueSingle("ScreenSpace.SN1987aImage.Enabled", true);
+          openspace.setPropertyValueSingle('ScreenSpace.SN1987aImage.Enabled', true);
         }
       }
 
       function pointToHD84406() {
-        document.getElementById("rah").value = "9";
-        document.getElementById("ram").value = "47";
-        document.getElementById("ras").value = "30.55";
+        document.getElementById('rah').value = '9';
+        document.getElementById('ram').value = '47';
+        document.getElementById('ras').value = '30.55';
 
-        document.getElementById("decd").value = "63";
-        document.getElementById("decm").value = "14";
-        document.getElementById("decs").value = "52.09";
+        document.getElementById('decd').value = '63';
+        document.getElementById('decm').value = '14';
+        document.getElementById('decs').value = '52.09';
         directJWST(openspace);
 
-        if (document.getElementById("showImagesCheck").checked) {
+        if (document.getElementById('showImagesCheck').checked) {
           resetImages();
-          openspace.setPropertyValueSingle("ScreenSpace.HD84406Image.Enabled", true);
+          openspace.setPropertyValueSingle('ScreenSpace.HD84406Image.Enabled', true);
         }
       }
 
       function reset() {
-        document.getElementById("ra-deg").value = "";
-        document.getElementById("rah").value = "";
-        document.getElementById("ram").value = "";
-        document.getElementById("ras").value = "";
+        document.getElementById('ra-deg').value = '';
+        document.getElementById('rah').value = '';
+        document.getElementById('ram').value = '';
+        document.getElementById('ras').value = '';
 
-        document.getElementById("dec-deg").value = "";
-        document.getElementById("decd").value = "";
-        document.getElementById("decm").value = "";
-        document.getElementById("decs").value = "";
+        document.getElementById('dec-deg').value = '';
+        document.getElementById('decd').value = '';
+        document.getElementById('decm').value = '';
+        document.getElementById('decs').value = '';
 
-        document.getElementById("rotation-time").value = 3;
-        document.getElementById("rotation-time-value").innerHTML = 3;
+        document.getElementById('rotation-time').value = 3;
+        document.getElementById('rotation-time-value').innerHTML = 3;
 
-        if (document.getElementById("showImagesCheck").checked) {
+        if (document.getElementById('showImagesCheck').checked) {
           resetImages();
         }
         resetJWST(openspace);
       }
 
       function resetImages() {
-        openspace.setPropertyValue("{mission_jwst_target}.Enabled", false);
+        openspace.setPropertyValue('{mission_jwst_target}.Enabled', false);
       }
 
       function showImagesCheckOnChange() {
-        if (!document.getElementById("showImagesCheck").checked) {
+        if (!document.getElementById('showImagesCheck').checked) {
           resetImages();
         }
       }
 
       function resetJWST(openspace) {
         if (openspace == null) {
-          console.log("Error: No connection to an OpenSpace application");
+          console.log('Error: No connection to an OpenSpace application');
           return;
         }
         openspace.setPropertyValueSingle(
-          "Scene.JWSTModel.Rotation.Rotation",
+          'Scene.JWSTModel.Rotation.Rotation',
           [0.0, 0.0, 0.0],
-          3.0,
+          3.0
         );
       }
 
       function isInputValid(ra_h, ra_m, ra_s, dec_d, dec_m, dec_s) {
         // Empty
         if (
-          ra_h == "" ||
-          ra_m == "" ||
-          ra_s == "" ||
-          dec_d == "" ||
-          dec_m == "" ||
-          dec_s == ""
+          ra_h == '' ||
+          ra_m == '' ||
+          ra_s == '' ||
+          dec_d == '' ||
+          dec_m == '' ||
+          dec_s == ''
         ) {
           let messageString =
-            "Warning: At least one of the coordinate input fields were empty";
+            'Warning: At least one of the coordinate input fields were empty';
           logMessage(messageString);
           return false;
         }
@@ -431,7 +429,7 @@
           isNaN(dec_m) ||
           isNaN(dec_s)
         ) {
-          let messageString = "Warning: All coordinate input fields must be numbers";
+          let messageString = 'Warning: All coordinate input fields must be numbers';
           logMessage(messageString);
           return false;
         }
@@ -439,19 +437,19 @@
         // Ra
         if (ra_h < 0.0 || ra_h >= 24.0) {
           let messageString =
-            "Warning: Right ascension hours is outside the allowed range of 0 to 24 hours (exclusive)";
+            'Warning: Right ascension hours is outside the allowed range of 0 to 24 hours (exclusive)';
           logMessage(messageString);
           return false;
         }
         if (ra_m < 0.0 || ra_m >= 60.0) {
           let messageString =
-            "Warning: Right ascension minutes is outside the allowed range of 0 to 60 minutes (exclusive)";
+            'Warning: Right ascension minutes is outside the allowed range of 0 to 60 minutes (exclusive)';
           logMessage(messageString);
           return false;
         }
         if (ra_s < 0.0 || ra_s >= 60.0) {
           let messageString =
-            "Warning: Right ascension seconds is outside the allowed range of 0 to 60 seconds (exclusive)";
+            'Warning: Right ascension seconds is outside the allowed range of 0 to 60 seconds (exclusive)';
           logMessage(messageString);
           return false;
         }
@@ -459,24 +457,24 @@
         // Dec
         if (dec_d < -90.0 || dec_d > 90.0) {
           let messageString =
-            "Warning: Declination degrees is outside the allowed range of -90 to 90 degrees (inclusive)";
+            'Warning: Declination degrees is outside the allowed range of -90 to 90 degrees (inclusive)';
           logMessage(messageString);
           return false;
         } else if ((dec_d == -90.0 || dec_d == 90.0) && (dec_m != 0 || dec_s != 0)) {
           let messageString =
-            "Warning: Total declination is outside the allowed range of -90 to 90 degrees (inclusive)";
+            'Warning: Total declination is outside the allowed range of -90 to 90 degrees (inclusive)';
           logMessage(messageString);
           return false;
         }
         if (dec_m < 0.0 || dec_m >= 60.0) {
           let messageString =
-            "Warning: Declination minutes is outside the allowed range of 0 to 60 minutes (exclusive)";
+            'Warning: Declination minutes is outside the allowed range of 0 to 60 minutes (exclusive)';
           logMessage(messageString);
           return false;
         }
         if (dec_s < 0.0 || dec_s >= 60.0) {
           let messageString =
-            "Warning: Declination seconds is outside the allowed range of 0 to 60 seconds (exclusive)";
+            'Warning: Declination seconds is outside the allowed range of 0 to 60 seconds (exclusive)';
           logMessage(messageString);
           return false;
         }
@@ -486,22 +484,22 @@
 
       async function directJWST(openspace) {
         if (openspace == null) {
-          console.log("Error: No connection to an OpenSpace application");
+          console.log('Error: No connection to an OpenSpace application');
           return;
         }
 
         // Get input
-        let ra_h = document.getElementById("rah").value;
-        let ra_m = document.getElementById("ram").value;
-        let ra_s = document.getElementById("ras").value;
+        let ra_h = document.getElementById('rah').value;
+        let ra_m = document.getElementById('ram').value;
+        let ra_s = document.getElementById('ras').value;
 
-        let dec_d = document.getElementById("decd").value;
-        let dec_m = document.getElementById("decm").value;
-        let dec_s = document.getElementById("decs").value;
+        let dec_d = document.getElementById('decd').value;
+        let dec_m = document.getElementById('decm').value;
+        let dec_s = document.getElementById('decs').value;
 
-        let RA = ra_h.toString() + "h" + ra_m.toString() + "m" + ra_s.toString() + "s";
+        let RA = ra_h.toString() + 'h' + ra_m.toString() + 'm' + ra_s.toString() + 's';
         let DEC =
-          dec_d.toString() + "d" + dec_m.toString() + "m" + dec_s.toString() + "s";
+          dec_d.toString() + 'd' + dec_m.toString() + 'm' + dec_s.toString() + 's';
         let distJS = 9.2e15;
 
         // Check input
@@ -513,13 +511,13 @@
         let coordinates = convertRaDec(ra_h, ra_m, ra_s, dec_d, dec_m, dec_s);
 
         // Get JWST position
-        const JWSTPosition = await openspace.worldPosition("JWSTModel");
+        const JWSTPosition = await openspace.worldPosition('JWSTModel');
         if (JWSTPosition == null) {
           let errorString =
-            "Error: Could not find the JWST model inside the connected OpenSpace instance";
+            'Error: Could not find the JWST model inside the connected OpenSpace instance';
           console.log(errorString);
-          document.getElementById("connection-status").style.opacity = 1;
-          document.getElementById("connection-status").innerHTML = errorString;
+          document.getElementById('connection-status').style.opacity = 1;
+          document.getElementById('connection-status').innerHTML = errorString;
           return;
         }
 
@@ -527,17 +525,17 @@
         let JWSTtoCoord = [
           coordinates[0] - JWSTPosition[0],
           coordinates[1] - JWSTPosition[1],
-          coordinates[2] - JWSTPosition[2],
+          coordinates[2] - JWSTPosition[2]
         ];
 
         // Apply the worldRotation before calculating the angles
-        const JWSTRotation = await openspace.worldRotation("JWSTRotation");
+        const JWSTRotation = await openspace.worldRotation('JWSTRotation');
         if (JWSTRotation == null) {
           let errorString =
-            "Error: Could not find the JWST rotation inside the connected OpenSpace instance";
+            'Error: Could not find the JWST rotation inside the connected OpenSpace instance';
           console.log(errorString);
-          document.getElementById("connection-status").style.opacity = 1;
-          document.getElementById("connection-status").innerHTML = errorString;
+          document.getElementById('connection-status').style.opacity = 1;
+          document.getElementById('connection-status').innerHTML = errorString;
           return;
         }
         let JWSTtoCoordRotated = applyMatrix(JWSTRotation, JWSTtoCoord);
@@ -546,34 +544,34 @@
         let JWSTAngles = calculateJWSTAngles(
           JWSTtoCoordRotated[0],
           JWSTtoCoordRotated[1],
-          JWSTtoCoordRotated[2],
+          JWSTtoCoordRotated[2]
         );
 
         // Check if the new angle violate the sunshield
         // -45 deg to 5 deg is valid in x rotation
         if (JWSTAngles[0] < -0.785398163 || JWSTAngles[0] > 0.0872664626) {
-          logMessage("Warning: Coordinate violates the sunshield");
+          logMessage('Warning: Coordinate violates the sunshield');
         } else {
-          console.log("Coordinate is valid for sunshield");
+          console.log('Coordinate is valid for sunshield');
         }
 
-        let timing = parseInt(document.getElementById("rotation-time").value);
+        let timing = parseInt(document.getElementById('rotation-time').value);
         console.log(timing);
         openspace.setPropertyValueSingle(
-          "Scene.JWSTModel.Rotation.Rotation",
+          'Scene.JWSTModel.Rotation.Rotation',
           [JWSTAngles[0], JWSTAngles[1], 0.0],
-          timing,
+          timing
         );
       }
 
       function convertHMStoDeg() {
-        let RA_hours = document.getElementById("rah").value;
-        let RA_minutes = document.getElementById("ram").value;
-        let RA_seconds = document.getElementById("ras").value;
+        let RA_hours = document.getElementById('rah').value;
+        let RA_minutes = document.getElementById('ram').value;
+        let RA_seconds = document.getElementById('ras').value;
 
-        let Dec_d = document.getElementById("decd").value;
-        let Dec_minutes = document.getElementById("decm").value;
-        let Dec_seconds = document.getElementById("decs").value;
+        let Dec_d = document.getElementById('decd').value;
+        let Dec_minutes = document.getElementById('decm').value;
+        let Dec_seconds = document.getElementById('decs').value;
 
         let RA_degrees =
           RA_hours * 15.0 + (RA_minutes * 15) / 60.0 + (RA_seconds * 15) / 3600.0;
@@ -585,8 +583,8 @@
       }
 
       function convertDegtoHMS() {
-        let RA_degrees = document.getElementById("ra-deg").value;
-        let DEC_degrees = document.getElementById("dec-deg").value;
+        let RA_degrees = document.getElementById('ra-deg').value;
+        let DEC_degrees = document.getElementById('dec-deg').value;
 
         let RA_hours = Math.trunc(RA_degrees / 15.0);
         let rest = RA_degrees / 15.0 - RA_hours;
@@ -604,115 +602,115 @@
       }
 
       function raDegHandler() {
-        if (document.getElementById("ra-deg").value == "") {
-          document.getElementById("rah").value = "";
-          document.getElementById("ram").value = "";
-          document.getElementById("ras").value = "";
+        if (document.getElementById('ra-deg').value == '') {
+          document.getElementById('rah').value = '';
+          document.getElementById('ram').value = '';
+          document.getElementById('ras').value = '';
           return;
         }
 
         let hms = convertDegtoHMS();
-        document.getElementById("rah").value = hms[0];
-        document.getElementById("ram").value = hms[1];
-        document.getElementById("ras").value = hms[2];
+        document.getElementById('rah').value = hms[0];
+        document.getElementById('ram').value = hms[1];
+        document.getElementById('ras').value = hms[2];
       }
 
       function raHourHandler() {
         if (
-          document.getElementById("rah").value == "" &&
-          document.getElementById("ram").value == "" &&
-          document.getElementById("ras").value == ""
+          document.getElementById('rah').value == '' &&
+          document.getElementById('ram').value == '' &&
+          document.getElementById('ras').value == ''
         ) {
-          document.getElementById("ra-deg").value = "";
+          document.getElementById('ra-deg').value = '';
           return;
         }
 
         let degrees = convertHMStoDeg();
-        document.getElementById("ra-deg").value = degrees[0];
+        document.getElementById('ra-deg').value = degrees[0];
       }
 
       function raMinHandler() {
         if (
-          document.getElementById("rah").value == "" &&
-          document.getElementById("ram").value == "" &&
-          document.getElementById("ras").value == ""
+          document.getElementById('rah').value == '' &&
+          document.getElementById('ram').value == '' &&
+          document.getElementById('ras').value == ''
         ) {
-          document.getElementById("ra-deg").value = "";
+          document.getElementById('ra-deg').value = '';
           return;
         }
 
         let degrees = convertHMStoDeg();
-        document.getElementById("ra-deg").value = degrees[0];
+        document.getElementById('ra-deg').value = degrees[0];
       }
 
       function raSecHandler() {
         if (
-          document.getElementById("rah").value == "" &&
-          document.getElementById("ram").value == "" &&
-          document.getElementById("ras").value == ""
+          document.getElementById('rah').value == '' &&
+          document.getElementById('ram').value == '' &&
+          document.getElementById('ras').value == ''
         ) {
-          document.getElementById("ra-deg").value = "";
+          document.getElementById('ra-deg').value = '';
           return;
         }
 
         let degrees = convertHMStoDeg();
-        document.getElementById("ra-deg").value = degrees[0];
+        document.getElementById('ra-deg').value = degrees[0];
       }
 
       function decDegHandler() {
-        if (document.getElementById("dec-deg").value == "") {
-          document.getElementById("decd").value = "";
-          document.getElementById("decm").value = "";
-          document.getElementById("decs").value = "";
+        if (document.getElementById('dec-deg').value == '') {
+          document.getElementById('decd').value = '';
+          document.getElementById('decm').value = '';
+          document.getElementById('decs').value = '';
           return;
         }
 
         let hms = convertDegtoHMS();
-        document.getElementById("decd").value = hms[3];
-        document.getElementById("decm").value = hms[4];
-        document.getElementById("decs").value = hms[5];
+        document.getElementById('decd').value = hms[3];
+        document.getElementById('decm').value = hms[4];
+        document.getElementById('decs').value = hms[5];
       }
 
       function decDHandler() {
         if (
-          document.getElementById("decd").value == "" &&
-          document.getElementById("decm").value == "" &&
-          document.getElementById("decs").value == ""
+          document.getElementById('decd').value == '' &&
+          document.getElementById('decm').value == '' &&
+          document.getElementById('decs').value == ''
         ) {
-          document.getElementById("dec-deg").value = "";
+          document.getElementById('dec-deg').value = '';
           return;
         }
 
         let degrees = convertHMStoDeg();
-        document.getElementById("dec-deg").value = degrees[1];
+        document.getElementById('dec-deg').value = degrees[1];
       }
 
       function decMinHandler() {
         if (
-          document.getElementById("decd").value == "" &&
-          document.getElementById("decm").value == "" &&
-          document.getElementById("decs").value == ""
+          document.getElementById('decd').value == '' &&
+          document.getElementById('decm').value == '' &&
+          document.getElementById('decs').value == ''
         ) {
-          document.getElementById("dec-deg").value = "";
+          document.getElementById('dec-deg').value = '';
           return;
         }
 
         let degrees = convertHMStoDeg();
-        document.getElementById("dec-deg").value = degrees[1];
+        document.getElementById('dec-deg').value = degrees[1];
       }
 
       function decSecHandler() {
         if (
-          document.getElementById("decd").value == "" &&
-          document.getElementById("decm").value == "" &&
-          document.getElementById("decs").value == ""
+          document.getElementById('decd').value == '' &&
+          document.getElementById('decm').value == '' &&
+          document.getElementById('decs').value == ''
         ) {
-          document.getElementById("dec-deg").value = "";
+          document.getElementById('dec-deg').value = '';
           return;
         }
 
         let degrees = convertHMStoDeg();
-        document.getElementById("dec-deg").value = degrees[1];
+        document.getElementById('dec-deg').value = degrees[1];
       }
     </script>
   </head>
@@ -854,10 +852,10 @@
       </div>
       <div id="main"></div>
       <script type="text/javascript">
-        connectToOpenSpace("localhost");
+        connectToOpenSpace('localhost');
 
-        let slider = document.getElementById("rotation-time");
-        let output = document.getElementById("rotation-time-value");
+        let slider = document.getElementById('rotation-time');
+        let output = document.getElementById('rotation-time-value');
         slider.value = 3;
         output.innerHTML = slider.value;
         slider.oninput = function () {

@@ -11,72 +11,70 @@
       const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
       let htmlFunction = (action, id) => {
-        let cardHTML =
-          '<div id="' + action.title + "\" class='card'><h2>" + action.title + "</h2>";
+        let cardHTML = `<div id="${action.title}" class='card'><h2>${action.title}</h2>`;
         if (action.description) {
-          action.description.split("\n").map((item) => {
-            cardHTML += "<p>" + item + "</p>";
+          action.description.split('\n').map((item) => {
+            cardHTML += `<p>${item}</p>`;
           });
         }
         if (action.buttons) {
           Object.keys(action.buttons).map((button) => {
             const fn = action.buttons[button];
-            cardHTML +=
-              '<button id="' + action.title + button + '">' + button + "</button>";
+            cardHTML += `<button id="${action.title}${button}">${button}</button>`;
           });
         }
-        cardHTML += "</div>";
-        document.getElementById("main").innerHTML += cardHTML;
+        cardHTML += '</div>';
+        document.getElementById('main').innerHTML += cardHTML;
       };
 
       let clickFunction = (action, id) => {
         if (action.buttons) {
           Object.keys(action.buttons).map((button) => {
             const fn = action.buttons[button];
-            document.getElementById(action.title + button).addEventListener("click", fn);
+            document.getElementById(action.title + button).addEventListener('click', fn);
           });
         }
       };
 
       // Helper function to map the buttons to html
       function mapButtons(openspace) {
-        document.getElementById("main").innerHTML +=
+        document.getElementById('main').innerHTML +=
           "<div class='card'>Default Buttons</div>";
         defaultButtonGroups.map(htmlFunction);
         defaultButtonGroups.map(clickFunction);
       }
 
-      // Helper function to connect to opensapce
+      // Helper function to connect to OpenSpace
       let connectToOpenSpace = () => {
         // Setup the api params
-        let host = document.getElementById("ipaddress").value;
+        let host = document.getElementById('ipaddress').value;
         if (!host) {
           return;
         }
         let api = window.openspaceApi(host, 4682);
         // Notify users on disconnect
         api.onDisconnect(() => {
-          console.log("disconnected");
-          document.getElementById("container").className = "disconnected";
-          document.getElementById("connection-status").style.opacity = 1;
-          let disconnectedString = "Connect to OpenSpace: ";
+          console.log('disconnected');
+          document.getElementById('container').className = 'disconnected';
+          document.getElementById('connection-status').style.opacity = 1;
+          let disconnectedString = 'Connect to OpenSpace: ';
           disconnectedString +=
             '<input id="ipaddress" type=text placeholder="Enter ip address" /> ';
           disconnectedString +=
             '<button onClick="connectToOpenSpace();">Connect</button>';
-          document.getElementById("connection-status").innerHTML = disconnectedString;
+          document.getElementById('connection-status').innerHTML = disconnectedString;
           openspace = null;
         });
         // Notify users and map buttons when connected
         api.onConnect(async () => {
           try {
-            document.getElementById("container").className = "connected";
-            document.getElementById("connection-status").innerHTML = "";
+            document.getElementById('container').className = 'connected';
+            document.getElementById('connection-status').innerHTML = '';
             openspace = await api.library();
-            console.log("connected");
+            console.log('connected');
             // mapButtons(openspace);
           } catch (e) {
-            console.log("OpenSpace library could not be loaded: Error: \n", e);
+            console.log('OpenSpace library could not be loaded: Error: \n', e);
             return;
           }
         });
@@ -86,15 +84,15 @@
 
       function logMessage(message) {
         console.log(message);
-        document.getElementById("connection-status").innerHTML = message;
-        document.getElementById("connection-status").style.opacity = 1;
+        document.getElementById('connection-status').innerHTML = message;
+        document.getElementById('connection-status').style.opacity = 1;
         fadeOut();
       }
 
       // Function that fades out the log div after 5 seconds
       function fadeOut() {
         setTimeout(function () {
-          let fade = document.getElementById("connection-status");
+          let fade = document.getElementById('connection-status');
           let timerId = setInterval(function () {
             let opacity = fade.style.opacity;
             if (opacity == 0.0) {
@@ -107,70 +105,58 @@
       }
 
       async function fadeOutSceneGraphNode(sgn, option) {
-        openspace.setPropertyValue("Scene." + sgn + ".Renderable.Opacity", 0.0, 1.0);
-        if (option != "NoDisable") {
+        openspace.setPropertyValue(`Scene.${sgn}.Renderable.Opacity`, 0.0, 1.0);
+        if (option != 'NoDisable') {
           await delay(1500);
-          openspace.setPropertyValue("Scene." + sgn + ".Renderable.Enabled", false);
+          openspace.setPropertyValue('Scene.' + sgn + '.Renderable.Enabled', false);
         }
       }
       function fadeInSceneGraphNode(sgn) {
-        openspace.setPropertyValue("Scene." + sgn + ".Renderable.Opacity", 0.0);
-        openspace.setPropertyValue("Scene." + sgn + ".Renderable.Enabled", true);
-        openspace.setPropertyValue("Scene." + sgn + ".Renderable.Opacity", 1.0, 1.0);
+        openspace.setPropertyValue(`Scene.${sgn}.Renderable.Opacity`, 0.0);
+        openspace.setPropertyValue(`Scene.${sgn}.Renderable.Enabled`, true);
+        openspace.setPropertyValue(`Scene.${sgn}.Renderable.Opacity`, 1.0, 1.0);
       }
 
       async function fadeOutColorLayer(planet, layer) {
         openspace.setPropertyValueSingle(
-          "Scene." +
-            planet +
-            ".Renderable.Layers.ColorLayers." +
-            layer +
-            ".Settings.Opacity",
+          `Scene.${planet}.Renderable.Layers.ColorLayers.${layer}.Settings.Opacity`,
           0.0,
-          1.0,
+          1.0
         );
         await delay(1500);
         openspace.setPropertyValueSingle(
-          "Scene." + planet + ".Renderable.Layers.ColorLayers." + layer + ".Enabled",
-          false,
+          `Scene.${planet}.Renderable.Layers.ColorLayers.${layer}.Enabled`,
+          false
         );
       }
 
       function fadeInColorLayer(planet, layer) {
         openspace.setPropertyValueSingle(
-          "Scene." +
-            planet +
-            ".Renderable.Layers.ColorLayers." +
-            layer +
-            ".Settings.Opacity",
-          0.0,
+          `Scene.${planet}.Renderable.Layers.ColorLayers.${layer}.Settings.Opacity`,
+          0.0
         );
         openspace.setPropertyValueSingle(
-          "Scene." + planet + ".Renderable.Layers.ColorLayers." + layer + ".Enabled",
-          true,
+          `Scene.${planet}.Renderable.Layers.ColorLayers.${layer}.Enabled`,
+          true
         );
         openspace.setPropertyValueSingle(
-          "Scene." +
-            planet +
-            ".Renderable.Layers.ColorLayers." +
-            layer +
-            ".Settings.Opacity",
+          `Scene.${planet}.Renderable.Layers.ColorLayers.${layer}.Settings.Opacity`,
           1.0,
-          1.0,
+          1.0
         );
       }
 
       async function disableHeightLayer(planet, layer) {
         openspace.setPropertyValueSingle(
-          "Scene." + planet + ".Renderable.Layers.HeightLayers." + layer + ".Enabled",
-          false,
+          `Scene.${planet}.Renderable.Layers.HeightLayers.${layer}.Enabled`,
+          false
         );
       }
 
       function enableHeightLayer(planet, layer) {
         openspace.setPropertyValueSingle(
-          "Scene." + planet + ".Renderable.Layers.HeightLayers." + layer + ".Enabled",
-          true,
+          `Scene.${planet}.Renderable.Layers.HeightLayers.${layer}.Enabled`,
+          true
         );
       }
     </script>
@@ -268,7 +254,7 @@
 
       <div id="main"></div>
       <script type="text/javascript">
-        connectToOpenSpace("localhost");
+        connectToOpenSpace('localhost');
       </script>
     </div>
   </body>

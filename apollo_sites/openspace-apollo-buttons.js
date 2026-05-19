@@ -2,154 +2,154 @@
 let showTrails = (objects) => {
   objects.map(async (object) => {
     const isEnabled = await openspace.propertyValue(
-      "Scene." + object + "Trail.Renderable.Enabled",
+      `Scene.${object}Trail.Renderable.Enabled`
     );
 
     if (!isEnabled) {
-      openspace.fadeIn("Scene." + object + "Trail.Renderable");
+      openspace.fadeIn(`Scene.${object}Trail.Renderable`);
     }
-    openspace.setPropertyValue("Scene." + object + "Trail.Renderable.Opacity", 1, 1);
+    openspace.setPropertyValue(`Scene.${object}Trail.Renderable.Opacity`, 1, 1);
   });
 };
 
 //helper function to set the focus target
 let setFocus = (focus) => {
-  openspace.setPropertyValue("NavigationHandler.OrbitalNavigator.Anchor", focus);
-  openspace.setPropertyValue("NavigationHandler.OrbitalNavigator.RetargetAnchor", null);
+  openspace.setPropertyValue('NavigationHandler.OrbitalNavigator.Anchor', focus);
+  openspace.setPropertyValue('NavigationHandler.OrbitalNavigator.RetargetAnchor', null);
 };
 //list of commands to setup apollo 11 site
 let setupApollo11Site = () => {
-  openspace.time.setTime("1969 JUL 20 20:17:40");
+  openspace.time.setTime('1969 JUL 20 20:17:40');
   openspace.setPropertyValueSingle(
-    "Scene.Moon.Renderable.Layers.HeightLayers.LRO_NAC_Apollo_11.Enabled",
-    true,
+    'Scene.Moon.Renderable.Layers.HeightLayers.LRO_NAC_Apollo_11.Enabled',
+    true
   );
   openspace.setPropertyValueSingle(
-    "Scene.Moon.Renderable.Layers.ColorLayers.A11_M177481212_p_longlat.Enabled",
-    true,
+    'Scene.Moon.Renderable.Layers.ColorLayers.A11_M177481212_p_longlat.Enabled',
+    true
   );
-  openspace.setPropertyValueSingle("Scene.Moon.Renderable.TargetLodScaleFactor", 20.11);
+  openspace.setPropertyValueSingle('Scene.Moon.Renderable.TargetLodScaleFactor', 20.11);
   openspace.setPropertyValue(
-    "NavigationHandler.OrbitalNavigator.Anchor",
-    "Apollo11LemModel",
+    'NavigationHandler.OrbitalNavigator.Anchor',
+    'Apollo11LemModel'
   );
-  openspace.setPropertyValue("NavigationHandler.OrbitalNavigator.RetargetAnchor", null);
-  openspace.setPropertyValueSingle("Scene.Apollo11MoonTrail.Renderable.Opacity", 1);
-  openspace.setPropertyValueSingle("Scene.Apollo11LemTrail.Renderable.Opacity", 1);
-  openspace.setPropertyValueSingle("Scene.Apollo11MoonTrail.Renderable.Enabled", true);
-  openspace.setPropertyValueSingle("Scene.Apollo11LemTrail.Renderable.Enabled", true);
+  openspace.setPropertyValue('NavigationHandler.OrbitalNavigator.RetargetAnchor', null);
+  openspace.setPropertyValueSingle('Scene.Apollo11MoonTrail.Renderable.Opacity', 1);
+  openspace.setPropertyValueSingle('Scene.Apollo11LemTrail.Renderable.Opacity', 1);
+  openspace.setPropertyValueSingle('Scene.Apollo11MoonTrail.Renderable.Enabled', true);
+  openspace.setPropertyValueSingle('Scene.Apollo11LemTrail.Renderable.Enabled', true);
 };
 //list of commands to setup apollo 17 site
 let setupApollo17Site = function () {
-  openspace.time.setTime("1972 DEC 12 19:47:11");
+  openspace.time.setTime('1972 DEC 12 19:47:11');
   openspace.setPropertyValueSingle(
-    "Scene.Moon.Renderable.Layers.ColorLayers.A17_travmap.BlendMode",
-    0.0,
+    'Scene.Moon.Renderable.Layers.ColorLayers.A17_travmap.BlendMode',
+    0.0
   );
   openspace.setPropertyValueSingle(
-    "Scene.Moon.Renderable.Layers.ColorLayers.A17_travmap.Enabled",
-    true,
+    'Scene.Moon.Renderable.Layers.ColorLayers.A17_travmap.Enabled',
+    true
   );
   openspace.setPropertyValueSingle(
-    "Scene.Moon.Renderable.Layers.HeightLayers.LRO_NAC_Apollo_17.Enabled",
-    true,
+    'Scene.Moon.Renderable.Layers.HeightLayers.LRO_NAC_Apollo_17.Enabled',
+    true
   );
   openspace.setPropertyValueSingle(
-    "Scene.Moon.Renderable.Layers.ColorLayers.A17_LEM.Enabled",
-    true,
+    'Scene.Moon.Renderable.Layers.ColorLayers.A17_LEM.Enabled',
+    true
   );
   openspace.setPropertyValueSingle(
-    "Scene.Moon.Renderable.Layers.ColorLayers.A17_LEM.BlendMode",
-    0.0,
+    'Scene.Moon.Renderable.Layers.ColorLayers.A17_LEM.BlendMode',
+    0.0
   );
   openspace.setPropertyValueSingle(
-    "Scene.Moon.Renderable.Layers.ColorLayers.A17_NAC_Alt_p.Enabled",
-    true,
+    'Scene.Moon.Renderable.Layers.ColorLayers.A17_NAC_Alt_p.Enabled',
+    true
   );
   openspace.setPropertyValueSingle(
-    "Scene.Moon.Renderable.Layers.ColorLayers.A17_NAC_Alt_p.BlendMode",
-    0.0,
+    'Scene.Moon.Renderable.Layers.ColorLayers.A17_NAC_Alt_p.BlendMode',
+    0.0
   );
-  openspace.setPropertyValueSingle("Scene.Moon.Renderable.TargetLodScaleFactor", 20.17);
+  openspace.setPropertyValueSingle('Scene.Moon.Renderable.TargetLodScaleFactor', 20.17);
   openspace.setPropertyValue(
-    "NavigationHandler.OrbitalNavigator.Anchor",
-    "Apollo17LemModel",
+    'NavigationHandler.OrbitalNavigator.Anchor',
+    'Apollo17LemModel'
   );
-  openspace.setPropertyValue("NavigationHandler.OrbitalNavigator.RetargetAnchor", null);
+  openspace.setPropertyValue('NavigationHandler.OrbitalNavigator.RetargetAnchor', null);
   openspace.setPropertyValueSingle(
-    "Scene.Moon.Renderable.Layers.ColorLayers.A17_station7.BlendMode",
-    0.0,
+    'Scene.Moon.Renderable.Layers.ColorLayers.A17_station7.BlendMode',
+    0.0
   );
 };
 //list of commands to disable apollo sites
 let disableSites = function () {
   openspace.setPropertyValue(
-    "Scene.Moon.Renderable.Layers.ColorLayers.A17_*.Enabled",
-    false,
+    'Scene.Moon.Renderable.Layers.ColorLayers.A17_*.Enabled',
+    false
   );
   openspace.setPropertyValueSingle(
-    "Scene.Moon.Renderable.Layers.HeightLayers.LRO_NAC_Apollo_11.Enabled",
-    false,
+    'Scene.Moon.Renderable.Layers.HeightLayers.LRO_NAC_Apollo_11.Enabled',
+    false
   );
   openspace.setPropertyValueSingle(
-    "Scene.Moon.Renderable.Layers.ColorLayers.A11_M177481212_p_longlat.Enabled",
-    false,
+    'Scene.Moon.Renderable.Layers.ColorLayers.A11_M177481212_p_longlat.Enabled',
+    false
   );
-  openspace.setPropertyValueSingle("Scene.Apollo11MoonTrail.Renderable.Enabled", false);
-  openspace.setPropertyValueSingle("Scene.Apollo11LemTrail.Renderable.Enabled", false);
+  openspace.setPropertyValueSingle('Scene.Apollo11MoonTrail.Renderable.Enabled', false);
+  openspace.setPropertyValueSingle('Scene.Apollo11LemTrail.Renderable.Enabled', false);
   openspace.setPropertyValueSingle(
-    "Scene.Moon.Renderable.Layers.HeightLayers.LRO_NAC_Apollo_17.Enabled",
-    false,
+    'Scene.Moon.Renderable.Layers.HeightLayers.LRO_NAC_Apollo_17.Enabled',
+    false
   );
 };
 //now setup all the buttons
 let siteButtons = {
-  title: "Site Setup",
+  title: 'Site Setup',
   buttons: {
-    "Setup Apollo 11 site": () => {
+    'Setup Apollo 11 site': () => {
       setupApollo11Site();
     },
-    "Setup Apollo 17 site": () => {
+    'Setup Apollo 17 site': () => {
       setupApollo17Site();
     },
-    "Disable all sites": () => {
+    'Disable all sites': () => {
       disableSites();
-    },
-  },
+    }
+  }
 };
 let focusButtons = {
-  title: "Set Focus",
+  title: 'Set Focus',
   buttons: {
-    "Focus on Moon": () => {
-      setFocus("Moon");
+    'Focus on Moon': () => {
+      setFocus('Moon');
     },
-    "Focus on Apollo 11 Lem": () => {
-      setFocus("Apollo11LemModel");
+    'Focus on Apollo 11 Lem': () => {
+      setFocus('Apollo11LemModel');
     },
-    "Focus on Apollo 11 Orbiter": () => {
-      setFocus("Apollo11");
+    'Focus on Apollo 11 Orbiter': () => {
+      setFocus('Apollo11');
     },
-    "Focus on Apollo 17 Lem": () => {
-      setFocus("Apollo17LemModel");
-    },
-  },
+    'Focus on Apollo 17 Lem': () => {
+      setFocus('Apollo17LemModel');
+    }
+  }
 };
 let trailButtons = {
-  title: "Trails",
+  title: 'Trails',
   buttons: {
     Moon: () => {
-      showTrails(["Moon"]);
+      showTrails(['Moon']);
     },
-    "Apollo 11 Orbits": () => {
-      showTrails(["Apollo11Moon"]);
+    'Apollo 11 Orbits': () => {
+      showTrails(['Apollo11Moon']);
     },
-    "Apollo 11 Lunar Lander": () => {
-      showTrails(["Apollo11Lem"]);
+    'Apollo 11 Lunar Lander': () => {
+      showTrails(['Apollo11Lem']);
     },
-    "Earth, Moon & Mars": () => {
-      showTrails(["Earth", "Moon", "Mars"]);
-    },
-  },
+    'Earth, Moon & Mars': () => {
+      showTrails(['Earth', 'Moon', 'Mars']);
+    }
+  }
 };
 
 let apolloButtonGroups = [siteButtons, focusButtons, trailButtons];
