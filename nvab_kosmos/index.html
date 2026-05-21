@@ -49,7 +49,8 @@
         // Setup the api params
         let host = document.getElementById('ipaddress').value;
         if (!host) {
-          return;
+          // Host is empty, default to localhost
+          host = 'localhost';
         }
         let api = window.openspaceApi(host, 4682);
         // Notify users on disconnect
@@ -254,7 +255,7 @@
 
       <div id="main"></div>
       <script type="text/javascript">
-        connectToOpenSpace('localhost');
+        connectToOpenSpace();
       </script>
     </div>
   </body>
