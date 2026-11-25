@@ -1,8 +1,8 @@
 <html>
   <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>OpenSpace Night Live - Mars</title>
-    <link rel="stylesheet" type="text/css" href="main.css">
+    <link rel="stylesheet" type="text/css" href="main.css" />
     <script type="text/javascript" src="openspace-api.js"></script>
     <script type="text/javascript" src="init.js"></script>
     <script type="text/javascript" src="actions.js"></script>
@@ -12,30 +12,40 @@
     <div id="container" class="disconnected">
       <div id="connection-status" class="connection-status">
         Connect to OpenSpace:
-        <input id='ipaddress' type=text placeholder="Enter ip address"/>
+        <input id="ipaddress" type="text" placeholder="Enter ip address" />
         <button onClick="connectToOpenSpace();">Connect</button>
       </div>
-      <div id="main" style="display:flex; width:100%">
-        <div id="blocker" class="blockit">
-        </div>
+      <div id="main" style="display: flex; width: 100%">
+        <div id="blocker" class="blockit"></div>
         <div id="left" style="width: 60%">
           <div class="card">
-            <h2>Information</h3>
+            <h2>Information</h2>
             <ul>
               <li>Start by logging in to Blackout if needed.</li>
-              <li>"Set History view" will set correct parameters and camera view for rocket launch history.</li>
+              <li>
+                "Set History view" will set correct parameters and camera view for rocket
+                launch history.
+              </li>
               <li>"Set 39A view" will go to Pad 39A and enable PAD vehicles.</li>
               <li>"Reset" will reset parameters but keep camera view.</li>
-              <li><b>NOTE:</b> Will <u>NOT</u> hide graph - needs to be done manually.</li>
+              <li>
+                <b>NOTE:</b> Will <u>NOT</u> hide graph - needs to be done manually.
+              </li>
             </ul>
           </div>
-          <div class='card'>
+          <div class="card">
             <h2>Master</h2>
-            <button type="button" class="green" onclick="prepareLaunches(1)">Set History view</button>
-            <button type="button" class="green" onclick="prepare39A()">Set 39A view</button>
+            <button type="button" class="green" onclick="prepareLaunches(1)">
+              Set History view
+            </button>
+            <button type="button" class="green" onclick="prepare39A()">
+              Set 39A view
+            </button>
             <button type="button" onclick="reset()">Reset Everything</button>
-            <br>
-            <button type="button" class="grey" onclick="test()">History Test (3 times before show)</button>
+            <br />
+            <button type="button" class="grey" onclick="test()">
+              History Test (3 times before show)
+            </button>
           </div>
           <div class="card">
             <h2>Controls</h2>
@@ -52,13 +62,15 @@
             <br>
             -->
             <label>Graph</label>
-            <button type="button" class="green" onclick="toggleGraph()">Toggle Graph</button>
-            <br>
+            <button type="button" class="green" onclick="toggleGraph()">
+              Toggle Graph
+            </button>
+            <br />
             <label>Launch History</label>
             <button type="button" class="green" onclick="playYears()">Play</button>
             <button type="button" class="orange" onclick="pauseYears()">Pause</button>
             <button type="button" class="red" onclick="stopYears()">Restart</button>
-            <br>
+            <br />
             <button type="button" class="purple" onclick="jumpPrevYears(10)"><<</button>
             <button type="button" class="purple" onclick="jumpPrevYears(1)"><</button>
             <button type="button" class="blue" onclick="playPrevYear()">Prev</button>
@@ -66,47 +78,66 @@
             <button type="button" class="blue" onclick="playNextYear()">Next</button>
             <button type="button" class="purple" onclick="jumpNextYears(1)">></button>
             <button type="button" class="purple" onclick="jumpNextYears(10)">>></button>
-            <hr>
+            <hr />
             <label>Pad 39A</label>
-            <br>
-            <button type="button" class="green" onclick="togglePad39A()">Toggle Falcon 9 on Pad</button>
-            <button type="button" class="green" onclick="togglePad39b()">Toggle Saturn V on Pad</button>
-            <button type="button" class="red" onclick="disablePads()">Quick Disable Pads</button>
-            <br>
-            <button type="button" class="green" onclick="toggleS()">Toggle Star Ship</button>
-            <button type="button" class="green" onclick="toggleSV()">Toggle Saturn V</button>
-            <button type="button" class="green" onclick="toggleF9()">Toggle Falcon 9</button>
-            <button type="button" class="green" onclick="toggleSS()">Toggle Space Shuttle</button>
-            <button type="button" class="green" onclick="toggleA5()">Toggle Ariane 5</button>
-            <br>
-            <button type="button" class="red" onclick="disableAllRockets()">Quick Disable All Rockets</button>
-
+            <br />
+            <button type="button" class="green" onclick="togglePad39A()">
+              Toggle Falcon 9 on Pad
+            </button>
+            <button type="button" class="green" onclick="togglePad39b()">
+              Toggle Saturn V on Pad
+            </button>
+            <button type="button" class="red" onclick="disablePads()">
+              Quick Disable Pads
+            </button>
+            <br />
+            <button type="button" class="green" onclick="toggleS()">
+              Toggle Star Ship
+            </button>
+            <button type="button" class="green" onclick="toggleSV()">
+              Toggle Saturn V
+            </button>
+            <button type="button" class="green" onclick="toggleF9()">
+              Toggle Falcon 9
+            </button>
+            <button type="button" class="green" onclick="toggleSS()">
+              Toggle Space Shuttle
+            </button>
+            <button type="button" class="green" onclick="toggleA5()">
+              Toggle Ariane 5
+            </button>
+            <br />
+            <button type="button" class="red" onclick="disableAllRockets()">
+              Quick Disable All Rockets
+            </button>
           </div>
         </div>
-        <div id="right" style="flex-grow: 1;">
+        <div id="right" style="flex-grow: 1">
           <div id="blackoutDiv" class="card">
             <h2>Blackout</h2>
             <button id="hideBlackout" onclick="toggleBlackout()">Toggle Blackout</button>
-            <p><b>Note: </b>The control points for the blackout area is drawn from: </br> 
-              topleft (TL) -> topright (TR) -> bottomright (BR) -> bottomleft (BL) -> topleft (TL)
+            <p>
+              <b>Note: </b>The control points for the blackout area is drawn from: <br />
+              topleft (TL) -> topright (TR) -> bottomright (BR) -> bottomleft (BL) ->
+              topleft (TL)
             </p>
             <ul>
               <li>
                 <label class="loginlbl">Site: </label>
-                <input id="siteinput" type="text"/>
+                <input id="siteinput" type="text" />
               </li>
               <li>
                 <label class="loginlbl">Passkey: </label>
-                <input id="passinput" type="password"/>
+                <input id="passinput" type="password" />
               </li>
               <li>
                 <button id="goButton" onclick="enableBlackoutControls()">Enter</button>
               </li>
             </ul>
-            <div id="blackoutbox" style="display:none">
-              <div id="blackoutcontrols" style="display: flex;">
+            <div id="blackoutbox" style="display: none">
+              <div id="blackoutcontrols" style="display: flex">
                 <div id="blackoutleft" style="width: 50%"></div>
-                <div id="blackoutright" style="flex-grow: 1;"></div>
+                <div id="blackoutright" style="flex-grow: 1"></div>
               </div>
             </div>
           </div>
@@ -116,5 +147,5 @@
         connectToOpenSpace('localhost');
       </script>
     </div>
-  <body>
+  </body>
 </html>

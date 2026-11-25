@@ -10,7 +10,7 @@ button {
   background-color: #15379d;
 }
 
-button.off{
+button.off {
   background-color: #15379d;
 }
 
@@ -23,7 +23,7 @@ button.off{
 }
 
 /* Active color */
-button.on{
+button.on {
   background-color: #4b72e7;
 }
 
@@ -38,4 +38,3 @@ button:active {
 div.connecting #connect-button {
   background-color: #4b72e7;
 }
-

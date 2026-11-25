@@ -5,16 +5,15 @@ html {
 body {
   margin: 0;
   padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 .header {
   color: #fff;
@@ -28,7 +27,7 @@ code {
 
 /* Clear floats after the columns */
 .row:after {
-  content: "";
+  content: '';
   display: table;
   clear: both;
 }
@@ -38,16 +37,16 @@ code {
   width: calc(50% - 4em);
 }
 
-input[type=text] {
-  padding:5px;
-  border:1px solid #ccc;
+input[type='text'] {
+  padding: 5px;
+  border: 1px solid #ccc;
   -webkit-border-radius: 3px;
   border-radius: 3px;
 }
 
-input[type=text].coord {
-  padding:5px;
-  border:1px solid #ccc;
+input[type='text'].coord {
+  padding: 5px;
+  border: 1px solid #ccc;
   -webkit-border-radius: 3px;
   border-radius: 3px;
   width: 9ch;
@@ -55,12 +54,12 @@ input[type=text].coord {
   margin-top: 0.5em;
 }
 
-input[type=text].degree {
+input[type='text'].degree {
   width: 15ch;
 }
 
-input[type=text]:focus {
-    border-color:#333;
+input[type='text']:focus {
+  border-color: #333;
 }
 
 .connection-status {

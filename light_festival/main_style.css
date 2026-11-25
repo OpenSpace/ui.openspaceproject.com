@@ -1,7 +1,7 @@
 html {
   background-color: rgb(0, 0, 0);
   position: relative;
-  letter-spacing: .06rem;
+  letter-spacing: 0.06rem;
   line-height: 1.2;
 }
 
@@ -46,7 +46,7 @@ button:active {
   margin: 1em 1em 1em;
   padding: 0.5em 1em 1em;
   color: #fff;
-  letter-spacing: .08rem;
+  letter-spacing: 0.08rem;
 }
 
 .footer {
@@ -71,7 +71,8 @@ p {
   color: #fff;
 }
 
-h1, h2 {
+h1,
+h2 {
   font-family: 'Roboto', sans-serif;
   line-height: 1.2;
 }
@@ -85,9 +86,9 @@ h2 {
   text-align: left;
 }
 
-@media only screen and (max-width:620px) {
+@media only screen and (max-width: 620px) {
   /* For mobile phones: */
-  .main{
+  .main {
     width: 100%;
   }
   #logo {

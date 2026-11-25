@@ -1,11 +1,11 @@
 var locationButtons = {
-  title: "Platser",
+  title: 'Platser',
   buttons: {
-    'Saturnus': () => {
-      console.log("Going to Saturn");
-    }, 
-    'Ringar': () => {
-      console.log("Going to Saturns rings");
+    Saturnus: () => {
+      console.log('Going to Saturn');
+    },
+    Ringar: () => {
+      console.log('Going to Saturns rings');
     }
   }
 };

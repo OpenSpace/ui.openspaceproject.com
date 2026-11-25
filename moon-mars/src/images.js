@@ -38,7 +38,7 @@ export default {
   laika: {
     url: remoteUrl + 'soviet/laika.jpg',
     domePosition: [5, -0.6, 0.3],
-    flatPosition: [4, -0.45, 0],
+    flatPosition: [4, -0.45, 0]
   },
   luna2: {
     url: remoteUrl + 'soviet/luna2.jpg',
@@ -49,27 +49,27 @@ export default {
   luna3: {
     url: remoteUrl + 'soviet/luna3Backside.jpg',
     domePosition: [4, 0.6, 0.3],
-    flatPosition: [4, 0.45, 0],
+    flatPosition: [4, 0.45, 0]
   },
   gagarin: {
     url: remoteUrl + 'soviet/gagarin.jpg',
     domePosition: [4, -1, 0.3],
-    flatPosition: [4, -0.3, 0],
+    flatPosition: [4, -0.3, 0]
   },
   vostokSpacecraft: {
     url: remoteUrl + 'soviet/vostokSpacecraft.jpg',
     domePosition: [4, -0.33, 0.3],
-    flatPosition: [4, 0.3, 0],
+    flatPosition: [4, 0.3, 0]
   },
   sovietNews: {
     url: remoteUrl + 'soviet/news.jpg',
     domePosition: [4, 0.33, 0.3],
-    flatPosition: [4, -0.3, 0],
+    flatPosition: [4, -0.3, 0]
   },
   teresjkovaMedals: {
     url: remoteUrl + 'soviet/teresjkovaMedals.jpg',
     domePosition: [4, 1, 0.3],
-    flatPosition: [4, 0.3, 0],
+    flatPosition: [4, 0.3, 0]
   },
   glenn: {
     url: remoteUrl + 'usa/glenn.jpg',
@@ -147,17 +147,17 @@ export default {
     url: remoteUrl + 'apollo11/nixon.jpg',
     domePosition: [3.5, 1.1, 0.4], // position: [3.5, 0, 0.4],
     tweenPosition: true,
-    flatPosition: [4, 0, 0],
+    flatPosition: [4, 0, 0]
   },
   apollo11News1: {
     url: remoteUrl + 'apollo11/news1.png',
     domePosition: [3.5, -0.4, 1],
-    flatPosition: [3, -0.4, 0],
+    flatPosition: [3, -0.4, 0]
   },
   apollo11News2: {
     url: remoteUrl + 'apollo11/news2.png',
     domePosition: [3.0, 0.4, 1],
-    flatPosition: [2.9, 0.4, 0],
+    flatPosition: [2.9, 0.4, 0]
   },
   apollo13Problem: {
     url: remoteUrl + 'apollo13/problem.jpg',
@@ -171,28 +171,28 @@ export default {
     domePosition: [3.5, -1, 0.4],
     flatPosition: [3.5, -1, 0],
     rotation: [0.1, 0, 0],
-    scale: 1,
+    scale: 1
   },
   apollo13InWater: {
     url: remoteUrl + 'apollo13/inWater.jpg',
     domePosition: [3, -0.35, 0.4],
     flatPosition: [3, -0.35, 0],
     rotation: [0.05, 0, 0],
-    scale: 1,
+    scale: 1
   },
   apollo13Helicopter: {
     url: remoteUrl + 'apollo13/helicopter.jpg',
     domePosition: [3.5, 0.35, 0.4],
     flatPosition: [3, 0.35, 0],
     rotation: [-0.05, 0, 0],
-    scale: 1,
+    scale: 1
   },
   apollo13LoadOnDeck: {
     url: remoteUrl + 'apollo13/loadOnDeck.jpg',
     domePosition: [3, 1, 0.4],
     flatPosition: [3, 1, 0],
     rotation: [-0.1, 0, 0],
-    scale: 1,
+    scale: 1
   },
   apollo13Happy: {
     url: remoteUrl + 'apollo13/happy.jpg',
@@ -202,34 +202,32 @@ export default {
     tweenPosition: true
   },
 
-
   apollo17Lrv: {
     url: remoteUrl + 'apollo17/lrv2.jpg',
     domePosition: [3.5, -1.2, 0.4],
     flatPosition: [7, -0.5, 0],
     rotation: [-0.05, 0, 0],
-    scale: 2,
+    scale: 2
   },
   apollo17Digging: {
     url: remoteUrl + 'apollo17/digging.jpg',
     domePosition: [3, -0.35, 0.4],
     flatPosition: [5, -0.2, 0],
     rotation: [0.05, 0, 0],
-    scale: 1,
+    scale: 1
   },
   apollo17Reflector: {
     url: remoteUrl + 'apollo17/reflector.jpg',
     domePosition: [3.5, 0.35, 0.4],
     flatPosition: [5, 0.2, 0],
     rotation: [-0.05, 0, 0],
-    scale: 1,
+    scale: 1
   },
   apollo17Boulder: {
     url: remoteUrl + 'apollo17/boulder.jpg',
     domePosition: [3, 1.3, 0.4],
     flatPosition: [7, 0.6, 0],
     rotation: [0.05, 0, 0],
-    scale: 2,
-  },
-
-}
+    scale: 2
+  }
+};
