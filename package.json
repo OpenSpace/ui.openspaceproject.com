@@ -1,0 +1,22 @@
+{
+  "name": "ui.openspaceproject.com",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Web pages that control OpenSpace for shows and events",
+  "type": "module",
+  "scripts": {
+    "lint": "prettier --check . && markdownlint-cli2 \"**/*.md\" \"#node_modules\"",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OpenSpace/ui.openspaceproject.com.git"
+  },
+  "devDependencies": {
+    "@openspace/shared-configs": "github:OpenSpace/shared-configs#v1.0.0",
+    "markdownlint-cli2": "^0.24.2",
+    "prettier": "^3.10.1"
+  },
+  "prettier": "@openspace/shared-configs/prettier"
+}

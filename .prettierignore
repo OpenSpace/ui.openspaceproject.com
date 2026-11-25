@@ -1,0 +1,12 @@
+# Dependencies
+node_modules
+package-lock.json
+
+# Bundled copies of the OpenSpace JavaScript API
+openspace-api.js
+
+# Raw data that the pages were generated from
+OSNL_Mars2024/data sources
+
+# Markdown is checked by markdownlint, whose list indentation differs from Prettier's
+*.md
